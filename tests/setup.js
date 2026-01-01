@@ -69,6 +69,22 @@ global.Phaser = {
           clear: jest.fn(),
           countActive: jest.fn(() => 0),
           getLength: jest.fn(() => 0)
+        })),
+        graphics: jest.fn(() => ({
+          x: 0, y: 0,
+          clear: jest.fn(),
+          fillStyle: jest.fn(),
+          fillCircle: jest.fn(),
+          fillRect: jest.fn(),
+          fillTriangle: jest.fn(),
+          setScrollFactor: jest.fn(),
+          setDepth: jest.fn(),
+          active: true,
+          visible: true,
+          alpha: 1,
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          destroy: jest.fn()
         }))
       };
       this.physics = {
@@ -115,6 +131,21 @@ global.Phaser = {
         start: jest.fn(),
         pause: jest.fn(),
         restart: jest.fn()
+      };
+      this.time = {
+        delayedCall: jest.fn((delay, callback, args, scope) => {
+          // Auto-execute callback for simple tests or store it?
+          // For now, just mocking the function is enough to prevent crashes.
+          // In specific tests, we can override this implementation.
+          return { remove: jest.fn() };
+        })
+      };
+      this.tweens = {
+        add: jest.fn((config) => {
+          // Execute onComplete immediately if needed? No, let tests handle it.
+          return { stop: jest.fn() };
+        }),
+        killTweensOf: jest.fn()
       };
     }
   },
