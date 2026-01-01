@@ -67,6 +67,79 @@ http://localhost:8080
 
 Simply open `index.html` in a modern web browser. The game loads Phaser from a CDN.
 
+## Testing
+
+A comprehensive test suite is included to verify all game features work correctly after each development cycle.
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (auto-rerun on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+The test suite covers all features listed in this README:
+
+#### Core Gameplay Tests
+- ✅ Player movement (WASD and Arrow keys)
+- ✅ Mouth hitbox detection and positioning
+- ✅ Consumption mechanics
+- ✅ 5-tier size progression system
+- ✅ Dynamic player growth and scaling
+- ✅ Edible item variety (shapes, colors, tiers)
+- ✅ Hazard entities and collision detection
+
+#### Scoring System Tests
+- ✅ Base point awards (80 points)
+- ✅ Diminishing returns algorithm
+- ✅ Item type variety rewards
+- ✅ Score penalties for hazards (-80 points)
+- ✅ 3-star rating thresholds
+
+#### UI/HUD Tests
+- ✅ Size indicator display
+- ✅ Progress bar updates
+- ✅ Live score display
+- ✅ Timer formatting (MM:SS)
+- ✅ HUD element positioning
+
+#### Game Mechanics Tests
+- ✅ Camera follow and zoom
+- ✅ Item despawning (tier N-2)
+- ✅ Consumable tier rules
+- ✅ Hazard bounce physics
+- ✅ Win condition (tier 5 completion)
+- ✅ Pause functionality (ESC key)
+
+### Test Files
+
+```
+tests/
+├── setup.js              # Test configuration and mocks
+├── Player.test.js        # Player movement, consumption, tier advancement (100+ tests)
+├── EdibleItem.test.js    # Item creation and properties
+├── Hazard.test.js        # Hazard behavior and physics
+├── GameScene.test.js     # Game mechanics and integration tests
+├── ScoringSystem.test.js # Comprehensive scoring algorithm tests
+└── UI.test.js            # HUD and UI element tests
+```
+
+### Viewing Coverage Reports
+
+After running `npm run test:coverage`, open `coverage/index.html` in your browser to see a detailed coverage report showing:
+- Line coverage
+- Branch coverage
+- Function coverage
+- Statement coverage
+
 ## How to Play
 
 1. **Movement**: Use WASD or Arrow Keys to move your character
