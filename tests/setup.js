@@ -30,6 +30,7 @@ global.Phaser = {
           x, y, width: w, height: h, displayWidth: w, displayHeight: h,
           setOrigin: jest.fn().mockReturnThis(),
           setScrollFactor: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
           destroy: jest.fn()
         })),
         triangle: jest.fn((x, y, x1, y1, x2, y2, x3, y3, color) => ({
@@ -41,12 +42,16 @@ global.Phaser = {
           setText: jest.fn(function(t) { this.text = t; }),
           setOrigin: jest.fn().mockReturnThis(),
           setScrollFactor: jest.fn().mockReturnThis(),
+          setInteractive: jest.fn().mockReturnThis(),
+          on: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
           destroy: jest.fn()
         })),
         group: jest.fn(() => ({
           add: jest.fn(),
           getChildren: jest.fn(() => []),
-          clear: jest.fn()
+          clear: jest.fn(),
+          countActive: jest.fn(() => 0)
         }))
       };
       this.physics = {
@@ -62,7 +67,9 @@ global.Phaser = {
         },
         world: {
           setBounds: jest.fn()
-        }
+        },
+        pause: jest.fn(),
+        resume: jest.fn()
       };
       this.cameras = {
         main: {
