@@ -170,7 +170,8 @@ class GameScene extends Phaser.Scene {
 
             // Check collision
             if (distance < this.player.getSize() + hazard.displayWidth / 2) {
-                if (playerTier > hazard.hazardData.tier) {
+                const maxTier = GameConfig.SIZE_TIERS.length;
+                if (playerTier > hazard.hazardData.tier || playerTier === maxTier) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;
@@ -380,6 +381,14 @@ class GameScene extends Phaser.Scene {
                 const eating = Math.min(remainingNeeded, canEat);
                 availableItems[sameTier] -= eating;
                 remainingNeeded -= eating;
+
+                // REQ-MECH-014: If at Max Tier, hazards of current tier are also edible
+                if (remainingNeeded > 0 && t === maxTier) {
+                    const canEatHazards = availableHazards[t] || 0;
+                    const eatenHazards = Math.min(remainingNeeded, canEatHazards);
+                    availableHazards[t] -= eatenHazards;
+                    remainingNeeded -= eatenHazards;
+                }
             }
 
             if (remainingNeeded > 0) {
