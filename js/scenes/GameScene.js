@@ -154,32 +154,39 @@ class GameScene extends Phaser.Scene {
 
     checkHazardCollisions() {
         const playerTier = this.player.getCurrentTier();
-        const hazards = this.hazards.getChildren();
+        // Create a copy to safely modify the group during iteration
+        const hazards = [...this.hazards.getChildren()];
 
         for (let hazard of hazards) {
             if (!hazard.active || !hazard.hazardData) continue;
-
-            // Only hazards from higher tiers are dangerous
-            if (hazard.hazardData.tier <= playerTier) continue;
 
             const distance = Phaser.Math.Distance.Between(
                 this.player.sprite.x, this.player.sprite.y,
                 hazard.x, hazard.y
             );
 
+            // Check collision
             if (distance < this.player.getSize() + hazard.displayWidth / 2) {
-                const penalty = this.player.takeDamage();
-                this.score -= penalty;
+                if (playerTier > hazard.hazardData.tier) {
+                    // Consume hazard
+                    const points = this.player.consume(hazard.hazardData);
+                    this.score += points;
+                    hazard.destroy();
+                } else {
+                    // Damage player (equal or greater tier hazards are dangerous)
+                    const penalty = this.player.takeDamage();
+                    this.score -= penalty;
 
-                // Visual feedback
-                this.cameras.main.shake(200, 0.01);
+                    // Visual feedback
+                    this.cameras.main.shake(200, 0.01);
 
-                // Push player away
-                const angle = Phaser.Math.Angle.Between(hazard.x, hazard.y, this.player.sprite.x, this.player.sprite.y);
-                this.player.sprite.body.setVelocity(
-                    Math.cos(angle) * 300,
-                    Math.sin(angle) * 300
-                );
+                    // Push player away
+                    const angle = Phaser.Math.Angle.Between(hazard.x, hazard.y, this.player.sprite.x, this.player.sprite.y);
+                    this.player.sprite.body.setVelocity(
+                        Math.cos(angle) * 300,
+                        Math.sin(angle) * 300
+                    );
+                }
             }
         }
     }
@@ -266,10 +273,25 @@ class GameScene extends Phaser.Scene {
             }
         }
 
+        // Count available hazards per tier
+        const availableHazards = {};
+        const hazards = this.hazards.getChildren();
+        for (let hazard of hazards) {
+            if (hazard.active && hazard.hazardData) {
+                const tier = hazard.hazardData.tier;
+                if (!availableHazards[tier]) {
+                    availableHazards[tier] = 0;
+                }
+                availableHazards[tier]++;
+            }
+        }
+
         // Iterate through remaining growth stages
         const maxTier = GameConfig.SIZE_TIERS.length;
 
         for (let t = currentTier; t <= maxTier; t++) {
+            // 't' represents the player's size tier during this simulation step.
+            // We are trying to satisfy the quota to grow from tier 't' to 't+1'.
             const tierConfig = GameConfig.SIZE_TIERS[t - 1];
             const quota = tierConfig.quota;
 
@@ -287,10 +309,21 @@ class GameScene extends Phaser.Scene {
             // Eat from t-1 (if applicable)
             if (t > 1) {
                 const lowerTier = t - 1;
-                const canEat = availableItems[lowerTier] || 0;
-                const eating = Math.min(remainingNeeded, canEat);
-                availableItems[lowerTier] -= eating;
-                remainingNeeded -= eating;
+
+                // Edible items from t-1
+                const canEatItems = availableItems[lowerTier] || 0;
+                const eatenItems = Math.min(remainingNeeded, canEatItems);
+                availableItems[lowerTier] -= eatenItems;
+                remainingNeeded -= eatenItems;
+
+                // Hazards from t-1 (now edible since we are tier t)
+                // Hazards of tier 'lowerTier' are smaller than player tier 't', so they are edible.
+                if (remainingNeeded > 0) {
+                    const canEatHazards = availableHazards[lowerTier] || 0;
+                    const eatenHazards = Math.min(remainingNeeded, canEatHazards);
+                    availableHazards[lowerTier] -= eatenHazards;
+                    remainingNeeded -= eatenHazards;
+                }
             }
 
             // Eat from t
@@ -311,6 +344,7 @@ class GameScene extends Phaser.Scene {
             // When we advance from t to t+1, items from t-1 are despawned.
             if (t > 1) {
                 availableItems[t - 1] = 0;
+                availableHazards[t - 1] = 0;
             }
         }
 

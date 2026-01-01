@@ -22,6 +22,7 @@ class Hazard {
 
         // Store reference
         this.sprite.hazardData = this;
+        this.itemType = 'HAZARD';
     }
 
     destroy() {

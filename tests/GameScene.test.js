@@ -22,7 +22,31 @@ describe('GameScene', () => {
 
   beforeEach(() => {
     gameScene = new GameScene();
+
+    // Initialize groups manually to mock them before create()
+    // create() will overwrite them but we can mock the values if we mock the add.group function
+    // However, GameScene.js calls this.add.group() inside create().
+
+    // We need to intercept the groups AFTER create() calls this.add.group() but BEFORE it calls checkWinnability()?
+    // Impossible in synchronous code.
+
+    // Solution: Mock this.add.group implementation in the test setup for this suite?
+    // tests/setup.js defines global.Phaser.Scene ... this.add.group
+
+    // We can just rely on the fact that we can modify the mock implementation of countActive *after* create()
+    // and then manually reset gameEnded to false if we want to proceed with a "valid" game state test.
+
     gameScene.create();
+
+    // Default to a winnable state for most tests
+    for (let t = 1; t <= 5; t++) {
+        if (gameScene.edibleItems[t]) {
+             gameScene.edibleItems[t].countActive.mockReturnValue(50);
+        }
+    }
+    // Force game not ended
+    gameScene.gameEnded = false;
+    gameScene.physics.pause.mockClear(); // Clear any pause called by impossible warning
   });
 
   describe('Initialization', () => {
@@ -272,7 +296,7 @@ describe('GameScene', () => {
       expect(gameScene.cameras.main.shake).toHaveBeenCalled();
     });
 
-    test('should not damage player from lower tier hazards', () => {
+    test('should consume and award points for lower tier hazards', () => {
       gameScene.score = 1000;
 
       // Advance player to tier 3
@@ -284,14 +308,16 @@ describe('GameScene', () => {
         y: gameScene.player.sprite.y,
         active: true,
         displayWidth: 30,
-        hazardData: { tier: 2 }
+        hazardData: { tier: 2 },
+        destroy: jest.fn()
       };
 
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
       gameScene.checkHazardCollisions();
 
-      // Score should not change
-      expect(gameScene.score).toBe(1000);
+      // Score should increase (hazard consumed)
+      expect(gameScene.score).toBeGreaterThan(1000);
+      expect(mockHazard.destroy).toHaveBeenCalled();
     });
   });
 

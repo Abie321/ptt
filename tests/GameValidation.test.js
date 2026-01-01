@@ -96,6 +96,7 @@ describe('Winnability Validation', () => {
         for(let t=1; t<=5; t++) {
             scene.edibleItems[t] = scene.add.group();
         }
+        scene.hazards = scene.add.group();
     });
 
     test('should pass validation when items are sufficient', () => {
