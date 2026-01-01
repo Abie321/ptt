@@ -3,7 +3,8 @@ const path = require('path');
 
 // Load required classes
 const playerPath = path.join(__dirname, '../js/entities/Player.js');
-eval(fs.readFileSync(playerPath, 'utf8'));
+const playerCode = fs.readFileSync(playerPath, 'utf8').replace('class Player', 'global.Player = class Player');
+eval(playerCode);
 
 describe('Scoring System', () => {
   let scene;
@@ -40,6 +41,10 @@ describe('Scoring System', () => {
 
   describe('Diminishing Returns Algorithm', () => {
     test('should decrease points for repeated consumption of same type', () => {
+      // Mock density to be low so decay happens faster
+      const originalDensity = GameConfig.ITEMS_PER_TIER[1];
+      GameConfig.ITEMS_PER_TIER[1] = 5;
+
       const item = { tier: 1, itemType: 5 };
 
       const points1 = player.consume(item);
@@ -50,6 +55,9 @@ describe('Scoring System', () => {
       expect(points1).toBeGreaterThan(points2);
       expect(points2).toBeGreaterThan(points3);
       expect(points3).toBeGreaterThan(points4);
+
+      // Restore
+      GameConfig.ITEMS_PER_TIER[1] = originalDensity;
     });
 
     test('should track consumption count per item type', () => {

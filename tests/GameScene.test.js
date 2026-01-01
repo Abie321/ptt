@@ -7,10 +7,15 @@ const itemPath = path.join(__dirname, '../js/entities/EdibleItem.js');
 const hazardPath = path.join(__dirname, '../js/entities/Hazard.js');
 const scenePath = path.join(__dirname, '../js/scenes/GameScene.js');
 
-eval(fs.readFileSync(playerPath, 'utf8'));
-eval(fs.readFileSync(itemPath, 'utf8'));
-eval(fs.readFileSync(hazardPath, 'utf8'));
-eval(fs.readFileSync(scenePath, 'utf8'));
+const playerCode = fs.readFileSync(playerPath, 'utf8').replace('class Player', 'global.Player = class Player');
+const itemCode = fs.readFileSync(itemPath, 'utf8').replace('class EdibleItem', 'global.EdibleItem = class EdibleItem');
+const hazardCode = fs.readFileSync(hazardPath, 'utf8').replace('class Hazard', 'global.Hazard = class Hazard');
+const sceneCode = fs.readFileSync(scenePath, 'utf8').replace('class GameScene', 'global.GameScene = class GameScene');
+
+eval(playerCode);
+eval(itemCode);
+eval(hazardCode);
+eval(sceneCode);
 
 describe('GameScene', () => {
   let gameScene;
@@ -206,10 +211,11 @@ describe('GameScene', () => {
     test('should award points when consuming items', () => {
       const initialScore = gameScene.score;
 
-      // Mock an item in range
+      // Mock an item in range (at mouth position)
+      const mouthPos = gameScene.player.getMouthPosition();
       const mockItem = {
-        x: gameScene.player.sprite.x,
-        y: gameScene.player.sprite.y,
+        x: mouthPos.x,
+        y: mouthPos.y,
         active: true,
         displayWidth: 20,
         itemData: { tier: 1, itemType: 0 },

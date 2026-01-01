@@ -3,7 +3,7 @@ const path = require('path');
 
 // Load EdibleItem class
 const itemPath = path.join(__dirname, '../js/entities/EdibleItem.js');
-const itemCode = fs.readFileSync(itemPath, 'utf8');
+const itemCode = fs.readFileSync(itemPath, 'utf8').replace('class EdibleItem', 'global.EdibleItem = class EdibleItem');
 eval(itemCode);
 
 describe('EdibleItem', () => {
