@@ -38,6 +38,9 @@ class GameScene extends Phaser.Scene {
         // Listen for tier advancement
         this.events.on('tierAdvanced', this.onTierAdvanced, this);
 
+        // Initial visibility update
+        this.updateEntityVisibility();
+
         // Initial winnability check
         if (!this.checkWinnability()) {
             this.showImpossibleWarning();
@@ -198,6 +201,9 @@ class GameScene extends Phaser.Scene {
             this.edibleItems[despawnTier].clear(true, true);
         }
 
+        // Update entity visibility based on new tier
+        this.updateEntityVisibility();
+
         // Update camera zoom to accommodate larger player
         const zoomLevels = [1, 0.9, 0.8, 0.7, 0.6];
         this.cameras.main.setZoom(zoomLevels[newTier - 1] || 0.5);
@@ -209,6 +215,45 @@ class GameScene extends Phaser.Scene {
         if (!this.checkWinnability()) {
             this.showImpossibleWarning();
         }
+    }
+
+    updateEntityVisibility() {
+        const playerTier = this.player.getCurrentTier();
+
+        // REQ-MECH-013: Entities visible only if in [N-1, N, N+1]
+        // REQ-DMG-006: If Player Tier == 1, NO Hazards are visible/active.
+
+        // Update Edible Items
+        for (let tier = 1; tier <= GameConfig.SIZE_TIERS.length; tier++) {
+            if (!this.edibleItems[tier]) continue;
+
+            const isVisible = (tier >= playerTier - 1) && (tier <= playerTier + 1);
+
+            const items = this.edibleItems[tier].getChildren();
+            items.forEach(item => {
+                if (item) {
+                    item.setActive(isVisible);
+                    item.setVisible(isVisible);
+                }
+            });
+        }
+
+        // Update Hazards
+        const hazards = this.hazards.getChildren();
+        hazards.forEach(hazard => {
+            if (!hazard.hazardData) return;
+
+            const tier = hazard.hazardData.tier;
+            let isVisible = (tier >= playerTier - 1) && (tier <= playerTier + 1);
+
+            // REQ-DMG-006 Override
+            if (playerTier === 1) {
+                isVisible = false;
+            }
+
+            hazard.setActive(isVisible);
+            hazard.setVisible(isVisible);
+        });
     }
 
     updateHUD() {
@@ -263,11 +308,12 @@ class GameScene extends Phaser.Scene {
         const currentTier = this.player.getCurrentTier();
         const consumedInTier = this.player.consumedInTier;
 
-        // Count available items per tier (only active ones)
+        // Count available items per tier (all existing ones, ignoring current active state)
         const availableItems = {};
         for (let t = 1; t <= GameConfig.SIZE_TIERS.length; t++) {
             if (this.edibleItems[t]) {
-                availableItems[t] = this.edibleItems[t].countActive(true);
+                // use getLength() to count all items including inactive ones (hidden by fog of war)
+                availableItems[t] = this.edibleItems[t].getLength();
             } else {
                 availableItems[t] = 0;
             }
@@ -277,7 +323,8 @@ class GameScene extends Phaser.Scene {
         const availableHazards = {};
         const hazards = this.hazards.getChildren();
         for (let hazard of hazards) {
-            if (hazard.active && hazard.hazardData) {
+            // Count hazards regardless of active state (they might be hidden now but consumable later)
+            if (hazard.hazardData) {
                 const tier = hazard.hazardData.tier;
                 if (!availableHazards[tier]) {
                     availableHazards[tier] = 0;
