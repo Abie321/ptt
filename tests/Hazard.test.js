@@ -3,7 +3,7 @@ const path = require('path');
 
 // Load Hazard class
 const hazardPath = path.join(__dirname, '../js/entities/Hazard.js');
-const hazardCode = fs.readFileSync(hazardPath, 'utf8');
+const hazardCode = fs.readFileSync(hazardPath, 'utf8').replace('class Hazard', 'global.Hazard = class Hazard');
 eval(hazardCode);
 
 describe('Hazard', () => {

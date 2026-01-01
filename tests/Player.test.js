@@ -4,7 +4,8 @@ const path = require('path');
 // Load Player class
 const playerPath = path.join(__dirname, '../js/entities/Player.js');
 const playerCode = fs.readFileSync(playerPath, 'utf8');
-eval(playerCode);
+const modifiedPlayerCode = playerCode.replace('class Player', 'global.Player = class Player');
+eval(modifiedPlayerCode);
 
 describe('Player', () => {
   let scene;
@@ -260,6 +261,10 @@ describe('Player', () => {
     });
 
     test('should implement diminishing returns for repeated items', () => {
+      // Mock density to be low so decay happens faster
+      const originalDensity = GameConfig.ITEMS_PER_TIER[1];
+      GameConfig.ITEMS_PER_TIER[1] = 5;
+
       const mockItem = { tier: 1, itemType: 0 };
       const firstPoints = player.consume(mockItem);
       const secondPoints = player.consume(mockItem);
@@ -268,6 +273,9 @@ describe('Player', () => {
       expect(firstPoints).toBe(GameConfig.SCORING.MAX_POINTS_PER_ITEM);
       expect(secondPoints).toBeLessThan(firstPoints);
       expect(thirdPoints).toBeLessThan(secondPoints);
+
+      // Restore
+      GameConfig.ITEMS_PER_TIER[1] = originalDensity;
     });
 
     test('should never award less than minimum points', () => {

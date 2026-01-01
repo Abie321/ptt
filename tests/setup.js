@@ -6,8 +6,9 @@ const path = require('path');
 // Load game configuration
 const configPath = path.join(__dirname, '../js/config.js');
 const configCode = fs.readFileSync(configPath, 'utf8');
-eval(configCode);
-global.GameConfig = GameConfig;
+// Replace const declaration with global assignment for testing
+const modifiedConfigCode = configCode.replace('const GameConfig =', 'global.GameConfig =');
+eval(modifiedConfigCode);
 
 // Mock Phaser for testing
 global.Phaser = {
