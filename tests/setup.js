@@ -22,36 +22,53 @@ global.Phaser = {
       this.add = {
         circle: jest.fn((x, y, radius, color, alpha) => ({
           x, y, radius, displayWidth: radius * 2, displayHeight: radius * 2,
+          active: true,
+          visible: true,
           setRadius: jest.fn(function(r) { this.radius = r; this.displayWidth = r * 2; }),
           setFillStyle: jest.fn(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
         rectangle: jest.fn((x, y, w, h, color) => ({
           x, y, width: w, height: h, displayWidth: w, displayHeight: h,
+          active: true,
+          visible: true,
           setOrigin: jest.fn().mockReturnThis(),
           setScrollFactor: jest.fn().mockReturnThis(),
           setDepth: jest.fn().mockReturnThis(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
         triangle: jest.fn((x, y, x1, y1, x2, y2, x3, y3, color) => ({
           x, y, displayWidth: 20, displayHeight: 20,
+          active: true,
+          visible: true,
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
         text: jest.fn((x, y, text, style) => ({
           x, y, text,
+          active: true,
+          visible: true,
           setText: jest.fn(function(t) { this.text = t; }),
           setOrigin: jest.fn().mockReturnThis(),
           setScrollFactor: jest.fn().mockReturnThis(),
           setInteractive: jest.fn().mockReturnThis(),
           on: jest.fn().mockReturnThis(),
           setDepth: jest.fn().mockReturnThis(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
         group: jest.fn(() => ({
           add: jest.fn(),
           getChildren: jest.fn(() => []),
           clear: jest.fn(),
-          countActive: jest.fn(() => 0)
+          countActive: jest.fn(() => 0),
+          getLength: jest.fn(() => 0)
         }))
       };
       this.physics = {
@@ -96,7 +113,8 @@ global.Phaser = {
       };
       this.scene = {
         start: jest.fn(),
-        pause: jest.fn()
+        pause: jest.fn(),
+        restart: jest.fn()
       };
     }
   },

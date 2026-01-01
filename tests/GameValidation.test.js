@@ -26,6 +26,7 @@ describe('Winnability Validation', () => {
                 add: jest.fn(),
                 getChildren: jest.fn(() => []),
                 countActive: jest.fn(),
+                getLength: jest.fn(() => 0), // Added getLength mock
                 clear: jest.fn()
             })),
             text: jest.fn().mockReturnThis(),
@@ -100,41 +101,41 @@ describe('Winnability Validation', () => {
     });
 
     test('should pass validation when items are sufficient', () => {
-        scene.edibleItems[1].countActive.mockReturnValue(30);
-        scene.edibleItems[2].countActive.mockReturnValue(30);
-        scene.edibleItems[3].countActive.mockReturnValue(30);
-        scene.edibleItems[4].countActive.mockReturnValue(30);
-        scene.edibleItems[5].countActive.mockReturnValue(30);
+        scene.edibleItems[1].getLength.mockReturnValue(30); // Changed from countActive
+        scene.edibleItems[2].getLength.mockReturnValue(30);
+        scene.edibleItems[3].getLength.mockReturnValue(30);
+        scene.edibleItems[4].getLength.mockReturnValue(30);
+        scene.edibleItems[5].getLength.mockReturnValue(30);
 
         const result = scene.checkWinnability();
         expect(result).toBe(true);
     });
 
     test('should fail validation when Tier 5 is impossible', () => {
-        scene.edibleItems[1].countActive.mockReturnValue(50);
-        scene.edibleItems[2].countActive.mockReturnValue(50);
-        scene.edibleItems[3].countActive.mockReturnValue(50);
-        scene.edibleItems[4].countActive.mockReturnValue(10);
-        scene.edibleItems[5].countActive.mockReturnValue(5);
+        scene.edibleItems[1].getLength.mockReturnValue(50);
+        scene.edibleItems[2].getLength.mockReturnValue(50);
+        scene.edibleItems[3].getLength.mockReturnValue(50);
+        scene.edibleItems[4].getLength.mockReturnValue(10);
+        scene.edibleItems[5].getLength.mockReturnValue(5);
 
         const result = scene.checkWinnability();
         expect(result).toBe(false);
     });
 
     test('should fail validation when Tier 2 is impossible (early fail)', () => {
-        scene.edibleItems[1].countActive.mockReturnValue(5);
-        scene.edibleItems[2].countActive.mockReturnValue(100);
+        scene.edibleItems[1].getLength.mockReturnValue(5);
+        scene.edibleItems[2].getLength.mockReturnValue(100);
 
         const result = scene.checkWinnability();
         expect(result).toBe(false);
     });
 
     test('should correctly handle despawn logic (items from T(N-2) are lost)', () => {
-        scene.edibleItems[1].countActive.mockReturnValue(10);
-        scene.edibleItems[2].countActive.mockReturnValue(40);
-        scene.edibleItems[3].countActive.mockReturnValue(20);
-        scene.edibleItems[4].countActive.mockReturnValue(5);
-        scene.edibleItems[5].countActive.mockReturnValue(100);
+        scene.edibleItems[1].getLength.mockReturnValue(10);
+        scene.edibleItems[2].getLength.mockReturnValue(40);
+        scene.edibleItems[3].getLength.mockReturnValue(20);
+        scene.edibleItems[4].getLength.mockReturnValue(5);
+        scene.edibleItems[5].getLength.mockReturnValue(100);
 
         const result = scene.checkWinnability();
         expect(result).toBe(true);
