@@ -38,6 +38,11 @@ class GameScene extends Phaser.Scene {
         // Listen for tier advancement
         this.events.on('tierAdvanced', this.onTierAdvanced, this);
 
+        // Initial winnability check
+        if (!this.checkWinnability()) {
+            this.showImpossibleWarning();
+        }
+
         // Create HUD (fixed to camera)
         this.createHUD();
 
@@ -192,6 +197,11 @@ class GameScene extends Phaser.Scene {
 
         // Visual feedback
         this.cameras.main.flash(500, 255, 255, 255);
+
+        // Check winnability
+        if (!this.checkWinnability()) {
+            this.showImpossibleWarning();
+        }
     }
 
     updateHUD() {
@@ -239,5 +249,109 @@ class GameScene extends Phaser.Scene {
             time: elapsed,
             stars: stars
         });
+    }
+
+    checkWinnability() {
+        // Clone current state
+        const currentTier = this.player.getCurrentTier();
+        const consumedInTier = this.player.consumedInTier;
+
+        // Count available items per tier (only active ones)
+        const availableItems = {};
+        for (let t = 1; t <= GameConfig.SIZE_TIERS.length; t++) {
+            if (this.edibleItems[t]) {
+                availableItems[t] = this.edibleItems[t].countActive(true);
+            } else {
+                availableItems[t] = 0;
+            }
+        }
+
+        // Iterate through remaining growth stages
+        const maxTier = GameConfig.SIZE_TIERS.length;
+
+        for (let t = currentTier; t <= maxTier; t++) {
+            const tierConfig = GameConfig.SIZE_TIERS[t - 1];
+            const quota = tierConfig.quota;
+
+            // If this is the current tier, we already consumed some
+            const needed = (t === currentTier) ? (quota - consumedInTier) : quota;
+
+            if (needed <= 0) {
+                continue;
+            }
+
+            let remainingNeeded = needed;
+
+            // Strategy: Eat from lower tier (t-1) first, then current tier (t)
+
+            // Eat from t-1 (if applicable)
+            if (t > 1) {
+                const lowerTier = t - 1;
+                const canEat = availableItems[lowerTier] || 0;
+                const eating = Math.min(remainingNeeded, canEat);
+                availableItems[lowerTier] -= eating;
+                remainingNeeded -= eating;
+            }
+
+            // Eat from t
+            if (remainingNeeded > 0) {
+                const sameTier = t;
+                const canEat = availableItems[sameTier] || 0;
+                const eating = Math.min(remainingNeeded, canEat);
+                availableItems[sameTier] -= eating;
+                remainingNeeded -= eating;
+            }
+
+            if (remainingNeeded > 0) {
+                // Cannot satisfy quota for tier t
+                return false;
+            }
+
+            // Simulate despawn for next tier advancement
+            // When we advance from t to t+1, items from t-1 are despawned.
+            if (t > 1) {
+                availableItems[t - 1] = 0;
+            }
+        }
+
+        return true;
+    }
+
+    showImpossibleWarning() {
+        if (this.gameEnded) return;
+        this.gameEnded = true;
+        this.physics.pause();
+
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        const bg = this.add.rectangle(centerX, centerY, width, height, 0x000000, 0.7)
+            .setScrollFactor(0);
+
+        const text = this.add.text(centerX, centerY - 50, 'Growth Stunted!\nNot enough food to reach full size.', {
+            fontSize: '32px',
+            fill: '#ff0000',
+            align: 'center',
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setScrollFactor(0);
+
+        const restartBtn = this.add.text(centerX, centerY + 50, 'Restart Level', {
+            fontSize: '24px',
+            fill: '#ffffff',
+            backgroundColor: '#333333',
+            padding: { x: 20, y: 10 }
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => {
+            this.scene.restart();
+        });
+
+        bg.setDepth(1000);
+        text.setDepth(1001);
+        restartBtn.setDepth(1001);
     }
 }
