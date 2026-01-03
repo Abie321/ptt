@@ -116,11 +116,10 @@ describe('GameScene', () => {
     test('should zoom out when player advances tiers', () => {
       gameScene.cameras.main.setZoom.mockClear();
 
+      const tier2Config = GameConfig.SIZE_TIERS[1];
       gameScene.onTierAdvanced(2);
 
-      expect(gameScene.cameras.main.setZoom).toHaveBeenCalled();
-      const zoomLevel = gameScene.cameras.main.setZoom.mock.calls[0][0];
-      expect(zoomLevel).toBeLessThan(1);
+      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(tier2Config.zoom);
     });
 
     test('should flash camera on tier advancement', () => {

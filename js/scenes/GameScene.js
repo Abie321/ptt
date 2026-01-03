@@ -28,7 +28,7 @@ class GameScene extends Phaser.Scene {
         // Camera follows player
         this.cameras.main.setBounds(0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT);
         this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
-        this.cameras.main.setZoom(1);
+        this.cameras.main.setZoom(GameConfig.SIZE_TIERS[0].zoom);
 
         // Create item groups
         this.edibleItems = {};
@@ -244,8 +244,10 @@ class GameScene extends Phaser.Scene {
         this.updateEntityVisibility();
 
         // Update camera zoom to accommodate larger player
-        const zoomLevels = [1, 0.9, 0.8, 0.7, 0.6];
-        this.cameras.main.setZoom(zoomLevels[newTier - 1] || 0.5);
+        const tierConfig = GameConfig.SIZE_TIERS[newTier - 1];
+        if (tierConfig && tierConfig.zoom) {
+            this.cameras.main.setZoom(tierConfig.zoom);
+        }
 
         // Visual feedback
         this.cameras.main.flash(500, 255, 255, 255);
