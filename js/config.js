@@ -46,7 +46,10 @@ const GameConfig = {
         5: 25
     },
 
-    // Item naming for HUD
+    ASSETS: {
+        BACKGROUND_IMAGE: 'assets/images/background.png'
+    },
+  
     ITEM_NAMES: {
         1: ["Bacteria", "Plankton", "Virus", "Cell", "Spore", "Amoeba", "Germ", "Mite", "Algae", "Yeast"],
         2: ["Ant", "Crumb", "Dust", "Seed", "Flea", "Gnat", "Pollen", "Sand", "Rice", "Lint"],

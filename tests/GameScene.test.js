@@ -75,6 +75,24 @@ describe('GameScene', () => {
     });
   });
 
+  describe('Asset Loading', () => {
+    test('should preload background image', () => {
+        gameScene.preload();
+        expect(gameScene.load.image).toHaveBeenCalledWith('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
+    });
+
+    test('should create background image', () => {
+        // Checking if add.image was called with correct parameters
+        // The mock setup clears after each test in most setups, but here we're inside beforeEach which runs create()
+        // so add.image should have been called.
+        expect(gameScene.add.image).toHaveBeenCalledWith(
+            GameConfig.WORLD.WIDTH / 2,
+            GameConfig.WORLD.HEIGHT / 2,
+            'background'
+        );
+    });
+  });
+
   describe('Camera System', () => {
     test('should set camera bounds to world size', () => {
       expect(gameScene.cameras.main.setBounds).toHaveBeenCalledWith(
