@@ -261,11 +261,16 @@ describe('Player', () => {
     });
 
     test('should implement diminishing returns for repeated items', () => {
-      // Mock density to be low so decay happens faster
-      const originalDensity = GameConfig.ITEMS_PER_TIER[1];
-      GameConfig.ITEMS_PER_TIER[1] = 5;
+      // Create a specific test entity configuration for this test
+      // to ensure we have a controlled density
+      const originalEntities = GameConfig.TIER_ENTITIES;
 
-      const mockItem = { tier: 1, itemType: 0 };
+      // Override with a single item type with count 5 for density calculation
+      GameConfig.TIER_ENTITIES = {
+          1: [{ type: 'TestItem', count: 5, value: 80, shape: 'circle', color: 0xFFFFFF }]
+      };
+
+      const mockItem = { tier: 1, itemType: 'TestItem', value: 80 };
       const firstPoints = player.consume(mockItem);
       const secondPoints = player.consume(mockItem);
       const thirdPoints = player.consume(mockItem);
@@ -275,7 +280,7 @@ describe('Player', () => {
       expect(thirdPoints).toBeLessThan(secondPoints);
 
       // Restore
-      GameConfig.ITEMS_PER_TIER[1] = originalDensity;
+      GameConfig.TIER_ENTITIES = originalEntities;
     });
 
     test('should never award less than minimum points', () => {
@@ -289,8 +294,8 @@ describe('Player', () => {
     });
 
     test('should apply different scoring for different item types', () => {
-      const item1 = { tier: 1, itemType: 0 };
-      const item2 = { tier: 1, itemType: 1 };
+      const item1 = { tier: 1, itemType: 'TypeA' };
+      const item2 = { tier: 1, itemType: 'TypeB' };
 
       // Consume first item type multiple times
       player.consume(item1);

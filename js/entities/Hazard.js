@@ -1,15 +1,20 @@
 // Hazard entity class (larger entities that damage the player)
 
 class Hazard {
-    constructor(scene, x, y, tier) {
+    constructor(scene, x, y, config) {
         this.scene = scene;
-        this.tier = tier;
+        this.config = config;
+        this.tier = config.tier;
+        this.hazardData = config; // Standardize on hazardData holding the config
 
         // Hazards are larger and red-tinted
         const baseSize = 15;
-        const size = baseSize + (tier * 5);
+        const size = baseSize + (this.tier * 5);
 
-        this.sprite = scene.add.circle(x, y, size, 0xFF0000, 0.7);
+        // Use color from config (defaults to red if not provided, though config should have it)
+        const color = config.color !== undefined ? config.color : 0xFF0000;
+
+        this.sprite = scene.add.circle(x, y, size, color, 0.7);
         scene.physics.add.existing(this.sprite);
 
         // Simple movement pattern (optional for prototype)
@@ -21,7 +26,7 @@ class Hazard {
         this.sprite.body.setCollideWorldBounds(true);
 
         // Store reference
-        this.sprite.hazardData = this;
+        this.sprite.hazardData = config;
         this.itemType = 'HAZARD';
     }
 
