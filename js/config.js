@@ -44,5 +44,21 @@ const GameConfig = {
         3: 25,
         4: 25,
         5: 25
+    },
+
+    // Item naming for HUD
+    ITEM_NAMES: {
+        1: ["Bacteria", "Plankton", "Virus", "Cell", "Spore", "Amoeba", "Germ", "Mite", "Algae", "Yeast"],
+        2: ["Ant", "Crumb", "Dust", "Seed", "Flea", "Gnat", "Pollen", "Sand", "Rice", "Lint"],
+        3: ["Bug", "Pebble", "Berry", "Coin", "Beetle", "Marble", "Button", "Bean", "Nut", "Leaf"],
+        4: ["Mouse", "Apple", "Rock", "Can", "Rat", "Bird", "Frog", "Phone", "Shoe", "Cup"],
+        5: ["Cat", "Chair", "Bush", "Tire", "Dog", "Table", "Fence", "Bike", "Sign", "Box"]
+    },
+
+    HAZARD_NAMES: {
+        2: "Predator Mite",
+        3: "Spider",
+        4: "Cat",
+        5: "Human"
     }
 };
