@@ -5,6 +5,10 @@ class GameScene extends Phaser.Scene {
         super({ key: 'GameScene' });
     }
 
+    preload() {
+        this.load.image('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
+    }
+
     create() {
         // Initialize game state
         this.score = 0;
@@ -13,6 +17,10 @@ class GameScene extends Phaser.Scene {
 
         // Set world bounds
         this.physics.world.setBounds(0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT);
+
+        // Add background
+        const bg = this.add.image(GameConfig.WORLD.WIDTH / 2, GameConfig.WORLD.HEIGHT / 2, 'background');
+        bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
         this.player = new Player(this, GameConfig.WORLD.WIDTH / 2, GameConfig.WORLD.HEIGHT / 2);

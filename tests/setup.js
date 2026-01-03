@@ -19,7 +19,21 @@ global.Phaser = {
         on: jest.fn(),
         emit: jest.fn()
       };
+      this.load = {
+        image: jest.fn()
+      };
       this.add = {
+        image: jest.fn((x, y, key) => ({
+          x, y, key,
+          active: true,
+          visible: true,
+          setOrigin: jest.fn().mockReturnThis(),
+          setScrollFactor: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          destroy: jest.fn()
+        })),
         circle: jest.fn((x, y, radius, color, alpha) => ({
           x, y, radius, displayWidth: radius * 2, displayHeight: radius * 2,
           active: true,

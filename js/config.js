@@ -44,5 +44,10 @@ const GameConfig = {
         3: 25,
         4: 25,
         5: 25
+    },
+
+    // Asset paths
+    ASSETS: {
+        BACKGROUND_IMAGE: 'assets/images/background.png'
     }
 };
