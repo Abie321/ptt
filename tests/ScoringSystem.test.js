@@ -42,10 +42,14 @@ describe('Scoring System', () => {
   describe('Diminishing Returns Algorithm', () => {
     test('should decrease points for repeated consumption of same type', () => {
       // Mock density to be low so decay happens faster
-      const originalDensity = GameConfig.ITEMS_PER_TIER[1];
-      GameConfig.ITEMS_PER_TIER[1] = 5;
+      const originalEntities = GameConfig.TIER_ENTITIES;
 
-      const item = { tier: 1, itemType: 5 };
+      // Override with a single item type with count 5
+      GameConfig.TIER_ENTITIES = {
+          1: [{ type: 'TestItem', count: 5, value: 80, shape: 'circle', color: 0xFFFFFF }]
+      };
+
+      const item = { tier: 1, itemType: 'TestItem', value: 80 };
 
       const points1 = player.consume(item);
       const points2 = player.consume(item);
@@ -57,7 +61,7 @@ describe('Scoring System', () => {
       expect(points3).toBeGreaterThan(points4);
 
       // Restore
-      GameConfig.ITEMS_PER_TIER[1] = originalDensity;
+      GameConfig.TIER_ENTITIES = originalEntities;
     });
 
     test('should track consumption count per item type', () => {
@@ -104,9 +108,16 @@ describe('Scoring System', () => {
     });
 
     test('should factor in tier density for decay calculation', () => {
-      // Items from tiers with different densities should have different decay rates
-      const tier1Item = { tier: 1, itemType: 0 };
-      const tier5Item = { tier: 5, itemType: 1 };
+      // Create mock density scenarios by manipulating GameConfig temporarily
+      const originalEntities = GameConfig.TIER_ENTITIES;
+
+      GameConfig.TIER_ENTITIES = {
+          1: [{ type: 'LowDensity', count: 5, value: 80 }],
+          5: [{ type: 'HighDensity', count: 50, value: 80 }]
+      };
+
+      const tier1Item = { tier: 1, itemType: 'LowDensity', value: 80 };
+      const tier5Item = { tier: 5, itemType: 'HighDensity', value: 80 };
 
       // Consume each type twice
       player.consume(tier1Item);
@@ -117,9 +128,11 @@ describe('Scoring System', () => {
       player2.consume(tier5Item);
       const tier5Second = player2.consume(tier5Item);
 
-      // Both should show diminishing returns
-      expect(tier1Second).toBeLessThan(GameConfig.SCORING.MAX_POINTS_PER_ITEM);
-      expect(tier5Second).toBeLessThan(GameConfig.SCORING.MAX_POINTS_PER_ITEM);
+      // Tier 1 (Low Density) should decay faster (lower points) than Tier 5 (High Density)
+      expect(tier1Second).toBeLessThan(tier5Second);
+
+      // Restore
+      GameConfig.TIER_ENTITIES = originalEntities;
     });
   });
 

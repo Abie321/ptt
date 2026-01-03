@@ -1,34 +1,34 @@
 // Edible item class
 
 class EdibleItem {
-    constructor(scene, x, y, tier, itemType) {
+    constructor(scene, x, y, config) {
         this.scene = scene;
-        this.tier = tier;
-        this.itemType = itemType;
+        this.config = config;
+        this.tier = config.tier;
+        this.itemType = config.type; // Maintaining property for compatibility/debugging
+        this.itemData = config; // Standardize on itemData holding the config
 
-        // Visual representation based on tier
-        const colors = [0x8BC34A, 0x03A9F4, 0xFFEB3B, 0xFF5722, 0xE91E63];
+        // Visual representation based on config and tier
         const baseSize = 8;
-        const size = baseSize + (tier * 3);
+        const size = baseSize + (this.tier * 3);
 
-        // Create sprite (different shapes for variety)
-        const shapes = ['circle', 'square', 'triangle'];
-        const shape = shapes[itemType % shapes.length];
+        const shape = config.shape;
+        const color = config.color;
 
         if (shape === 'circle') {
-            this.sprite = scene.add.circle(x, y, size, colors[tier - 1]);
+            this.sprite = scene.add.circle(x, y, size, color);
         } else if (shape === 'square') {
-            this.sprite = scene.add.rectangle(x, y, size * 2, size * 2, colors[tier - 1]);
+            this.sprite = scene.add.rectangle(x, y, size * 2, size * 2, color);
         } else {
             // Triangle approximation with polygon
-            this.sprite = scene.add.triangle(x, y, 0, size * 2, size * 2, size * 2, size, 0, colors[tier - 1]);
+            this.sprite = scene.add.triangle(x, y, 0, size * 2, size * 2, size * 2, size, 0, color);
         }
 
         scene.physics.add.existing(this.sprite);
         this.sprite.body.setImmovable(true);
 
         // Store reference
-        this.sprite.itemData = this;
+        this.sprite.itemData = config;
     }
 
     destroy() {

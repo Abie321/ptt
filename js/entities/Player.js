@@ -65,7 +65,7 @@ class Player {
 
     consume(item) {
         // Track consumed types for scoring
-        const itemType = item.itemType;
+        const itemType = item.type || item.itemType; // Support both new and old (for tests/compat)
         if (!this.consumedTypes[itemType]) {
             this.consumedTypes[itemType] = 0;
         }
@@ -73,11 +73,24 @@ class Player {
 
         // Calculate score with diminishing returns
         const consumeCount = this.consumedTypes[itemType];
-        const tierDensity = GameConfig.ITEMS_PER_TIER[item.tier] || 10;
+
+        // Calculate tier density from TIER_ENTITIES
+        let tierDensity = 10; // Default fallback
+        if (GameConfig.TIER_ENTITIES && GameConfig.TIER_ENTITIES[item.tier]) {
+            tierDensity = GameConfig.TIER_ENTITIES[item.tier].reduce((sum, e) => sum + (e.count || 0), 0);
+        } else if (GameConfig.ITEMS_PER_TIER) {
+             // Fallback for tests using old config structure
+             tierDensity = GameConfig.ITEMS_PER_TIER[item.tier] || 10;
+        }
+
         const decayFactor = Math.pow(0.9, (consumeCount - 1) / tierDensity);
+
+        // Use value from item config if available, otherwise max points
+        const baseValue = item.value || GameConfig.SCORING.MAX_POINTS_PER_ITEM;
+
         const points = Math.max(
             GameConfig.SCORING.MIN_POINTS_PER_ITEM,
-            Math.floor(GameConfig.SCORING.MAX_POINTS_PER_ITEM * decayFactor)
+            Math.floor(baseValue * decayFactor)
         );
 
         // Update consumption tracking

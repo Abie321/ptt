@@ -34,14 +34,8 @@ class GameScene extends Phaser.Scene {
         this.edibleItems = {};
         this.hazards = this.add.group();
 
-        // Spawn initial items for all tiers
-        for (let tier = 1; tier <= GameConfig.SIZE_TIERS.length; tier++) {
-            this.edibleItems[tier] = this.add.group();
-            this.spawnItemsForTier(tier);
-        }
-
-        // Spawn some hazards
-        this.spawnHazards();
+        // Spawn entities for all tiers based on new configuration
+        this.spawnEntities();
 
         // Listen for tier advancement
         this.events.on('tierAdvanced', this.onTierAdvanced, this);
@@ -64,30 +58,39 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    spawnItemsForTier(tier) {
-        const count = GameConfig.ITEMS_PER_TIER[tier] || 10;
+    spawnEntities() {
+        if (!GameConfig.TIER_ENTITIES) return;
 
-        for (let i = 0; i < count; i++) {
-            const x = Phaser.Math.Between(50, GameConfig.WORLD.WIDTH - 50);
-            const y = Phaser.Math.Between(50, GameConfig.WORLD.HEIGHT - 50);
-            const itemType = Phaser.Math.Between(0, 9); // 10 different item types per tier
-
-            const item = new EdibleItem(this, x, y, tier, itemType);
-            this.edibleItems[tier].add(item.sprite);
+        // Initialize edibleItems groups per tier
+        for (let tier = 1; tier <= GameConfig.SIZE_TIERS.length; tier++) {
+            this.edibleItems[tier] = this.add.group();
         }
-    }
 
-    spawnHazards() {
-        // Spawn hazards for higher tiers
-        for (let tier = 2; tier <= 5; tier++) {
-            const count = 3 + tier;
-            for (let i = 0; i < count; i++) {
-                const x = Phaser.Math.Between(100, GameConfig.WORLD.WIDTH - 100);
-                const y = Phaser.Math.Between(100, GameConfig.WORLD.HEIGHT - 100);
+        // Iterate through all tiers in configuration
+        for (const [tierKey, entities] of Object.entries(GameConfig.TIER_ENTITIES)) {
+            const tier = parseInt(tierKey);
 
-                const hazard = new Hazard(this, x, y, tier);
-                this.hazards.add(hazard.sprite);
-            }
+            entities.forEach(entityConfig => {
+                const count = entityConfig.count || 1;
+
+                for (let i = 0; i < count; i++) {
+                    const x = Phaser.Math.Between(50, GameConfig.WORLD.WIDTH - 50);
+                    const y = Phaser.Math.Between(50, GameConfig.WORLD.HEIGHT - 50);
+
+                    // Inject tier into the config for the entity to use
+                    const instanceConfig = { ...entityConfig, tier: tier };
+
+                    if (entityConfig.isHazard) {
+                        const hazard = new Hazard(this, x, y, instanceConfig);
+                        this.hazards.add(hazard.sprite);
+                    } else {
+                        const item = new EdibleItem(this, x, y, instanceConfig);
+                        if (this.edibleItems[tier]) {
+                            this.edibleItems[tier].add(item.sprite);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -499,33 +502,10 @@ class GameScene extends Phaser.Scene {
             this.consumedTween = null;
         }
 
-        // Determine Name
-        let name = "Unknown";
-        let color = 0xFFFFFF;
-        let shape = 'circle';
-
-        if (itemData.itemType === 'HAZARD') {
-            const tier = itemData.tier;
-            name = GameConfig.HAZARD_NAMES[tier] || "Hazard";
-            color = 0xFF0000;
-            shape = 'circle';
-        } else {
-            const tier = itemData.tier;
-            const type = itemData.itemType;
-            if (GameConfig.ITEM_NAMES && GameConfig.ITEM_NAMES[tier]) {
-                const names = GameConfig.ITEM_NAMES[tier];
-                name = names[type % names.length];
-            } else {
-                name = `Item T${tier}`;
-            }
-
-            // Mimic EdibleItem logic
-            const colors = [0x8BC34A, 0x03A9F4, 0xFFEB3B, 0xFF5722, 0xE91E63];
-            color = colors[tier - 1] || 0xFFFFFF;
-
-            const shapes = ['circle', 'square', 'triangle'];
-            shape = shapes[type % shapes.length];
-        }
+        // With new system, itemData IS the config object
+        const name = itemData.type || "Unknown";
+        const color = itemData.color !== undefined ? itemData.color : 0xFFFFFF;
+        const shape = itemData.shape || 'circle';
 
         // Update Text
         this.consumedText.setText(name);
