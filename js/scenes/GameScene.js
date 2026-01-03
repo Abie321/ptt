@@ -115,6 +115,34 @@ class GameScene extends Phaser.Scene {
         this.timerText = this.add.text(this.cameras.main.width - 10, 45, 'Time: 0:00', hudStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
+
+        // REQ-UI-HUD-005: Last Consumed Indicator
+        // Positioned to the left of the score
+        const indicatorX = this.cameras.main.width - 250;
+        const indicatorY = 25;
+
+        // Create graphics for the shape
+        this.consumedIcon = this.add.graphics();
+        this.consumedIcon.setScrollFactor(0);
+        this.consumedIcon.setDepth(100);
+        this.consumedIcon.x = indicatorX;
+        this.consumedIcon.y = indicatorY;
+        this.consumedIcon.alpha = 0;
+
+        // Text for the name
+        this.consumedText = this.add.text(indicatorX - 20, indicatorY, '', {
+            fontSize: '18px',
+            fill: '#fff',
+            fontStyle: 'bold'
+        })
+        .setOrigin(1, 0.5) // Right aligned
+        .setScrollFactor(0)
+        .setDepth(100);
+        this.consumedText.alpha = 0;
+
+        // Helper to manage fade out
+        this.consumedFadeEvent = null;
+        this.consumedTween = null;
     }
 
     update() {
@@ -156,6 +184,7 @@ class GameScene extends Phaser.Scene {
                 if (distance < this.player.getSize() * 0.5 + item.displayWidth / 2) {
                     const points = this.player.consume(item.itemData);
                     this.score += points;
+                    this.showConsumedItem(item.itemData); // Show HUD indicator
                     item.destroy();
                     break; // Only consume one item per frame
                 }
@@ -183,6 +212,7 @@ class GameScene extends Phaser.Scene {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;
+                    this.showConsumedItem(hazard.hazardData); // Show HUD indicator
                     hazard.destroy();
                 } else {
                     // Damage player (equal or greater tier hazards are dangerous)
@@ -451,5 +481,79 @@ class GameScene extends Phaser.Scene {
         bg.setDepth(1000);
         text.setDepth(1001);
         restartBtn.setDepth(1001);
+    }
+
+    showConsumedItem(itemData) {
+        if (!itemData) return;
+
+        // Reset any existing tweens or timers
+        if (this.consumedFadeEvent) {
+            this.consumedFadeEvent.remove();
+            this.consumedFadeEvent = null;
+        }
+        if (this.consumedTween) {
+            this.consumedTween.stop(); // Stop tween
+            this.tweens.killTweensOf([this.consumedIcon, this.consumedText]); // Ensure clean state
+            this.consumedTween = null;
+        }
+
+        // Determine Name
+        let name = "Unknown";
+        let color = 0xFFFFFF;
+        let shape = 'circle';
+
+        if (itemData.itemType === 'HAZARD') {
+            const tier = itemData.tier;
+            name = GameConfig.HAZARD_NAMES[tier] || "Hazard";
+            color = 0xFF0000;
+            shape = 'circle';
+        } else {
+            const tier = itemData.tier;
+            const type = itemData.itemType;
+            if (GameConfig.ITEM_NAMES && GameConfig.ITEM_NAMES[tier]) {
+                const names = GameConfig.ITEM_NAMES[tier];
+                name = names[type % names.length];
+            } else {
+                name = `Item T${tier}`;
+            }
+
+            // Mimic EdibleItem logic
+            const colors = [0x8BC34A, 0x03A9F4, 0xFFEB3B, 0xFF5722, 0xE91E63];
+            color = colors[tier - 1] || 0xFFFFFF;
+
+            const shapes = ['circle', 'square', 'triangle'];
+            shape = shapes[type % shapes.length];
+        }
+
+        // Update Text
+        this.consumedText.setText(name);
+        this.consumedText.alpha = 1;
+
+        // Update Graphics
+        this.consumedIcon.clear();
+        this.consumedIcon.fillStyle(color, 1);
+
+        const size = 10; // Fixed size for HUD
+        if (shape === 'circle') {
+            this.consumedIcon.fillCircle(0, 0, size);
+        } else if (shape === 'square') {
+            this.consumedIcon.fillRect(-size, -size, size * 2, size * 2);
+        } else {
+            // Triangle pointing up
+            this.consumedIcon.fillTriangle(0, -size, size, size, -size, size);
+        }
+        this.consumedIcon.alpha = 1;
+
+        // Schedule fade out after 2 seconds
+        this.consumedFadeEvent = this.time.delayedCall(2000, () => {
+            this.consumedTween = this.tweens.add({
+                targets: [this.consumedIcon, this.consumedText],
+                alpha: 0,
+                duration: 500,
+                onComplete: () => {
+                    this.consumedTween = null;
+                }
+            });
+        }, [], this);
     }
 }
