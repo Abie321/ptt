@@ -3,11 +3,11 @@
 const GameConfig = {
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, quota: 10, scale: 1.0, name: 'Micro', color: 0x4CAF50 },
-        { tier: 2, quota: 15, scale: 1.5, name: 'Tiny', color: 0x2196F3 },
-        { tier: 3, quota: 20, scale: 2.0, name: 'Small', color: 0xFF9800 },
-        { tier: 4, quota: 25, scale: 2.5, name: 'Medium', color: 0xF44336 },
-        { tier: 5, quota: 30, scale: 3.0, name: 'Large', color: 0x9C27B0 }
+        { tier: 1, quota: 10, scale: 1.0, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
+        { tier: 2, quota: 15, scale: 1.5, name: 'Tiny', color: 0x2196F3, zoom: 0.9 },
+        { tier: 3, quota: 20, scale: 2.0, name: 'Small', color: 0xFF9800, zoom: 0.8 },
+        { tier: 4, quota: 25, scale: 2.5, name: 'Medium', color: 0xF44336, zoom: 0.7 },
+        { tier: 5, quota: 30, scale: 3.0, name: 'Large', color: 0x9C27B0, zoom: 0.6 }
     ],
 
     // Scoring configuration
