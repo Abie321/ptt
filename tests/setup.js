@@ -34,6 +34,18 @@ global.Phaser = {
           setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
+        sprite: jest.fn((x, y, key) => ({
+          x, y, key,
+          displayWidth: 20, displayHeight: 20,
+          active: true,
+          visible: true,
+          setOrigin: jest.fn().mockReturnThis(),
+          setScrollFactor: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          destroy: jest.fn()
+        })),
         circle: jest.fn((x, y, radius, color, alpha) => ({
           x, y, radius, displayWidth: radius * 2, displayHeight: radius * 2,
           active: true,

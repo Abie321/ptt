@@ -40,6 +40,10 @@ const GameConfig = {
     ASSETS: {
         BACKGROUND_IMAGE: 'assets/images/background.png'
     },
+
+    ENTITY_IMAGES: {
+        'apple': 'assets/images/apple.png'
+    },
   
     // Entities configuration per tier
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean }
@@ -89,7 +93,7 @@ const GameConfig = {
         4: [
             // Edibles
             { type: "Mouse", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
-            { type: "Apple", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false },
+            { type: "Apple", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, image: 'apple' },
             { type: "Rock", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false },
             { type: "Can", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
             { type: "Rat", count: 2, value: 20, shape: 'square', color: 0xFF5722, isHazard: false },

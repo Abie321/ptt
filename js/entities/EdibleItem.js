@@ -15,7 +15,9 @@ class EdibleItem {
         const shape = config.shape;
         const color = config.color;
 
-        if (shape === 'circle') {
+        if (config.image) {
+            this.sprite = scene.add.sprite(x, y, config.image);
+        } else if (shape === 'circle') {
             this.sprite = scene.add.circle(x, y, size, color);
         } else if (shape === 'square') {
             this.sprite = scene.add.rectangle(x, y, size * 2, size * 2, color);
