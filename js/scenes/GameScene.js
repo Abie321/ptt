@@ -7,6 +7,11 @@ class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
+        if (GameConfig.ENTITY_IMAGES) {
+            for (const [key, path] of Object.entries(GameConfig.ENTITY_IMAGES)) {
+                this.load.image(key, path);
+            }
+        }
     }
 
     create() {
