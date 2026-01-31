@@ -32,8 +32,8 @@ const GameConfig = {
         SPRITE: {
             USE_SPRITESHEET: true,
             KEY: 'player_sheet',
-            FRAME_WIDTH: 64,
-            FRAME_HEIGHT: 64,
+            FRAME_WIDTH: 352,
+            FRAME_HEIGHT: 384,
             ANIMATIONS: {
                 IDLE: { start: 0, end: 3, rate: 8 },
                 MOVE: { start: 4, end: 7, rate: 12 }
@@ -52,7 +52,8 @@ const GameConfig = {
     },
 
     ENTITY_IMAGES: {
-        'apple': 'assets/images/apple.png'
+        'apple': 'assets/images/apple.png',
+        'player_sheet': 'assets/images/ghost.png'
     },
   
     // Entities configuration per tier
