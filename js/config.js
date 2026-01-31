@@ -42,23 +42,19 @@ const GameConfig = {
     },
 
     ENTITY_IMAGES: {
-        'apple': 'assets/images/apple.png'
+        'apple': 'assets/images/apple.png',
+        'teadrop': 'assets/images/teadrop.png',
+        'crumb': 'assets/images/crumb.png',
     },
   
     // Entities configuration per tier
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean }
     TIER_ENTITIES: {
         1: [
-            { type: "Bacteria", count: 3, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false },
-            { type: "Plankton", count: 3, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false },
+            { type: "Tea drop", count: 10, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop' },
+            { type: "Cookie crumb", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb' },
             { type: "Virus", count: 3, value: 5, shape: 'triangle', color: 0x8BC34A, isHazard: false },
-            { type: "Cell", count: 3, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false },
-            { type: "Spore", count: 3, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false },
-            { type: "Amoeba", count: 3, value: 5, shape: 'triangle', color: 0x8BC34A, isHazard: false },
-            { type: "Germ", count: 3, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false },
-            { type: "Mite", count: 3, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false },
-            { type: "Algae", count: 3, value: 5, shape: 'triangle', color: 0x8BC34A, isHazard: false },
-            { type: "Yeast", count: 3, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false }
+
         ],
         2: [
             // Edibles
