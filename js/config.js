@@ -28,7 +28,17 @@ const GameConfig = {
     PLAYER: {
         INITIAL_SIZE: 20,
         SPEED: 200,
-        MOUTH_OFFSET: 0.7 // Multiplier for hitbox position relative to player size
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 64,
+            FRAME_HEIGHT: 64,
+            ANIMATIONS: {
+                IDLE: { start: 0, end: 3, rate: 8 },
+                MOVE: { start: 4, end: 7, rate: 12 }
+            }
+        }
     },
 
     // World configuration

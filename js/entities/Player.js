@@ -6,14 +6,34 @@ class Player {
         this.currentTier = 1;
         this.consumedInTier = 0;
         this.totalConsumed = 0;
+        this.radius = GameConfig.PLAYER.INITIAL_SIZE;
 
-        // Create player sprite (circle for prototype)
-        this.sprite = scene.add.circle(x, y, GameConfig.PLAYER.INITIAL_SIZE, GameConfig.SIZE_TIERS[0].color);
-        scene.physics.add.existing(this.sprite);
+        // Create player sprite
+        if (GameConfig.PLAYER.SPRITE && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+            this.sprite = scene.add.sprite(x, y, GameConfig.PLAYER.SPRITE.KEY);
+
+            // Set initial scale
+            const targetDiameter = this.radius * 2;
+            const scale = targetDiameter / GameConfig.PLAYER.SPRITE.FRAME_WIDTH;
+            this.sprite.setScale(scale);
+
+            // Set color and animation
+            this.sprite.setTint(GameConfig.SIZE_TIERS[0].color);
+            this.sprite.play('idle');
+
+            scene.physics.add.existing(this.sprite);
+            // Set circular body matching the frame size (will scale with sprite)
+            this.sprite.body.setCircle(GameConfig.PLAYER.SPRITE.FRAME_WIDTH / 2);
+        } else {
+            // Fallback to circle
+            this.sprite = scene.add.circle(x, y, this.radius, GameConfig.SIZE_TIERS[0].color);
+            scene.physics.add.existing(this.sprite);
+        }
+
         this.sprite.body.setCollideWorldBounds(true);
 
         // Create mouth indicator (small circle at the front)
-        this.mouthIndicator = scene.add.circle(x, y - GameConfig.PLAYER.INITIAL_SIZE, 5, 0xFFFFFF);
+        this.mouthIndicator = scene.add.circle(x, y - this.radius, 5, 0xFFFFFF);
 
         // Track consumed item types for scoring
         this.consumedTypes = {};
@@ -50,6 +70,16 @@ class Player {
         // Update velocity
         this.sprite.body.setVelocity(velocity.x, velocity.y);
 
+        // Update animation and rotation if using sprite
+        if (this.sprite.anims) {
+            if (velocity.x !== 0 || velocity.y !== 0) {
+                this.sprite.play('move', true);
+                this.sprite.setRotation(Math.atan2(velocity.y, velocity.x));
+            } else {
+                this.sprite.play('idle', true);
+            }
+        }
+
         // Update direction for mouth positioning
         if (velocity.x !== 0 || velocity.y !== 0) {
             const length = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
@@ -58,7 +88,7 @@ class Player {
         }
 
         // Update mouth indicator position
-        const mouthDistance = this.sprite.radius * GameConfig.PLAYER.MOUTH_OFFSET;
+        const mouthDistance = this.radius * GameConfig.PLAYER.MOUTH_OFFSET;
         this.mouthIndicator.x = this.sprite.x + this.direction.x * mouthDistance;
         this.mouthIndicator.y = this.sprite.y + this.direction.y * mouthDistance;
     }
@@ -114,8 +144,17 @@ class Player {
 
         // Grow the player
         const newRadius = GameConfig.PLAYER.INITIAL_SIZE * newTierConfig.scale;
-        this.sprite.setRadius(newRadius);
-        this.sprite.setFillStyle(newTierConfig.color);
+        this.radius = newRadius;
+
+        if (this.sprite instanceof Phaser.GameObjects.Sprite) {
+            const targetDiameter = newRadius * 2;
+            const scale = targetDiameter / GameConfig.PLAYER.SPRITE.FRAME_WIDTH;
+            this.sprite.setScale(scale);
+            this.sprite.setTint(newTierConfig.color);
+        } else {
+            this.sprite.setRadius(newRadius);
+            this.sprite.setFillStyle(newTierConfig.color);
+        }
 
         // Emit event for scene to handle
         this.scene.events.emit('tierAdvanced', this.currentTier);
@@ -142,7 +181,7 @@ class Player {
     }
 
     getSize() {
-        return this.sprite.radius;
+        return this.radius;
     }
 
     getProgress() {

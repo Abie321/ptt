@@ -31,7 +31,21 @@ describe('Winnability Validation', () => {
             })),
             text: jest.fn().mockReturnThis(),
             rectangle: jest.fn().mockReturnThis(),
-            circle: jest.fn().mockReturnThis()
+            circle: jest.fn().mockReturnThis(),
+            sprite: jest.fn(() => ({
+                setScale: jest.fn().mockReturnThis(),
+                setTint: jest.fn().mockReturnThis(),
+                play: jest.fn().mockReturnThis(),
+                setRotation: jest.fn().mockReturnThis(),
+                anims: {
+                  play: jest.fn().mockReturnThis()
+                },
+                body: {
+                  setCircle: jest.fn(),
+                  setCollideWorldBounds: jest.fn(),
+                  setVelocity: jest.fn()
+                }
+            }))
         };
 
         const mockObj = {
@@ -50,12 +64,14 @@ describe('Winnability Validation', () => {
             pause: jest.fn(),
             add: {
                 existing: jest.fn((sprite) => {
-                    sprite.body = {
-                        setCollideWorldBounds: jest.fn(),
-                        setVelocity: jest.fn(),
-                        setImmovable: jest.fn(),
-                        setBounce: jest.fn()
-                    };
+                    if (!sprite.body) {
+                        sprite.body = {};
+                    }
+                    sprite.body.setCollideWorldBounds = jest.fn();
+                    sprite.body.setVelocity = jest.fn();
+                    sprite.body.setImmovable = jest.fn();
+                    sprite.body.setBounce = jest.fn();
+                    sprite.body.setCircle = jest.fn();
                 })
             },
             world: { setBounds: jest.fn() }

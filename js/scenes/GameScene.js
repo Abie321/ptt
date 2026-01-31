@@ -14,11 +14,82 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    generateDummySpriteSheet() {
+        const spriteConfig = GameConfig.PLAYER.SPRITE;
+        const width = spriteConfig.FRAME_WIDTH;
+        const height = spriteConfig.FRAME_HEIGHT;
+        const frameCount = 8; // 4 idle, 4 move
+
+        // Create a graphics object to draw frames
+        const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+
+        // Draw 8 frames horizontally
+        for (let i = 0; i < frameCount; i++) {
+            const xOffset = i * width;
+
+            // Draw circle body
+            graphics.fillStyle(0xFFFFFF, 1);
+            graphics.fillCircle(xOffset + width/2, height/2, width/2 - 2);
+
+            // Draw detail to show animation
+            graphics.fillStyle(0x000000, 1);
+
+            if (i < 4) {
+                // Idle animation: Pulse
+                const pulseSize = 4 + (i % 2) * 2;
+                graphics.fillCircle(xOffset + width/2, height/2, pulseSize);
+            } else {
+                // Move animation: Wiggle
+                const wiggle = ((i - 4) % 2 === 0) ? -5 : 5;
+                graphics.fillCircle(xOffset + width/2 + wiggle, height/2, 6);
+            }
+        }
+
+        // Generate texture
+        graphics.generateTexture(spriteConfig.KEY, width * frameCount, height);
+        graphics.destroy();
+
+        // Manually add frames to the texture
+        const texture = this.textures.get(spriteConfig.KEY);
+        if (texture) {
+            for (let i = 0; i < frameCount; i++) {
+                texture.add(i, 0, i * width, 0, width, height);
+            }
+        }
+    }
+
+    createPlayerAnimations() {
+        const spriteConfig = GameConfig.PLAYER.SPRITE;
+        const anims = spriteConfig.ANIMATIONS;
+
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers(spriteConfig.KEY, anims.IDLE),
+            frameRate: anims.IDLE.rate,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'move',
+            frames: this.anims.generateFrameNumbers(spriteConfig.KEY, anims.MOVE),
+            frameRate: anims.MOVE.rate,
+            repeat: -1
+        });
+    }
+
     create() {
         // Initialize game state
         this.score = 0;
         this.startTime = Date.now();
         this.gameEnded = false;
+
+        // Generate player sprite if needed and create animations
+        if (GameConfig.PLAYER.SPRITE && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+            if (!this.textures.exists(GameConfig.PLAYER.SPRITE.KEY)) {
+                this.generateDummySpriteSheet();
+            }
+            this.createPlayerAnimations();
+        }
 
         // Set world bounds
         this.physics.world.setBounds(0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT);
