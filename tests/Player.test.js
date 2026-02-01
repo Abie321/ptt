@@ -53,6 +53,7 @@ describe('Player', () => {
         0,
         -GameConfig.PLAYER.SPEED
       );
+      expect(player.sprite.play).toHaveBeenCalledWith('up', true);
     });
 
     test('should move down when S or Down arrow is pressed', () => {
@@ -62,6 +63,7 @@ describe('Player', () => {
         0,
         GameConfig.PLAYER.SPEED
       );
+      expect(player.sprite.play).toHaveBeenCalledWith('down', true);
     });
 
     test('should move left when A or Left arrow is pressed', () => {
@@ -71,6 +73,7 @@ describe('Player', () => {
         -GameConfig.PLAYER.SPEED,
         0
       );
+      expect(player.sprite.play).toHaveBeenCalledWith('left', true);
     });
 
     test('should move right when D or Right arrow is pressed', () => {
@@ -80,6 +83,7 @@ describe('Player', () => {
         GameConfig.PLAYER.SPEED,
         0
       );
+      expect(player.sprite.play).toHaveBeenCalledWith('right', true);
     });
 
     test('should move diagonally when two keys are pressed', () => {

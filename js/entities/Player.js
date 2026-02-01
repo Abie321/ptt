@@ -19,7 +19,7 @@ class Player {
 
             // Set color and animation
             this.sprite.setTint(GameConfig.SIZE_TIERS[0].color);
-            this.sprite.play('idle');
+            this.sprite.play('down'); // Default to down
 
             scene.physics.add.existing(this.sprite);
             // Set circular body matching the frame size (will scale with sprite)
@@ -49,6 +49,9 @@ class Player {
 
         // Direction vector for mouth positioning
         this.direction = { x: 0, y: -1 }; // Default: facing up
+
+        // Track facing direction for animation
+        this.facing = 'down';
     }
 
     update() {
@@ -70,13 +73,19 @@ class Player {
         // Update velocity
         this.sprite.body.setVelocity(velocity.x, velocity.y);
 
-        // Update animation and rotation if using sprite
+        // Update animation based on velocity
         if (this.sprite.anims) {
             if (velocity.x !== 0 || velocity.y !== 0) {
-                this.sprite.play('move', true);
-                this.sprite.setRotation(Math.atan2(velocity.y, velocity.x));
+                // Determine facing direction
+                if (velocity.x > 0) this.facing = 'right';
+                else if (velocity.x < 0) this.facing = 'left';
+                else if (velocity.y > 0) this.facing = 'down';
+                else if (velocity.y < 0) this.facing = 'up';
+
+                this.sprite.play(this.facing, true);
             } else {
-                this.sprite.play('idle', true);
+                // Continue playing the last facing animation
+                this.sprite.play(this.facing, true);
             }
         }
 

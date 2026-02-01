@@ -9,7 +9,14 @@ class GameScene extends Phaser.Scene {
         this.load.image('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
         if (GameConfig.ENTITY_IMAGES) {
             for (const [key, path] of Object.entries(GameConfig.ENTITY_IMAGES)) {
-                this.load.image(key, path);
+                if (key === GameConfig.PLAYER.SPRITE.KEY && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+                    this.load.spritesheet(key, path, {
+                        frameWidth: GameConfig.PLAYER.SPRITE.FRAME_WIDTH,
+                        frameHeight: GameConfig.PLAYER.SPRITE.FRAME_HEIGHT
+                    });
+                } else {
+                    this.load.image(key, path);
+                }
             }
         }
     }
@@ -18,12 +25,12 @@ class GameScene extends Phaser.Scene {
         const spriteConfig = GameConfig.PLAYER.SPRITE;
         const width = spriteConfig.FRAME_WIDTH;
         const height = spriteConfig.FRAME_HEIGHT;
-        const frameCount = 8; // 4 idle, 4 move
+        const frameCount = 32; // Updated to 32
 
         // Create a graphics object to draw frames
         const graphics = this.make.graphics({ x: 0, y: 0, add: false });
 
-        // Draw 8 frames horizontally
+        // Draw frames horizontally
         for (let i = 0; i < frameCount; i++) {
             const xOffset = i * width;
 
@@ -34,14 +41,20 @@ class GameScene extends Phaser.Scene {
             // Draw detail to show animation
             graphics.fillStyle(0x000000, 1);
 
-            if (i < 4) {
-                // Idle animation: Pulse
-                const pulseSize = 4 + (i % 2) * 2;
-                graphics.fillCircle(xOffset + width/2, height/2, pulseSize);
-            } else {
-                // Move animation: Wiggle
-                const wiggle = ((i - 4) % 2 === 0) ? -5 : 5;
-                graphics.fillCircle(xOffset + width/2 + wiggle, height/2, 6);
+            // Simple visual diff for frames based on index
+            const pulseSize = 4 + (i % 2) * 2;
+            graphics.fillCircle(xOffset + width/2, height/2, pulseSize);
+
+            // Add directional indicator based on range
+            // 0-7: Down, 8-15: Up, 16-23: Right, 24-31: Left
+            if (i >= 8 && i < 16) { // Up
+                 graphics.fillRect(xOffset + width/2 - 5, height/2 - 15, 10, 5);
+            } else if (i >= 16 && i < 24) { // Right
+                 graphics.fillRect(xOffset + width/2 + 10, height/2 - 5, 5, 10);
+            } else if (i >= 24) { // Left
+                 graphics.fillRect(xOffset + width/2 - 15, height/2 - 5, 5, 10);
+            } else { // Down
+                 graphics.fillRect(xOffset + width/2 - 5, height/2 + 10, 10, 5);
             }
         }
 
@@ -62,19 +75,16 @@ class GameScene extends Phaser.Scene {
         const spriteConfig = GameConfig.PLAYER.SPRITE;
         const anims = spriteConfig.ANIMATIONS;
 
-        this.anims.create({
-            key: 'idle',
-            frames: this.anims.generateFrameNumbers(spriteConfig.KEY, anims.IDLE),
-            frameRate: anims.IDLE.rate,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'move',
-            frames: this.anims.generateFrameNumbers(spriteConfig.KEY, anims.MOVE),
-            frameRate: anims.MOVE.rate,
-            repeat: -1
-        });
+        for (const [key, config] of Object.entries(anims)) {
+            // Convert 'DOWN' to 'down', etc.
+            const animKey = key.toLowerCase();
+            this.anims.create({
+                key: animKey,
+                frames: this.anims.generateFrameNumbers(spriteConfig.KEY, config),
+                frameRate: config.rate,
+                repeat: -1
+            });
+        }
     }
 
     create() {
