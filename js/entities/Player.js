@@ -3,30 +3,34 @@
 class Player {
     constructor(scene, x, y) {
         this.scene = scene;
+        // Access level config from scene, fallback to first level if not defined (e.g. tests)
+        this.config = scene.levelConfig || (typeof GameConfig !== 'undefined' && GameConfig.LEVELS ? GameConfig.LEVELS[0] : {});
+
         this.currentTier = 1;
         this.consumedInTier = 0;
         this.totalConsumed = 0;
-        this.radius = GameConfig.PLAYER.INITIAL_SIZE;
+        this.radius = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
 
         // Create player sprite
-        if (GameConfig.PLAYER.SPRITE && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
-            this.sprite = scene.add.sprite(x, y, GameConfig.PLAYER.SPRITE.KEY);
+        if (this.config.PLAYER && this.config.PLAYER.SPRITE && this.config.PLAYER.SPRITE.USE_SPRITESHEET) {
+            this.sprite = scene.add.sprite(x, y, this.config.PLAYER.SPRITE.KEY);
 
             // Set initial scale
             const targetDiameter = this.radius * 2;
-            const scale = targetDiameter / GameConfig.PLAYER.SPRITE.FRAME_WIDTH;
+            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
             this.sprite.setScale(scale);
 
             // Set color and animation
-            this.sprite.setTint(GameConfig.SIZE_TIERS[0].color);
+            this.sprite.setTint(this.config.SIZE_TIERS[0].color);
             this.sprite.play('down'); // Default to down
 
             scene.physics.add.existing(this.sprite);
             // Set circular body matching the frame size (will scale with sprite)
-            this.sprite.body.setCircle(GameConfig.PLAYER.SPRITE.FRAME_WIDTH / 2);
+            this.sprite.body.setCircle(this.config.PLAYER.SPRITE.FRAME_WIDTH / 2);
         } else {
             // Fallback to circle
-            this.sprite = scene.add.circle(x, y, this.radius, GameConfig.SIZE_TIERS[0].color);
+            const color = (this.config.SIZE_TIERS && this.config.SIZE_TIERS[0]) ? this.config.SIZE_TIERS[0].color : 0x4CAF50;
+            this.sprite = scene.add.circle(x, y, this.radius, color);
             scene.physics.add.existing(this.sprite);
         }
 
@@ -56,18 +60,19 @@ class Player {
 
     update() {
         const velocity = { x: 0, y: 0 };
+        const speed = this.config.PLAYER ? this.config.PLAYER.SPEED : 200;
 
         // Handle input (Arrow keys and WASD)
         if (this.cursors.up.isDown || this.wasd.up.isDown) {
-            velocity.y = -GameConfig.PLAYER.SPEED;
+            velocity.y = -speed;
         } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
-            velocity.y = GameConfig.PLAYER.SPEED;
+            velocity.y = speed;
         }
 
         if (this.cursors.left.isDown || this.wasd.left.isDown) {
-            velocity.x = -GameConfig.PLAYER.SPEED;
+            velocity.x = -speed;
         } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
-            velocity.x = GameConfig.PLAYER.SPEED;
+            velocity.x = speed;
         }
 
         // Update velocity
@@ -97,7 +102,8 @@ class Player {
         }
 
         // Update mouth indicator position
-        const mouthDistance = this.radius * GameConfig.PLAYER.MOUTH_OFFSET;
+        const mouthOffset = this.config.PLAYER ? this.config.PLAYER.MOUTH_OFFSET : 0.7;
+        const mouthDistance = this.radius * mouthOffset;
         this.mouthIndicator.x = this.sprite.x + this.direction.x * mouthDistance;
         this.mouthIndicator.y = this.sprite.y + this.direction.y * mouthDistance;
     }
@@ -115,20 +121,21 @@ class Player {
 
         // Calculate tier density from TIER_ENTITIES
         let tierDensity = 10; // Default fallback
-        if (GameConfig.TIER_ENTITIES && GameConfig.TIER_ENTITIES[item.tier]) {
-            tierDensity = GameConfig.TIER_ENTITIES[item.tier].reduce((sum, e) => sum + (e.count || 0), 0);
-        } else if (GameConfig.ITEMS_PER_TIER) {
+        if (this.config.TIER_ENTITIES && this.config.TIER_ENTITIES[item.tier]) {
+            tierDensity = this.config.TIER_ENTITIES[item.tier].reduce((sum, e) => sum + (e.count || 0), 0);
+        } else if (this.config.ITEMS_PER_TIER) {
              // Fallback for tests using old config structure
-             tierDensity = GameConfig.ITEMS_PER_TIER[item.tier] || 10;
+             tierDensity = this.config.ITEMS_PER_TIER[item.tier] || 10;
         }
 
         const decayFactor = Math.pow(0.9, (consumeCount - 1) / tierDensity);
 
         // Use value from item config if available, otherwise max points
-        const baseValue = item.value || GameConfig.SCORING.MAX_POINTS_PER_ITEM;
+        const baseValue = item.value || (this.config.SCORING ? this.config.SCORING.MAX_POINTS_PER_ITEM : 80);
 
+        const minPoints = this.config.SCORING ? this.config.SCORING.MIN_POINTS_PER_ITEM : 1;
         const points = Math.max(
-            GameConfig.SCORING.MIN_POINTS_PER_ITEM,
+            minPoints,
             Math.floor(baseValue * decayFactor)
         );
 
@@ -137,8 +144,8 @@ class Player {
         this.totalConsumed++;
 
         // Check for tier advancement
-        const currentTierConfig = GameConfig.SIZE_TIERS[this.currentTier - 1];
-        if (this.consumedInTier >= currentTierConfig.quota && this.currentTier < GameConfig.SIZE_TIERS.length) {
+        const currentTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
+        if (this.consumedInTier >= currentTierConfig.quota && this.currentTier < this.config.SIZE_TIERS.length) {
             this.advanceTier();
         }
 
@@ -149,15 +156,15 @@ class Player {
         this.currentTier++;
         this.consumedInTier = 0;
 
-        const newTierConfig = GameConfig.SIZE_TIERS[this.currentTier - 1];
+        const newTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
 
         // Grow the player
-        const newRadius = GameConfig.PLAYER.INITIAL_SIZE * newTierConfig.scale;
+        const newRadius = this.config.PLAYER.INITIAL_SIZE * newTierConfig.scale;
         this.radius = newRadius;
 
         if (this.sprite instanceof Phaser.GameObjects.Sprite) {
             const targetDiameter = newRadius * 2;
-            const scale = targetDiameter / GameConfig.PLAYER.SPRITE.FRAME_WIDTH;
+            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
             this.sprite.setScale(scale);
             this.sprite.setTint(newTierConfig.color);
         } else {
@@ -186,7 +193,7 @@ class Player {
     }
 
     takeDamage() {
-        return GameConfig.SCORING.HAZARD_PENALTY;
+        return this.config.SCORING ? this.config.SCORING.HAZARD_PENALTY : 80;
     }
 
     getSize() {
@@ -194,7 +201,7 @@ class Player {
     }
 
     getProgress() {
-        const currentTierConfig = GameConfig.SIZE_TIERS[this.currentTier - 1];
+        const currentTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
         return this.consumedInTier / currentTierConfig.quota;
     }
 }

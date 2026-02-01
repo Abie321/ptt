@@ -36,7 +36,7 @@ class MainMenuScene extends Phaser.Scene {
         });
 
         playButton.on('pointerdown', () => {
-            this.scene.start('GameScene');
+            this.scene.start('LevelSelectScene');
         });
 
         // Instructions

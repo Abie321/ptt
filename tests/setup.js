@@ -242,7 +242,21 @@ global.Phaser = {
 };
 
 // Helper function to create a mock scene
-global.createMockScene = () => new Phaser.Scene({ key: 'TestScene' });
+global.createMockScene = () => {
+  const scene = new Phaser.Scene({ key: 'TestScene' });
+  // Attach default level config for tests
+  // Use global.GameConfig itself because we patch it with level properties below,
+  // and tests modify global.GameConfig expecting changes to propagate.
+  if (global.GameConfig) {
+    scene.levelConfig = global.GameConfig;
+  }
+  return scene;
+};
+
+// Compatibility patch for legacy tests accessing GameConfig directly
+if (global.GameConfig && global.GameConfig.LEVELS) {
+    Object.assign(global.GameConfig, global.GameConfig.LEVELS[0]);
+}
 
 // Helper to simulate key press
 global.simulateKeyPress = (key, isDown = true) => {

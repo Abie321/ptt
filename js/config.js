@@ -1,6 +1,6 @@
 // Game configuration constants
 
-const GameConfig = {
+const LEVEL_1_CONFIG = {
     // Size tier configuration
     SIZE_TIERS: [
         { tier: 1, quota: 10, scale: 1.0, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
@@ -130,4 +130,30 @@ const GameConfig = {
             { type: "Human", count: 8, value: 80, shape: 'circle', color: 0xFF0000, isHazard: true }
         ]
     }
+};
+
+const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
+LEVEL_2_CONFIG.SIZE_TIERS = [
+    { tier: 1, quota: 15, scale: 1.0, name: 'Nano', color: 0x607D8B, zoom: 1.0 },
+    { tier: 2, quota: 20, scale: 1.5, name: 'Mini', color: 0x9E9E9E, zoom: 0.9 },
+    { tier: 3, quota: 25, scale: 2.0, name: 'Small', color: 0x795548, zoom: 0.8 },
+    { tier: 4, quota: 30, scale: 2.5, name: 'Average', color: 0xFF5722, zoom: 0.7 },
+    { tier: 5, quota: 35, scale: 3.0, name: 'Massive', color: 0xE91E63, zoom: 0.6 }
+];
+// Make level 2 slightly harder
+LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;
+
+const GameConfig = {
+    LEVELS: [
+        {
+            id: 'level1',
+            name: 'Kitchen',
+            ...LEVEL_1_CONFIG
+        },
+        {
+            id: 'level2',
+            name: 'Garden',
+            ...LEVEL_2_CONFIG
+        }
+    ]
 };

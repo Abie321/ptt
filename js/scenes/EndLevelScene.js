@@ -9,6 +9,7 @@ class EndLevelScene extends Phaser.Scene {
         this.finalScore = data.score || 0;
         this.finalTime = data.time || 0;
         this.stars = data.stars || 0;
+        this.levelConfig = data.levelConfig;
     }
 
     create() {
@@ -55,7 +56,7 @@ class EndLevelScene extends Phaser.Scene {
 
         playAgainButton.on('pointerover', () => playAgainButton.setScale(1.1));
         playAgainButton.on('pointerout', () => playAgainButton.setScale(1));
-        playAgainButton.on('pointerdown', () => this.scene.start('GameScene'));
+        playAgainButton.on('pointerdown', () => this.scene.start('GameScene', { levelConfig: this.levelConfig }));
 
         const menuButton = this.add.text(width / 2, height - 100, 'MAIN MENU', {
             fontSize: '28px',

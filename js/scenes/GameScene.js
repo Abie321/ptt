@@ -3,16 +3,38 @@
 class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
+        // Default for tests that might skip init
+        if (typeof GameConfig !== 'undefined' && GameConfig.LEVELS) {
+             this.levelConfig = GameConfig.LEVELS[0];
+        } else {
+             this.levelConfig = {};
+        }
+    }
+
+    init(data) {
+        // Initialize level config
+        if (data && data.levelConfig) {
+            this.levelConfig = data.levelConfig;
+        } else if (typeof GameConfig !== 'undefined' && GameConfig.LEVELS) {
+             // Fallback to first level
+             this.levelConfig = GameConfig.LEVELS[0];
+        } else {
+             this.levelConfig = {};
+        }
     }
 
     preload() {
-        this.load.image('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
-        if (GameConfig.ENTITY_IMAGES) {
-            for (const [key, path] of Object.entries(GameConfig.ENTITY_IMAGES)) {
-                if (key === GameConfig.PLAYER.SPRITE.KEY && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+        if (this.levelConfig.ASSETS && this.levelConfig.ASSETS.BACKGROUND_IMAGE) {
+            this.load.image('background', this.levelConfig.ASSETS.BACKGROUND_IMAGE);
+        }
+        if (this.levelConfig.ENTITY_IMAGES) {
+            for (const [key, path] of Object.entries(this.levelConfig.ENTITY_IMAGES)) {
+                if (this.levelConfig.PLAYER && this.levelConfig.PLAYER.SPRITE &&
+                    key === this.levelConfig.PLAYER.SPRITE.KEY &&
+                    this.levelConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
                     this.load.spritesheet(key, path, {
-                        frameWidth: GameConfig.PLAYER.SPRITE.FRAME_WIDTH,
-                        frameHeight: GameConfig.PLAYER.SPRITE.FRAME_HEIGHT
+                        frameWidth: this.levelConfig.PLAYER.SPRITE.FRAME_WIDTH,
+                        frameHeight: this.levelConfig.PLAYER.SPRITE.FRAME_HEIGHT
                     });
                 } else {
                     this.load.image(key, path);
@@ -22,7 +44,7 @@ class GameScene extends Phaser.Scene {
     }
 
     generateDummySpriteSheet() {
-        const spriteConfig = GameConfig.PLAYER.SPRITE;
+        const spriteConfig = this.levelConfig.PLAYER.SPRITE;
         const width = spriteConfig.FRAME_WIDTH;
         const height = spriteConfig.FRAME_HEIGHT;
         const frameCount = 32; // Updated to 32
@@ -72,7 +94,7 @@ class GameScene extends Phaser.Scene {
     }
 
     createPlayerAnimations() {
-        const spriteConfig = GameConfig.PLAYER.SPRITE;
+        const spriteConfig = this.levelConfig.PLAYER.SPRITE;
         const anims = spriteConfig.ANIMATIONS;
 
         for (const [key, config] of Object.entries(anims)) {
@@ -94,27 +116,27 @@ class GameScene extends Phaser.Scene {
         this.gameEnded = false;
 
         // Generate player sprite if needed and create animations
-        if (GameConfig.PLAYER.SPRITE && GameConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
-            if (!this.textures.exists(GameConfig.PLAYER.SPRITE.KEY)) {
+        if (this.levelConfig.PLAYER && this.levelConfig.PLAYER.SPRITE && this.levelConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+            if (!this.textures.exists(this.levelConfig.PLAYER.SPRITE.KEY)) {
                 this.generateDummySpriteSheet();
             }
             this.createPlayerAnimations();
         }
 
         // Set world bounds
-        this.physics.world.setBounds(0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT);
+        this.physics.world.setBounds(0, 0, this.levelConfig.WORLD.WIDTH, this.levelConfig.WORLD.HEIGHT);
 
         // Add background
-        const bg = this.add.image(GameConfig.WORLD.WIDTH / 2, GameConfig.WORLD.HEIGHT / 2, 'background');
+        const bg = this.add.image(this.levelConfig.WORLD.WIDTH / 2, this.levelConfig.WORLD.HEIGHT / 2, 'background');
         bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
-        this.player = new Player(this, GameConfig.WORLD.WIDTH / 2, GameConfig.WORLD.HEIGHT / 2);
+        this.player = new Player(this, this.levelConfig.WORLD.WIDTH / 2, this.levelConfig.WORLD.HEIGHT / 2);
 
         // Camera follows player
-        this.cameras.main.setBounds(0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT);
+        this.cameras.main.setBounds(0, 0, this.levelConfig.WORLD.WIDTH, this.levelConfig.WORLD.HEIGHT);
         this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
-        this.cameras.main.setZoom(GameConfig.SIZE_TIERS[0].zoom);
+        this.cameras.main.setZoom(this.levelConfig.SIZE_TIERS[0].zoom);
 
         // Create item groups
         this.edibleItems = {};
@@ -145,23 +167,23 @@ class GameScene extends Phaser.Scene {
     }
 
     spawnEntities() {
-        if (!GameConfig.TIER_ENTITIES) return;
+        if (!this.levelConfig.TIER_ENTITIES) return;
 
         // Initialize edibleItems groups per tier
-        for (let tier = 1; tier <= GameConfig.SIZE_TIERS.length; tier++) {
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             this.edibleItems[tier] = this.add.group();
         }
 
         // Iterate through all tiers in configuration
-        for (const [tierKey, entities] of Object.entries(GameConfig.TIER_ENTITIES)) {
+        for (const [tierKey, entities] of Object.entries(this.levelConfig.TIER_ENTITIES)) {
             const tier = parseInt(tierKey);
 
             entities.forEach(entityConfig => {
                 const count = entityConfig.count || 1;
 
                 for (let i = 0; i < count; i++) {
-                    const x = Phaser.Math.Between(50, GameConfig.WORLD.WIDTH - 50);
-                    const y = Phaser.Math.Between(50, GameConfig.WORLD.HEIGHT - 50);
+                    const x = Phaser.Math.Between(50, this.levelConfig.WORLD.WIDTH - 50);
+                    const y = Phaser.Math.Between(50, this.levelConfig.WORLD.HEIGHT - 50);
 
                     // Inject tier into the config for the entity to use
                     const instanceConfig = { ...entityConfig, tier: tier };
@@ -296,7 +318,7 @@ class GameScene extends Phaser.Scene {
 
             // Check collision
             if (distance < this.player.getSize() + hazard.displayWidth / 2) {
-                const maxTier = GameConfig.SIZE_TIERS.length;
+                const maxTier = this.levelConfig.SIZE_TIERS.length;
                 if (playerTier > hazard.hazardData.tier || playerTier === maxTier) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
@@ -333,7 +355,7 @@ class GameScene extends Phaser.Scene {
         this.updateEntityVisibility();
 
         // Update camera zoom to accommodate larger player
-        const tierConfig = GameConfig.SIZE_TIERS[newTier - 1];
+        const tierConfig = this.levelConfig.SIZE_TIERS[newTier - 1];
         if (tierConfig && tierConfig.zoom) {
             this.cameras.main.setZoom(tierConfig.zoom);
         }
@@ -354,7 +376,7 @@ class GameScene extends Phaser.Scene {
         // REQ-DMG-006: If Player Tier == 1, NO Hazards are visible/active.
 
         // Update Edible Items
-        for (let tier = 1; tier <= GameConfig.SIZE_TIERS.length; tier++) {
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
 
             const isVisible = (tier >= playerTier - 1) && (tier <= playerTier + 1);
@@ -388,7 +410,7 @@ class GameScene extends Phaser.Scene {
 
     updateHUD() {
         // Size indicator
-        const tierConfig = GameConfig.SIZE_TIERS[this.player.getCurrentTier() - 1];
+        const tierConfig = this.levelConfig.SIZE_TIERS[this.player.getCurrentTier() - 1];
         this.sizeText.setText(`Size: ${tierConfig.name} (Tier ${this.player.getCurrentTier()})`);
 
         // Progress bar
@@ -407,7 +429,7 @@ class GameScene extends Phaser.Scene {
 
     checkWinCondition() {
         // Win when player reaches max tier and completes its quota
-        const maxTier = GameConfig.SIZE_TIERS.length;
+        const maxTier = this.levelConfig.SIZE_TIERS.length;
         if (this.player.getCurrentTier() === maxTier && this.player.getProgress() >= 1) {
             this.endLevel();
         }
@@ -421,15 +443,16 @@ class GameScene extends Phaser.Scene {
 
         // Calculate stars
         let stars = 0;
-        if (this.score >= GameConfig.STAR_THRESHOLDS.THREE_STAR) stars = 3;
-        else if (this.score >= GameConfig.STAR_THRESHOLDS.TWO_STAR) stars = 2;
-        else if (this.score >= GameConfig.STAR_THRESHOLDS.ONE_STAR) stars = 1;
+        if (this.score >= this.levelConfig.STAR_THRESHOLDS.THREE_STAR) stars = 3;
+        else if (this.score >= this.levelConfig.STAR_THRESHOLDS.TWO_STAR) stars = 2;
+        else if (this.score >= this.levelConfig.STAR_THRESHOLDS.ONE_STAR) stars = 1;
 
         // Transition to end scene
         this.scene.start('EndLevelScene', {
             score: this.score,
             time: elapsed,
-            stars: stars
+            stars: stars,
+            levelConfig: this.levelConfig
         });
     }
 
@@ -440,7 +463,7 @@ class GameScene extends Phaser.Scene {
 
         // Count available items per tier (all existing ones, ignoring current active state)
         const availableItems = {};
-        for (let t = 1; t <= GameConfig.SIZE_TIERS.length; t++) {
+        for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
             if (this.edibleItems[t]) {
                 // use getLength() to count all items including inactive ones (hidden by fog of war)
                 availableItems[t] = this.edibleItems[t].getLength();
@@ -464,12 +487,12 @@ class GameScene extends Phaser.Scene {
         }
 
         // Iterate through remaining growth stages
-        const maxTier = GameConfig.SIZE_TIERS.length;
+        const maxTier = this.levelConfig.SIZE_TIERS.length;
 
         for (let t = currentTier; t <= maxTier; t++) {
             // 't' represents the player's size tier during this simulation step.
             // We are trying to satisfy the quota to grow from tier 't' to 't+1'.
-            const tierConfig = GameConfig.SIZE_TIERS[t - 1];
+            const tierConfig = this.levelConfig.SIZE_TIERS[t - 1];
             const quota = tierConfig.quota;
 
             // If this is the current tier, we already consumed some
@@ -566,7 +589,7 @@ class GameScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => {
-            this.scene.restart();
+            this.scene.restart({ levelConfig: this.levelConfig });
         });
 
         bg.setDepth(1000);
