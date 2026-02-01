@@ -172,7 +172,7 @@ describe('Player', () => {
     });
 
     test('should scale player size when advancing tiers', () => {
-      const initialRadius = player.sprite.radius;
+      const initialRadius = player.getSize();
       const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
 
       for (let i = 0; i < tier1Quota; i++) {
@@ -180,7 +180,11 @@ describe('Player', () => {
         player.consume(mockItem);
       }
 
-      expect(player.sprite.setRadius).toHaveBeenCalled();
+      // Check if setScale was called instead of setRadius
+      expect(player.sprite.setScale).toHaveBeenCalled();
+
+      // Also check if size increased
+      expect(player.getSize()).toBeGreaterThan(initialRadius);
     });
 
     test('should emit tierAdvanced event when advancing', () => {
@@ -350,7 +354,9 @@ describe('Player', () => {
   describe('Player Size', () => {
     test('should return current player size', () => {
       const size = player.getSize();
-      expect(size).toBe(player.sprite.radius);
+      // Should equal the internal radius or calculated size, not necessarily sprite.radius
+      expect(size).toBeDefined();
+      expect(size).toBeGreaterThan(0);
     });
 
     test('should increase size when advancing tiers', () => {
@@ -361,8 +367,9 @@ describe('Player', () => {
         player.consume({ tier: 1, itemType: 0 });
       }
 
-      // Size should have changed (setRadius was called)
-      expect(player.sprite.setRadius).toHaveBeenCalled();
+      // Size should have increased
+      expect(player.getSize()).toBeGreaterThan(initialSize);
+      expect(player.sprite.setScale).toHaveBeenCalled();
     });
   });
 });

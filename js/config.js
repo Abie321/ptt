@@ -28,7 +28,17 @@ const GameConfig = {
     PLAYER: {
         INITIAL_SIZE: 20,
         SPEED: 200,
-        MOUTH_OFFSET: 0.7 // Multiplier for hitbox position relative to player size
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 352,
+            FRAME_HEIGHT: 384,
+            ANIMATIONS: {
+                IDLE: { start: 0, end: 3, rate: 8 },
+                MOVE: { start: 4, end: 7, rate: 12 }
+            }
+        }
     },
 
     // World configuration
@@ -43,6 +53,7 @@ const GameConfig = {
 
     ENTITY_IMAGES: {
         'apple': 'assets/images/apple.png',
+        'player_sheet': 'assets/images/ghost.png'
         'teadrop': 'assets/images/teadrop.png',
         'crumb': 'assets/images/crumb.png',
     },

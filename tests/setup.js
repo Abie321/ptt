@@ -12,6 +12,9 @@ eval(modifiedConfigCode);
 
 // Mock Phaser for testing
 global.Phaser = {
+  GameObjects: {
+    Sprite: class {}
+  },
   Scene: class {
     constructor(config) {
       this.config = config;
@@ -21,6 +24,26 @@ global.Phaser = {
       };
       this.load = {
         image: jest.fn()
+      };
+      this.textures = {
+        exists: jest.fn(() => false),
+        get: jest.fn(() => ({
+          add: jest.fn()
+        })),
+        createCanvas: jest.fn(),
+        addSpriteSheet: jest.fn()
+      };
+      this.make = {
+          graphics: jest.fn(() => ({
+              fillStyle: jest.fn(),
+              fillCircle: jest.fn(),
+              generateTexture: jest.fn(),
+              destroy: jest.fn()
+          }))
+      };
+      this.anims = {
+          create: jest.fn(),
+          generateFrameNumbers: jest.fn()
       };
       this.add = {
         image: jest.fn((x, y, key) => ({
@@ -32,20 +55,38 @@ global.Phaser = {
           setDepth: jest.fn().mockReturnThis(),
           setActive: jest.fn(function(a) { this.active = a; return this; }),
           setVisible: jest.fn(function(v) { this.visible = v; return this; }),
-          destroy: jest.fn()
+          destroy: jest.fn(),
+          setScale: jest.fn().mockReturnThis(),
+          setTint: jest.fn().mockReturnThis(),
+          play: jest.fn().mockReturnThis(),
+          setRotation: jest.fn().mockReturnThis(),
+          anims: {
+            play: jest.fn().mockReturnThis()
+          }
         })),
-        sprite: jest.fn((x, y, key) => ({
-          x, y, key,
-          displayWidth: 20, displayHeight: 20,
-          active: true,
-          visible: true,
-          setOrigin: jest.fn().mockReturnThis(),
-          setScrollFactor: jest.fn().mockReturnThis(),
-          setDepth: jest.fn().mockReturnThis(),
-          setActive: jest.fn(function(a) { this.active = a; return this; }),
-          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
-          destroy: jest.fn()
-        })),
+        sprite: jest.fn((x, y, key) => {
+          const s = new Phaser.GameObjects.Sprite();
+          Object.assign(s, {
+            x, y, key,
+            displayWidth: 20, displayHeight: 20,
+            active: true,
+            visible: true,
+            setOrigin: jest.fn().mockReturnThis(),
+            setScrollFactor: jest.fn().mockReturnThis(),
+            setDepth: jest.fn().mockReturnThis(),
+            setActive: jest.fn(function(a) { this.active = a; return this; }),
+            setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+            destroy: jest.fn(),
+            setScale: jest.fn().mockReturnThis(),
+            setTint: jest.fn().mockReturnThis(),
+            play: jest.fn().mockReturnThis(),
+            setRotation: jest.fn().mockReturnThis(),
+            anims: {
+              play: jest.fn().mockReturnThis()
+            }
+          });
+          return s;
+        }),
         circle: jest.fn((x, y, radius, color, alpha) => ({
           x, y, radius, displayWidth: radius * 2, displayHeight: radius * 2,
           active: true,
@@ -120,7 +161,8 @@ global.Phaser = {
               setCollideWorldBounds: jest.fn(),
               setVelocity: jest.fn(),
               setImmovable: jest.fn(),
-              setBounce: jest.fn()
+              setBounce: jest.fn(),
+              setCircle: jest.fn()
             };
           })
         },
