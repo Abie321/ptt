@@ -35,8 +35,10 @@ const GameConfig = {
             FRAME_WIDTH: 352,
             FRAME_HEIGHT: 384,
             ANIMATIONS: {
-                IDLE: { start: 0, end: 3, rate: 8 },
-                MOVE: { start: 4, end: 7, rate: 12 }
+                DOWN: { start: 0, end: 7, rate: 10 },
+                UP: { start: 8, end: 15, rate: 10 },
+                RIGHT: { start: 16, end: 23, rate: 10 },
+                LEFT: { start: 24, end: 31, rate: 10 }
             }
         }
     },
@@ -53,7 +55,7 @@ const GameConfig = {
 
     ENTITY_IMAGES: {
         'apple': 'assets/images/apple.png',
-        'player_sheet': 'assets/images/ghost.png'
+        'player_sheet': 'assets/images/ghost.png',
         'teadrop': 'assets/images/teadrop.png',
         'crumb': 'assets/images/crumb.png',
     },

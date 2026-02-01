@@ -23,7 +23,8 @@ global.Phaser = {
         emit: jest.fn()
       };
       this.load = {
-        image: jest.fn()
+        image: jest.fn(),
+        spritesheet: jest.fn()
       };
       this.textures = {
         exists: jest.fn(() => false),
@@ -38,7 +39,8 @@ global.Phaser = {
               fillStyle: jest.fn(),
               fillCircle: jest.fn(),
               generateTexture: jest.fn(),
-              destroy: jest.fn()
+              destroy: jest.fn(),
+              fillRect: jest.fn()
           }))
       };
       this.anims = {
