@@ -21,16 +21,14 @@ describe('LevelSelectScene', () => {
 
   test('should create grid buttons', () => {
     // We expect buttons to be created.
-    // In our mock, add.rectangle is called for each button.
+    // In our mock, add.circle is called for each button.
     // 2 configured levels + dummy levels to reach 24 total.
-    // Each button has a background rectangle.
-    // Plus one for modal background, one for blocker, one for play button, one for cancel button.
-    // Actually add.rectangle is called a lot.
+    // Each button has a background circle.
 
     // Let's filter calls to find level buttons.
-    // Level buttons are 80x60.
-    const rectCalls = levelSelectScene.add.rectangle.mock.calls;
-    const levelButtons = rectCalls.filter(call => call[2] === 80 && call[3] === 60);
+    // Level buttons have radius 30 (min(80, 60) / 2).
+    const circleCalls = levelSelectScene.add.circle.mock.calls;
+    const levelButtons = circleCalls.filter(call => call[2] === 30);
     expect(levelButtons.length).toBe(24);
   });
 
@@ -44,27 +42,25 @@ describe('LevelSelectScene', () => {
     // Find the first level button (interactive one)
     // The first call to createLevelButton is for Level 1.
     // We need to find the interactive object attached to it.
-    // In our mock, createLevelButton creates a rectangle and calls setInteractive on it.
+    // In our mock, createLevelButton creates a circle and calls setInteractive on it.
 
     // Let's spy on showModal
     const showModalSpy = jest.spyOn(levelSelectScene, 'showModal');
 
     // Re-create scene to attach spy
-    levelSelectScene.add.rectangle.mockClear();
+    levelSelectScene.add.circle.mockClear();
     levelSelectScene.create(); // Rerunning create might duplicate things in the "scene" but mocks are cleared manually or we just check calls.
 
     // We need to trigger the pointerdown event on the button.
     // The button logic is:
     // bg.on('pointerdown', () => { this.showModal(levelConfig, index); });
 
-    // We need to find the specific mock object returned by add.rectangle that corresponds to a level button.
-    const rectCalls = levelSelectScene.add.rectangle.mock.results;
-    // The first 24 rectangles are level buttons (assuming order).
-    // Actually the order depends on execution.
-    // create() calls createLevelButton loop first, then createModal.
-    // So first 24 rectangles are level buttons.
+    // We need to find the specific mock object returned by add.circle that corresponds to a level button.
+    const circleResults = levelSelectScene.add.circle.mock.results;
+    // The first 24 circles are level buttons (assuming order).
+    // create() calls createLevelButton loop first.
     // The first one is Level 1 (real level).
-    const level1Btn = rectCalls[0].value;
+    const level1Btn = circleResults[0].value;
 
     // Verify it has on('pointerdown')
     const pointerDownCall = level1Btn.on.mock.calls.find(call => call[0] === 'pointerdown');

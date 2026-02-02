@@ -69,7 +69,8 @@ class LevelSelectScene extends Phaser.Scene {
         const color = isDummy ? 0x555555 : 0x333333;
 
         // Button Background
-        const bg = this.add.rectangle(x, y, w, h, color);
+        const radius = Math.min(w, h) / 2;
+        const bg = this.add.circle(x, y, radius, color);
 
         // Level Number
         this.add.text(x, y, `${index}`, {
