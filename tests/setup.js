@@ -103,6 +103,10 @@ global.Phaser = {
           x, y, width: w, height: h, displayWidth: w, displayHeight: h,
           active: true,
           visible: true,
+          setInteractive: jest.fn().mockReturnThis(),
+          on: jest.fn().mockReturnThis(),
+          setFillStyle: jest.fn().mockReturnThis(),
+          setStrokeStyle: jest.fn().mockReturnThis(),
           setOrigin: jest.fn().mockReturnThis(),
           setScrollFactor: jest.fn().mockReturnThis(),
           setDepth: jest.fn().mockReturnThis(),
@@ -129,6 +133,22 @@ global.Phaser = {
           on: jest.fn().mockReturnThis(),
           setDepth: jest.fn().mockReturnThis(),
           setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          destroy: jest.fn()
+        })),
+        container: jest.fn((x, y, children) => ({
+          x, y, children: children || [],
+          active: true,
+          visible: true,
+          add: jest.fn(function(child) {
+              if (Array.isArray(child)) {
+                  this.children.push(...child);
+              } else {
+                  this.children.push(child);
+              }
+              return this;
+          }),
+          setDepth: jest.fn().mockReturnThis(),
           setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn()
         })),
