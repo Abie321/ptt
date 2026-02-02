@@ -97,6 +97,11 @@ global.Phaser = {
           setFillStyle: jest.fn(),
           setActive: jest.fn(function(a) { this.active = a; return this; }),
           setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          setInteractive: jest.fn().mockReturnThis(),
+          on: jest.fn().mockReturnThis(),
+          setOrigin: jest.fn().mockReturnThis(),
+          setScrollFactor: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
           destroy: jest.fn()
         })),
         rectangle: jest.fn((x, y, w, h, color) => ({
