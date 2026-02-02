@@ -62,11 +62,17 @@ class WorldSelectScene extends Phaser.Scene {
         }
 
         // Label
-        this.add.text(x, y, `World\n${index}`, {
+        let labelText = `World\n${index}`;
+        if (typeof GameConfig !== 'undefined' && GameConfig.WORLDS && GameConfig.WORLDS[index - 1] && GameConfig.WORLDS[index - 1].name) {
+            labelText = GameConfig.WORLDS[index - 1].name;
+        }
+
+        this.add.text(x, y, labelText, {
             fontSize: '18px',
             fill: isUnlocked ? '#fff' : '#aaa',
             align: 'center',
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            wordWrap: { width: w - 10 }
         }).setOrigin(0.5);
 
         if (isUnlocked) {
