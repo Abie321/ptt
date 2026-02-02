@@ -144,6 +144,10 @@ LEVEL_2_CONFIG.SIZE_TIERS = [
 LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;
 
 const GameConfig = {
+    WORLDS: [
+        { name: "The Kitchen" },
+        { name: "The Garden" }
+    ],
     LEVELS: [
         {
             id: 'level1',

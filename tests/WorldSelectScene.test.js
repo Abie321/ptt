@@ -82,4 +82,35 @@ describe('WorldSelectScene', () => {
         callback();
         expect(scene.scene.start).toHaveBeenCalledWith('MainMenuScene');
     });
+
+    test('should use configured world names', () => {
+        // Save original WORLDS
+        const originalWorlds = global.GameConfig.WORLDS;
+
+        // Mock WORLDS configuration
+        global.GameConfig.WORLDS = [
+            { name: "Test World 1" },
+            { name: "Test World 2" }
+        ];
+
+        // Re-create scene to apply new config
+        scene = new WorldSelectScene();
+        scene.cameras = { main: { width: 800, height: 600 } };
+        scene.create();
+
+        const textCalls = scene.add.text.mock.calls;
+
+        // Verify custom names are used
+        const hasWorld1 = textCalls.some(call => call[2] === "Test World 1");
+        const hasWorld2 = textCalls.some(call => call[2] === "Test World 2");
+        // Verify fallback is used for unconfigured worlds
+        const hasWorld3 = textCalls.some(call => call[2] === "World\n3");
+
+        expect(hasWorld1).toBe(true);
+        expect(hasWorld2).toBe(true);
+        expect(hasWorld3).toBe(true);
+
+        // Restore WORLDS
+        global.GameConfig.WORLDS = originalWorlds;
+    });
 });
