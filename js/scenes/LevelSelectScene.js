@@ -26,7 +26,7 @@ class LevelSelectScene extends Phaser.Scene {
         backBtn.on('pointerover', () => backBtn.setStyle({ fill: '#4CAF50' }));
         backBtn.on('pointerout', () => backBtn.setStyle({ fill: '#fff' }));
         backBtn.on('pointerdown', () => {
-             this.scene.start('MainMenuScene');
+             this.scene.start('WorldSelectScene');
         });
 
         // Grid of levels
