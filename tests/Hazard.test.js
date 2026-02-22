@@ -83,6 +83,12 @@ describe('Hazard', () => {
 
       expect(size5).toBeGreaterThan(size2);
     });
+
+    test('should use explicit size from config if provided', () => {
+      const config = { ...mockConfig, size: 45 };
+      const hazard = new Hazard(scene, 100, 100, config);
+      expect(hazard.radius).toBe(45);
+    });
   });
 
   describe('Physics and Movement', () => {

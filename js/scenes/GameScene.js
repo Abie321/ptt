@@ -297,11 +297,14 @@ class GameScene extends Phaser.Scene {
 
                 // Check if mouth touches the item
                 if (distance < this.player.getSize() * 0.5 + itemRadius) {
-                    const points = this.player.consume(item.itemData);
-                    this.score += points;
-                    this.showConsumedItem(item.itemData); // Show HUD indicator
-                    item.destroy();
-                    break; // Only consume one item per frame
+                    // Check if player is larger than item (size-based consumption)
+                    if (this.player.getSize() > itemRadius) {
+                        const points = this.player.consume(item.itemData);
+                        this.score += points;
+                        this.showConsumedItem(item.itemData); // Show HUD indicator
+                        item.destroy();
+                        break; // Only consume one item per frame
+                    }
                 }
             }
         });
@@ -324,8 +327,8 @@ class GameScene extends Phaser.Scene {
             // Check collision (Body vs Body)
             if (distance < this.player.getSize() + hazardRadius) {
                 // Size-based Interaction
-                // If Player >= Hazard, consume
-                if (this.player.getSize() >= hazardRadius) {
+                // If Player > Hazard, consume
+                if (this.player.getSize() > hazardRadius) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;

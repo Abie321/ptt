@@ -63,73 +63,73 @@ const LEVEL_1_CONFIG = {
     },
   
     // Entities configuration per tier
-    // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean }
+    // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 10, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop' },
-            { type: "Cookie crumb", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb' },
-            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin' },
-            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube' },
+            { type: "Tea drop", count: 10, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: 10 },
+            { type: "Cookie crumb", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: 9 },
+            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 11 },
+            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 12 },
         ],
         2: [
             // Edibles
-            { type: "Ant", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false },
-            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false },
-            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false },
-            { type: "Seed", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false },
-            { type: "Flea", count: 2, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false },
-            { type: "Gnat", count: 3, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false },
-            { type: "Pollen", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false },
-            { type: "Sand", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false },
-            { type: "Rice", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false },
-            { type: "Lint", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false },
+            { type: "Ant", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 13 },
+            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 13 },
+            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 12 },
+            { type: "Seed", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 14 },
+            { type: "Flea", count: 2, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 13 },
+            { type: "Gnat", count: 3, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 14 },
+            { type: "Pollen", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 12 },
+            { type: "Sand", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 15 },
+            { type: "Rice", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 14 },
+            { type: "Lint", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 13 },
             // Hazards
-            { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true }
+            { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 25 }
         ],
         3: [
             // Edibles
-            { type: "Bug", count: 3, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false },
-            { type: "Pebble", count: 3, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false },
-            { type: "Berry", count: 2, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false },
-            { type: "Coin", count: 3, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false },
-            { type: "Beetle", count: 2, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false },
-            { type: "Marble", count: 3, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false },
-            { type: "Button", count: 2, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false },
-            { type: "Bean", count: 3, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false },
-            { type: "Nut", count: 2, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false },
-            { type: "Leaf", count: 2, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false },
+            { type: "Bug", count: 3, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 16 },
+            { type: "Pebble", count: 3, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false, size: 17 },
+            { type: "Berry", count: 2, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false, size: 18 },
+            { type: "Coin", count: 3, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 17 },
+            { type: "Beetle", count: 2, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false, size: 19 },
+            { type: "Marble", count: 3, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false, size: 18 },
+            { type: "Button", count: 2, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 17 },
+            { type: "Bean", count: 3, value: 15, shape: 'square', color: 0xFFEB3B, isHazard: false, size: 18 },
+            { type: "Nut", count: 2, value: 15, shape: 'triangle', color: 0xFFEB3B, isHazard: false, size: 19 },
+            { type: "Leaf", count: 2, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 20 },
             // Hazards
-            { type: "Spider", count: 6, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true }
+            { type: "Spider", count: 6, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 30 }
         ],
         4: [
             // Edibles
-            { type: "Mouse", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
-            { type: "Apple", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, image: 'apple' },
-            { type: "Rock", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false },
-            { type: "Can", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
-            { type: "Rat", count: 2, value: 20, shape: 'square', color: 0xFF5722, isHazard: false },
-            { type: "Bird", count: 3, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false },
-            { type: "Frog", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
-            { type: "Phone", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false },
-            { type: "Shoe", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false },
-            { type: "Cup", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false },
+            { type: "Mouse", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 21 },
+            { type: "Apple", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, image: 'apple', size: 22 },
+            { type: "Rock", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 23 },
+            { type: "Can", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 22 },
+            { type: "Rat", count: 2, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, size: 24 },
+            { type: "Bird", count: 3, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 23 },
+            { type: "Frog", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 22 },
+            { type: "Phone", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, size: 25 },
+            { type: "Shoe", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 24 },
+            { type: "Cup", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 23 },
             // Hazards
-            { type: "Cat", count: 7, value: 70, shape: 'circle', color: 0xFF0000, isHazard: true }
+            { type: "Cat", count: 7, value: 70, shape: 'circle', color: 0xFF0000, isHazard: true, size: 35 }
         ],
         5: [
             // Edibles
-            { type: "Cat", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false },
-            { type: "Chair", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false },
-            { type: "Bush", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false },
-            { type: "Tire", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false },
-            { type: "Dog", count: 2, value: 25, shape: 'square', color: 0xE91E63, isHazard: false },
-            { type: "Table", count: 3, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false },
-            { type: "Fence", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false },
-            { type: "Bike", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false },
-            { type: "Sign", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false },
-            { type: "Box", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false },
+            { type: "Cat", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 30 },
+            { type: "Chair", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 32 },
+            { type: "Bush", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 35 },
+            { type: "Tire", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 30 },
+            { type: "Dog", count: 2, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 33 },
+            { type: "Table", count: 3, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 38 },
+            { type: "Fence", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 34 },
+            { type: "Bike", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 36 },
+            { type: "Sign", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 32 },
+            { type: "Box", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 31 },
             // Hazards
-            { type: "Human", count: 8, value: 80, shape: 'circle', color: 0xFF0000, isHazard: true }
+            { type: "Human", count: 8, value: 80, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ]
     }
 };
