@@ -11,14 +11,15 @@ class Player {
         this.totalConsumed = 0;
         this.radius = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
 
+        // Growth Factor: Controls how much area/radius is added per consumed item
+        this.GROWTH_FACTOR = 0.1;
+
         // Create player sprite
         if (this.config.PLAYER && this.config.PLAYER.SPRITE && this.config.PLAYER.SPRITE.USE_SPRITESHEET) {
             this.sprite = scene.add.sprite(x, y, this.config.PLAYER.SPRITE.KEY);
 
             // Set initial scale
-            const targetDiameter = this.radius * 2;
-            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
-            this.sprite.setScale(scale);
+            this.updateSpriteScale();
 
             // Set color and animation
             this.sprite.play('down'); // Default to down
@@ -142,35 +143,70 @@ class Player {
         this.consumedInTier++;
         this.totalConsumed++;
 
-        // Check for tier advancement
-        const currentTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
-        if (this.consumedInTier >= currentTierConfig.quota && this.currentTier < this.config.SIZE_TIERS.length) {
-            this.advanceTier();
+        // --- Growth Logic ---
+        // Area-based growth: NewArea = OldArea + (ItemArea * GrowthFactor)
+        const itemRadius = item.radius || 10;
+        const currentArea = this.radius * this.radius;
+        const itemArea = itemRadius * itemRadius;
+        const addedArea = itemArea * this.GROWTH_FACTOR;
+
+        this.radius = Math.sqrt(currentArea + addedArea);
+
+        // Apply new size
+        this.updateSpriteScale();
+
+        // Check for tier advancement (visual milestone)
+        const newTier = this.calculateTier();
+        if (newTier > this.currentTier) {
+            this.advanceTier(newTier);
         }
 
         return points;
     }
 
-    advanceTier() {
-        this.currentTier++;
+    calculateTier() {
+        // Find the highest tier where current radius exceeds the tier's base size
+        if (!this.config.SIZE_TIERS) return 1;
+
+        const baseSize = this.config.PLAYER.INITIAL_SIZE;
+        let calculatedTier = 1;
+
+        for (let i = 0; i < this.config.SIZE_TIERS.length; i++) {
+            const tierConfig = this.config.SIZE_TIERS[i];
+            const tierStartRadius = baseSize * tierConfig.scale;
+
+            // Allow small epsilon or exact match
+            if (this.radius >= tierStartRadius - 0.1) {
+                calculatedTier = tierConfig.tier;
+            } else {
+                break;
+            }
+        }
+        return calculatedTier;
+    }
+
+    updateSpriteScale() {
+        if (this.sprite instanceof Phaser.GameObjects.Sprite) {
+            const targetDiameter = this.radius * 2;
+            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
+            this.sprite.setScale(scale);
+        } else {
+            this.sprite.setRadius(this.radius);
+        }
+    }
+
+    advanceTier(newTier) {
+        this.currentTier = newTier;
         this.consumedInTier = 0;
 
         const newTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
 
-        // Grow the player
-        const newRadius = this.config.PLAYER.INITIAL_SIZE * newTierConfig.scale;
-        this.radius = newRadius;
-
-        if (this.sprite instanceof Phaser.GameObjects.Sprite) {
-            const targetDiameter = newRadius * 2;
-            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
-            this.sprite.setScale(scale);
-        } else {
-            this.sprite.setRadius(newRadius);
+        // Update color if using shape
+        if (!(this.sprite instanceof Phaser.GameObjects.Sprite)) {
             this.sprite.setFillStyle(newTierConfig.color);
         }
 
-        // Emit event for scene to handle
+        // Emit event for scene to handle (zoom, cleanup)
         this.scene.events.emit('tierAdvanced', this.currentTier);
     }
 
@@ -186,8 +222,12 @@ class Player {
     }
 
     getConsumableTiers() {
-        // Can consume current tier and previous tier
-        return [this.currentTier, Math.max(1, this.currentTier - 1)];
+        // Return active visible tiers for collision checking
+        return [
+            Math.max(1, this.currentTier - 1),
+            this.currentTier,
+            this.currentTier + 1
+        ];
     }
 
     takeDamage() {
@@ -199,7 +239,30 @@ class Player {
     }
 
     getProgress() {
-        const currentTierConfig = this.config.SIZE_TIERS[this.currentTier - 1];
-        return this.consumedInTier / currentTierConfig.quota;
+        // Calculate progress towards next tier
+        if (!this.config.SIZE_TIERS) return 0;
+
+        const currentTierIdx = this.currentTier - 1;
+        const currentTierConfig = this.config.SIZE_TIERS[currentTierIdx];
+
+        // Next Tier Index
+        const nextTierIdx = currentTierIdx + 1;
+
+        const baseSize = this.config.PLAYER.INITIAL_SIZE;
+        const currentTierStartRadius = baseSize * currentTierConfig.scale;
+
+        let nextTierStartRadius;
+        if (nextTierIdx < this.config.SIZE_TIERS.length) {
+            nextTierStartRadius = baseSize * this.config.SIZE_TIERS[nextTierIdx].scale;
+        } else {
+            // Extrapolate for final level so bar fills up
+            const step = this.config.SIZE_TIERS[currentTierIdx].scale - (currentTierIdx > 0 ? this.config.SIZE_TIERS[currentTierIdx-1].scale : 0.5);
+            nextTierStartRadius = baseSize * (currentTierConfig.scale + step);
+        }
+
+        const totalNeeded = nextTierStartRadius - currentTierStartRadius;
+        const currentProgress = this.radius - currentTierStartRadius;
+
+        return Phaser.Math.Clamp(currentProgress / totalNeeded, 0, 1);
     }
 }

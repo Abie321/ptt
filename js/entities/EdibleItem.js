@@ -10,7 +10,9 @@ class EdibleItem {
 
         // Visual representation based on config and tier
         const baseSize = 8;
-        const size = baseSize + (this.tier * 3);
+        // Calculate size/radius (used for collision and growth)
+        this.radius = baseSize + (this.tier * 3);
+        const size = this.radius;
 
         const shape = config.shape;
         const color = config.color;
@@ -30,6 +32,7 @@ class EdibleItem {
         this.sprite.body.setImmovable(true);
 
         // Store reference
+        config.radius = this.radius;
         this.sprite.itemData = config;
     }
 

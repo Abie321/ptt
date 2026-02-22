@@ -89,7 +89,9 @@ describe('Entity Visibility System', () => {
             currentTier: 1,
             getCurrentTier: jest.fn(function() { return this.currentTier; }),
             consumedInTier: 0,
-            getProgress: jest.fn(() => 0)
+            getProgress: jest.fn(() => 0),
+            getSize: jest.fn(() => 20),
+            GROWTH_FACTOR: 0.5 // High factor to ensure winnability with few items
         };
 
         // Setup HUD mocks

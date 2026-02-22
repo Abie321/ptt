@@ -202,8 +202,10 @@ describe('GameScene', () => {
       expect(text).toContain('Tier');
     });
 
-    test('should update progress bar based on consumption', () => {
-      gameScene.player.consumedInTier = 5;
+    test('should update progress bar based on growth', () => {
+      // Tier 1 start 20. Tier 2 start 30.
+      // Set radius to 25 (50% progress)
+      gameScene.player.radius = 25;
       gameScene.updateHUD();
 
       expect(gameScene.progressBar.width).toBeGreaterThan(0);
@@ -278,16 +280,18 @@ describe('GameScene', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    test('should deduct points when hitting hazard', () => {
+    test('should deduct points when hitting hazard (Player smaller than hazard)', () => {
       gameScene.score = 1000;
+      // Player radius ~20.
 
-      // Mock a hazard in range that's dangerous (higher tier than player)
+      // Mock a hazard in range that's dangerous (larger)
       const mockHazard = {
         x: gameScene.player.sprite.x,
         y: gameScene.player.sprite.y,
         active: true,
-        displayWidth: 30,
-        hazardData: { tier: 3 }
+        radius: 30, // Larger than player
+        hazardData: { tier: 3 },
+        destroy: jest.fn()
       };
 
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
@@ -303,8 +307,9 @@ describe('GameScene', () => {
         x: gameScene.player.sprite.x,
         y: gameScene.player.sprite.y,
         active: true,
-        displayWidth: 30,
-        hazardData: { tier: 5 }
+        radius: 30, // Larger
+        hazardData: { tier: 5 },
+        destroy: jest.fn()
       };
 
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
@@ -313,18 +318,16 @@ describe('GameScene', () => {
       expect(gameScene.cameras.main.shake).toHaveBeenCalled();
     });
 
-    test('should consume and award points for lower tier hazards', () => {
+    test('should consume and award points for smaller hazards', () => {
       gameScene.score = 1000;
 
-      // Advance player to tier 3
-      gameScene.player.currentTier = 3;
-
-      // Create tier 2 hazard (lower than player)
+      // Player radius ~20.
+      // Mock hazard smaller than player
       const mockHazard = {
         x: gameScene.player.sprite.x,
         y: gameScene.player.sprite.y,
         active: true,
-        displayWidth: 30,
+        radius: 10, // Smaller
         hazardData: { tier: 2 },
         destroy: jest.fn()
       };
@@ -346,9 +349,10 @@ describe('GameScene', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    test('should end level when reaching tier 5 with full quota', () => {
+    test('should end level when reaching max tier target size', () => {
+      // Max Tier is 5.
       gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      gameScene.player.radius = 1000; // Huge
 
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();
@@ -356,9 +360,9 @@ describe('GameScene', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    test('should not end level before tier 5', () => {
+    test('should not end level before max tier', () => {
       gameScene.player.currentTier = 4;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[3].quota;
+      gameScene.player.radius = 1000; // Huge but tier not advanced (should technically be 5 if radius is huge, but checkWinCondition checks currentTier property first)
 
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();
@@ -366,9 +370,11 @@ describe('GameScene', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    test('should not end level if tier 5 quota not met', () => {
+    test('should not end level if max tier target not met', () => {
       gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota - 1;
+      // Set radius to exactly start of Tier 5. Progress should be 0.
+      const tier5Config = GameConfig.SIZE_TIERS[4];
+      gameScene.player.radius = GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale;
 
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();

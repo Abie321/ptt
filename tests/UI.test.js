@@ -57,12 +57,8 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should update when tier changes', () => {
-      // Advance to tier 2
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      for (let i = 0; i < quota; i++) {
-        gameScene.player.consume({ tier: 1, itemType: i });
-      }
-
+      // Advance to tier 2 manually
+      gameScene.player.currentTier = 2;
       gameScene.updateHUD();
 
       const text = gameScene.sizeText.setText.mock.calls[
@@ -99,24 +95,27 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should increase width as player consumes items', () => {
-      gameScene.player.consumedInTier = 5;
+      // Tier 1 (20->30). Set radius 22.
+      gameScene.player.radius = 22;
       gameScene.updateHUD();
 
       expect(gameScene.progressBar.width).toBeGreaterThan(0);
     });
 
     test('should fill to 200px width at 100% progress', () => {
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      gameScene.player.consumedInTier = quota;
+      // Tier 1 Max is 30.
+      gameScene.player.radius = 30;
+      gameScene.player.currentTier = 1;
 
       gameScene.updateHUD();
 
-      expect(gameScene.progressBar.width).toBe(200);
+      expect(gameScene.progressBar.width).toBeCloseTo(200, 0);
     });
 
     test('should show 50% width at 50% progress', () => {
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      gameScene.player.consumedInTier = Math.floor(quota / 2);
+      // Tier 1 (20->30). Mid 25.
+      gameScene.player.radius = 25;
+      gameScene.player.currentTier = 1;
 
       gameScene.updateHUD();
 
@@ -124,18 +123,14 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should reset when advancing tiers', () => {
-      // Fill progress bar
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      gameScene.player.consumedInTier = quota;
-      gameScene.updateHUD();
-      expect(gameScene.progressBar.width).toBe(200);
+      // Tier 2 Start is 30.
+      gameScene.player.radius = 30;
+      gameScene.player.currentTier = 2;
 
-      // Advance tier
-      gameScene.player.advanceTier();
       gameScene.updateHUD();
 
-      // Progress should reset
-      expect(gameScene.progressBar.width).toBe(0);
+      // Progress should be 0 relative to Tier 2 start
+      expect(gameScene.progressBar.width).toBeCloseTo(0, 0);
     });
 
     test('should be positioned below size indicator', () => {
