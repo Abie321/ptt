@@ -8,17 +8,18 @@ eval(hazardCode);
 
 describe('Hazard', () => {
   let scene;
-  const mockConfig = {
+  let mockConfig;
+
+  beforeEach(() => {
+    scene = createMockScene();
+    mockConfig = {
       tier: 3,
       type: 'MockHazard',
       value: 50,
       shape: 'circle',
       color: 0xFF0000,
       isHazard: true
-  };
-
-  beforeEach(() => {
-    scene = createMockScene();
+    };
   });
 
   describe('Initialization', () => {

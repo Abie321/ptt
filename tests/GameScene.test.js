@@ -205,6 +205,7 @@ describe('GameScene', () => {
     test('should update progress bar based on growth', () => {
       // Tier 1 start 20. Tier 2 start 30.
       // Set radius to 25 (50% progress)
+      gameScene.player.size = 25;
       gameScene.player.radius = 25;
       gameScene.updateHUD();
 
@@ -392,6 +393,7 @@ describe('GameScene', () => {
     test('should end level when reaching max tier target size', () => {
       // Max Tier is 5.
       gameScene.player.currentTier = 5;
+      gameScene.player.size = 1000;
       gameScene.player.radius = 1000; // Huge
 
       const spy = jest.spyOn(gameScene, 'endLevel');
@@ -402,6 +404,7 @@ describe('GameScene', () => {
 
     test('should not end level before max tier', () => {
       gameScene.player.currentTier = 4;
+      gameScene.player.size = 1000;
       gameScene.player.radius = 1000; // Huge but tier not advanced (should technically be 5 if radius is huge, but checkWinCondition checks currentTier property first)
 
       const spy = jest.spyOn(gameScene, 'endLevel');
@@ -414,6 +417,7 @@ describe('GameScene', () => {
       gameScene.player.currentTier = 5;
       // Set radius to exactly start of Tier 5. Progress should be 0.
       const tier5Config = GameConfig.SIZE_TIERS[4];
+      gameScene.player.size = GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale;
       gameScene.player.radius = GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale;
 
       const spy = jest.spyOn(gameScene, 'endLevel');

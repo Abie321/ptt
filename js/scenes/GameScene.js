@@ -295,10 +295,13 @@ class GameScene extends Phaser.Scene {
                 // Use explicit radius if available, fallback to displayWidth/2
                 const itemRadius = item.radius || item.displayWidth / 2;
 
-                // Check if mouth touches the item
-                if (distance < this.player.getSize() * 0.5 + itemRadius) {
+                // Check if mouth touches the item (collision check using visual radii)
+                if (distance < this.player.getCollisionRadius() * 0.5 + itemRadius) {
                     // Check if player is larger than item (size-based consumption)
-                    if (this.player.getSize() > itemRadius) {
+                    // Use configured size vs player size
+                    const itemSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
+
+                    if (this.player.getSize() > itemSize) {
                         const points = this.player.consume(item.itemData);
                         this.score += points;
                         this.showConsumedItem(item.itemData); // Show HUD indicator
@@ -324,11 +327,13 @@ class GameScene extends Phaser.Scene {
 
             const hazardRadius = hazard.radius || hazard.displayWidth / 2;
 
-            // Check collision (Body vs Body)
-            if (distance < this.player.getSize() + hazardRadius) {
+            // Check collision (Body vs Body) using visual radii
+            if (distance < this.player.getCollisionRadius() + hazardRadius) {
                 // Size-based Interaction
                 // If Player > Hazard, consume
-                if (this.player.getSize() > hazardRadius) {
+                const hazardSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+
+                if (this.player.getSize() > hazardSize) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;
@@ -484,15 +489,15 @@ class GameScene extends Phaser.Scene {
             if (!this.edibleItems[tier]) continue;
             // Iterate all children (active and inactive)
             this.edibleItems[tier].getChildren().forEach(item => {
-                const r = item.radius || item.displayWidth / 2 || 10;
-                potentialAddedArea += (r * r * growthFactor);
+                const size = (item.itemData && item.itemData.size) ? item.itemData.size : (item.radius || item.displayWidth / 2 || 10);
+                potentialAddedArea += (size * size * growthFactor);
             });
         }
 
         // Hazards (eventually edible)
         this.hazards.getChildren().forEach(hazard => {
-            const r = hazard.radius || hazard.displayWidth / 2 || 15;
-            potentialAddedArea += (r * r * growthFactor);
+            const size = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : (hazard.radius || hazard.displayWidth / 2 || 15);
+            potentialAddedArea += (size * size * growthFactor);
         });
 
         // Check if achievable
