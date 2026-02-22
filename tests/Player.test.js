@@ -148,41 +148,28 @@ describe('Player', () => {
       expect(player.getCurrentTier()).toBe(1);
     });
 
-    test('should advance tier after consuming quota', () => {
-      const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
+    test('should advance tier after growing enough', () => {
+      // Need to grow from 20 to 30.
+      // Force huge growth
+      player.consume({ tier: 1, radius: 100, itemType: 0 }); // Adds lots of area
 
-      // Create mock items
-      for (let i = 0; i < tier1Quota; i++) {
-        const mockItem = { tier: 1, itemType: 0 };
-        player.consume(mockItem);
-      }
-
-      expect(player.getCurrentTier()).toBe(2);
+      expect(player.getCurrentTier()).toBeGreaterThan(1);
     });
 
     test('should have 5 tiers total', () => {
       expect(GameConfig.SIZE_TIERS.length).toBe(5);
     });
 
-    test('should reset consumedInTier when advancing', () => {
-      const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
-
-      for (let i = 0; i < tier1Quota; i++) {
-        const mockItem = { tier: 1, itemType: 0 };
-        player.consume(mockItem);
-      }
+    test('should reset consumedInTier when advancing (visual only)', () => {
+      // Force advance
+      player.consume({ tier: 1, radius: 100, itemType: 0 });
 
       expect(player.consumedInTier).toBe(0);
     });
 
-    test('should scale player size when advancing tiers', () => {
+    test('should scale player size when growing', () => {
       const initialRadius = player.getSize();
-      const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
-
-      for (let i = 0; i < tier1Quota; i++) {
-        const mockItem = { tier: 1, itemType: 0 };
-        player.consume(mockItem);
-      }
+      player.consume({ tier: 1, radius: 10, itemType: 0 });
 
       // Check if setScale was called instead of setRadius
       expect(player.sprite.setScale).toHaveBeenCalled();
@@ -192,25 +179,16 @@ describe('Player', () => {
     });
 
     test('should emit tierAdvanced event when advancing', () => {
-      const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
+      player.consume({ tier: 1, radius: 100, itemType: 0 });
 
-      for (let i = 0; i < tier1Quota; i++) {
-        const mockItem = { tier: 1, itemType: 0 };
-        player.consume(mockItem);
-      }
-
-      expect(scene.events.emit).toHaveBeenCalledWith('tierAdvanced', 2);
+      expect(scene.events.emit).toHaveBeenCalledWith('tierAdvanced', expect.any(Number));
     });
 
     test('should not advance beyond tier 5', () => {
-      // Consume enough to reach tier 5
-      for (let tier = 1; tier <= 5; tier++) {
-        const quota = GameConfig.SIZE_TIERS[tier - 1].quota;
-        for (let i = 0; i < quota; i++) {
-          const mockItem = { tier: tier, itemType: 0 };
-          player.consume(mockItem);
-        }
-      }
+      // Set radius huge
+      player.radius = 1000;
+      // Trigger update
+      player.consume({ tier: 5, radius: 10, itemType: 0 });
 
       expect(player.getCurrentTier()).toBe(5);
     });
@@ -331,27 +309,20 @@ describe('Player', () => {
 
   describe('Progress Tracking', () => {
     test('should calculate progress correctly', () => {
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-
+      // Tier 1: 20 -> 30.
       expect(player.getProgress()).toBe(0);
 
-      // Consume half the quota
-      for (let i = 0; i < quota / 2; i++) {
-        player.consume({ tier: 1, itemType: 0 });
-      }
+      // Set radius to 25 (midpoint)
+      player.radius = 25;
 
       expect(player.getProgress()).toBeCloseTo(0.5);
     });
 
-    test('should reach 100% progress at quota', () => {
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-
-      for (let i = 0; i < quota; i++) {
-        player.consume({ tier: 1, itemType: 0 });
-      }
-
-      // Should have advanced, so new tier progress is 0
-      expect(player.getProgress()).toBe(0);
+    test('should reach 100% progress at next tier threshold', () => {
+      // Set radius just below 30
+      player.radius = 29.99;
+      // Current Tier is still 1
+      expect(player.getProgress()).toBeCloseTo(1.0, 1);
     });
   });
 
@@ -363,13 +334,9 @@ describe('Player', () => {
       expect(size).toBeGreaterThan(0);
     });
 
-    test('should increase size when advancing tiers', () => {
+    test('should increase size when consuming items', () => {
       const initialSize = player.getSize();
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-
-      for (let i = 0; i < quota; i++) {
-        player.consume({ tier: 1, itemType: 0 });
-      }
+      player.consume({ tier: 1, radius: 10, itemType: 0 });
 
       // Size should have increased
       expect(player.getSize()).toBeGreaterThan(initialSize);

@@ -9,7 +9,8 @@ class Hazard {
 
         // Hazards are larger and red-tinted
         const baseSize = 15;
-        const size = baseSize + (this.tier * 5);
+        this.radius = baseSize + (this.tier * 5);
+        const size = this.radius;
 
         // Use color from config (defaults to red if not provided, though config should have it)
         const color = config.color !== undefined ? config.color : 0xFF0000;
@@ -26,6 +27,7 @@ class Hazard {
         this.sprite.body.setCollideWorldBounds(true);
 
         // Store reference
+        config.radius = this.radius;
         this.sprite.hazardData = config;
         this.itemType = 'HAZARD';
     }

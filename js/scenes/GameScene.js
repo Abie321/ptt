@@ -292,7 +292,11 @@ class GameScene extends Phaser.Scene {
                 );
 
                 // Check if mouth touches the item
-                if (distance < this.player.getSize() * 0.5 + item.displayWidth / 2) {
+                // Use explicit radius if available, fallback to displayWidth/2
+                const itemRadius = item.radius || item.displayWidth / 2;
+
+                // Check if mouth touches the item
+                if (distance < this.player.getSize() * 0.5 + itemRadius) {
                     const points = this.player.consume(item.itemData);
                     this.score += points;
                     this.showConsumedItem(item.itemData); // Show HUD indicator
@@ -304,7 +308,6 @@ class GameScene extends Phaser.Scene {
     }
 
     checkHazardCollisions() {
-        const playerTier = this.player.getCurrentTier();
         // Create a copy to safely modify the group during iteration
         const hazards = [...this.hazards.getChildren()];
 
@@ -316,17 +319,20 @@ class GameScene extends Phaser.Scene {
                 hazard.x, hazard.y
             );
 
-            // Check collision
-            if (distance < this.player.getSize() + hazard.displayWidth / 2) {
-                const maxTier = this.levelConfig.SIZE_TIERS.length;
-                if (playerTier > hazard.hazardData.tier || playerTier === maxTier) {
+            const hazardRadius = hazard.radius || hazard.displayWidth / 2;
+
+            // Check collision (Body vs Body)
+            if (distance < this.player.getSize() + hazardRadius) {
+                // Size-based Interaction
+                // If Player >= Hazard, consume
+                if (this.player.getSize() >= hazardRadius) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;
                     this.showConsumedItem(hazard.hazardData); // Show HUD indicator
                     hazard.destroy();
                 } else {
-                    // Damage player (equal or greater tier hazards are dangerous)
+                    // Damage player
                     const penalty = this.player.takeDamage();
                     this.score -= penalty;
 
@@ -457,103 +463,38 @@ class GameScene extends Phaser.Scene {
     }
 
     checkWinnability() {
-        // Clone current state
-        const currentTier = this.player.getCurrentTier();
-        const consumedInTier = this.player.consumedInTier;
+        // Size/Area based winnability check
+        const growthFactor = this.player.GROWTH_FACTOR || 0.1;
+        const currentRadius = this.player.getSize();
+        const currentArea = currentRadius * currentRadius;
 
-        // Count available items per tier (all existing ones, ignoring current active state)
-        const availableItems = {};
-        for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
-            if (this.edibleItems[t]) {
-                // use getLength() to count all items including inactive ones (hidden by fog of war)
-                availableItems[t] = this.edibleItems[t].getLength();
-            } else {
-                availableItems[t] = 0;
-            }
+        // Calculate Target Area (Max Tier Start Size)
+        const maxTierConfig = this.levelConfig.SIZE_TIERS[this.levelConfig.SIZE_TIERS.length - 1];
+        const targetRadius = this.levelConfig.PLAYER.INITIAL_SIZE * maxTierConfig.scale;
+        const targetArea = targetRadius * targetRadius;
+
+        // Calculate total potential area from all entities
+        let potentialAddedArea = 0;
+
+        // Edibles
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
+            if (!this.edibleItems[tier]) continue;
+            // Iterate all children (active and inactive)
+            this.edibleItems[tier].getChildren().forEach(item => {
+                const r = item.radius || item.displayWidth / 2 || 10;
+                potentialAddedArea += (r * r * growthFactor);
+            });
         }
 
-        // Count available hazards per tier
-        const availableHazards = {};
-        const hazards = this.hazards.getChildren();
-        for (let hazard of hazards) {
-            // Count hazards regardless of active state (they might be hidden now but consumable later)
-            if (hazard.hazardData) {
-                const tier = hazard.hazardData.tier;
-                if (!availableHazards[tier]) {
-                    availableHazards[tier] = 0;
-                }
-                availableHazards[tier]++;
-            }
-        }
+        // Hazards (eventually edible)
+        this.hazards.getChildren().forEach(hazard => {
+            const r = hazard.radius || hazard.displayWidth / 2 || 15;
+            potentialAddedArea += (r * r * growthFactor);
+        });
 
-        // Iterate through remaining growth stages
-        const maxTier = this.levelConfig.SIZE_TIERS.length;
-
-        for (let t = currentTier; t <= maxTier; t++) {
-            // 't' represents the player's size tier during this simulation step.
-            // We are trying to satisfy the quota to grow from tier 't' to 't+1'.
-            const tierConfig = this.levelConfig.SIZE_TIERS[t - 1];
-            const quota = tierConfig.quota;
-
-            // If this is the current tier, we already consumed some
-            const needed = (t === currentTier) ? (quota - consumedInTier) : quota;
-
-            if (needed <= 0) {
-                continue;
-            }
-
-            let remainingNeeded = needed;
-
-            // Strategy: Eat from lower tier (t-1) first, then current tier (t)
-
-            // Eat from t-1 (if applicable)
-            if (t > 1) {
-                const lowerTier = t - 1;
-
-                // Edible items from t-1
-                const canEatItems = availableItems[lowerTier] || 0;
-                const eatenItems = Math.min(remainingNeeded, canEatItems);
-                availableItems[lowerTier] -= eatenItems;
-                remainingNeeded -= eatenItems;
-
-                // Hazards from t-1 (now edible since we are tier t)
-                // Hazards of tier 'lowerTier' are smaller than player tier 't', so they are edible.
-                if (remainingNeeded > 0) {
-                    const canEatHazards = availableHazards[lowerTier] || 0;
-                    const eatenHazards = Math.min(remainingNeeded, canEatHazards);
-                    availableHazards[lowerTier] -= eatenHazards;
-                    remainingNeeded -= eatenHazards;
-                }
-            }
-
-            // Eat from t
-            if (remainingNeeded > 0) {
-                const sameTier = t;
-                const canEat = availableItems[sameTier] || 0;
-                const eating = Math.min(remainingNeeded, canEat);
-                availableItems[sameTier] -= eating;
-                remainingNeeded -= eating;
-
-                // REQ-MECH-014: If at Max Tier, hazards of current tier are also edible
-                if (remainingNeeded > 0 && t === maxTier) {
-                    const canEatHazards = availableHazards[t] || 0;
-                    const eatenHazards = Math.min(remainingNeeded, canEatHazards);
-                    availableHazards[t] -= eatenHazards;
-                    remainingNeeded -= eatenHazards;
-                }
-            }
-
-            if (remainingNeeded > 0) {
-                // Cannot satisfy quota for tier t
-                return false;
-            }
-
-            // Simulate despawn for next tier advancement
-            // When we advance from t to t+1, items from t-1 are despawned.
-            if (t > 1) {
-                availableItems[t - 1] = 0;
-                availableHazards[t - 1] = 0;
-            }
+        // Check if achievable
+        if (currentArea + potentialAddedArea < targetArea) {
+            return false;
         }
 
         return true;
