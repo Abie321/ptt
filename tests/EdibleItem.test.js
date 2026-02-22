@@ -8,17 +8,18 @@ eval(itemCode);
 
 describe('EdibleItem', () => {
   let scene;
-  const mockConfig = {
+  let mockConfig;
+
+  beforeEach(() => {
+    scene = createMockScene();
+    mockConfig = {
       tier: 2,
       type: 'MockItem',
       value: 10,
       shape: 'square',
       color: 0x00FF00,
       isHazard: false
-  };
-
-  beforeEach(() => {
-    scene = createMockScene();
+    };
   });
 
   describe('Initialization', () => {

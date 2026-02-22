@@ -11,6 +11,12 @@ class EdibleItem {
         // Visual representation based on config
         // Use configured size if available, otherwise fallback to old formula
         this.radius = config.size !== undefined ? config.size : (8 + (this.tier * 3));
+
+        // Ensure size is set in config for consumption logic
+        if (config.size === undefined) {
+            config.size = this.radius;
+        }
+
         const size = this.radius;
 
         const shape = config.shape;

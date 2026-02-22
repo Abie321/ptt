@@ -9,6 +9,12 @@ class Hazard {
 
         // Hazards use configured size if available
         this.radius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
+
+        // Ensure size is set in config for consumption logic
+        if (config.size === undefined) {
+            config.size = this.radius;
+        }
+
         const size = this.radius;
 
         // Use color from config (defaults to red if not provided, though config should have it)

@@ -186,6 +186,7 @@ describe('Player', () => {
 
     test('should not advance beyond tier 5', () => {
       // Set radius huge
+      player.size = 1000;
       player.radius = 1000;
       // Trigger update
       player.consume({ tier: 5, radius: 10, itemType: 0 });
@@ -313,6 +314,7 @@ describe('Player', () => {
       expect(player.getProgress()).toBe(0);
 
       // Set radius to 25 (midpoint)
+      player.size = 25;
       player.radius = 25;
 
       expect(player.getProgress()).toBeCloseTo(0.5);
@@ -320,6 +322,7 @@ describe('Player', () => {
 
     test('should reach 100% progress at next tier threshold', () => {
       // Set radius just below 30
+      player.size = 29.99;
       player.radius = 29.99;
       // Current Tier is still 1
       expect(player.getProgress()).toBeCloseTo(1.0, 1);

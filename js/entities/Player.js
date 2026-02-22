@@ -9,7 +9,13 @@ class Player {
         this.currentTier = 1;
         this.consumedInTier = 0;
         this.totalConsumed = 0;
-        this.radius = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
+
+        // Size Property (Logic)
+        this.size = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
+
+        // Radius Property (Visual/Physics)
+        // Currently 1:1 with size, but kept distinct for architectural separation
+        this.radius = this.size;
 
         // Growth Factor: Controls how much area/radius is added per consumed item
         this.GROWTH_FACTOR = 0.1;
@@ -145,12 +151,16 @@ class Player {
 
         // --- Growth Logic ---
         // Area-based growth: NewArea = OldArea + (ItemArea * GrowthFactor)
-        const itemRadius = item.radius || 10;
-        const currentArea = this.radius * this.radius;
-        const itemArea = itemRadius * itemRadius;
+        // Use SIZE for growth calculation
+        const itemSize = item.size !== undefined ? item.size : (item.radius || 10);
+        const currentArea = this.size * this.size;
+        const itemArea = itemSize * itemSize;
         const addedArea = itemArea * this.GROWTH_FACTOR;
 
-        this.radius = Math.sqrt(currentArea + addedArea);
+        this.size = Math.sqrt(currentArea + addedArea);
+
+        // Sync radius to size (for now)
+        this.radius = this.size;
 
         // Apply new size
         this.updateSpriteScale();
@@ -176,7 +186,8 @@ class Player {
             const tierStartRadius = baseSize * tierConfig.scale;
 
             // Allow small epsilon or exact match
-            if (this.radius >= tierStartRadius - 0.1) {
+            // Using size (which is same as radius for now)
+            if (this.size >= tierStartRadius - 0.1) {
                 calculatedTier = tierConfig.tier;
             } else {
                 break;
@@ -187,6 +198,7 @@ class Player {
 
     updateSpriteScale() {
         if (this.sprite instanceof Phaser.GameObjects.Sprite) {
+            // Scale based on size/radius
             const targetDiameter = this.radius * 2;
             const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
             this.sprite.setScale(scale);
@@ -235,6 +247,12 @@ class Player {
     }
 
     getSize() {
+        // Returns the logical size for consumption checks
+        return this.size;
+    }
+
+    getCollisionRadius() {
+        // Returns the visual/physics radius for collision checks
         return this.radius;
     }
 
@@ -261,7 +279,8 @@ class Player {
         }
 
         const totalNeeded = nextTierStartRadius - currentTierStartRadius;
-        const currentProgress = this.radius - currentTierStartRadius;
+        // Progress based on size
+        const currentProgress = this.size - currentTierStartRadius;
 
         return Phaser.Math.Clamp(currentProgress / totalNeeded, 0, 1);
     }
