@@ -27,6 +27,7 @@ const LEVEL_1_CONFIG = {
     // Player configuration
     PLAYER: {
         INITIAL_SIZE: 20,
+        GROWTH_FACTOR: 0.1,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         SPRITE: {

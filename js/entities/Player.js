@@ -18,7 +18,7 @@ class Player {
         this.radius = this.size;
 
         // Growth Factor: Controls how much area/radius is added per consumed item
-        this.GROWTH_FACTOR = 0.1;
+        this.GROWTH_FACTOR = (this.config.PLAYER && this.config.PLAYER.GROWTH_FACTOR !== undefined) ? this.config.PLAYER.GROWTH_FACTOR : 0.1;
 
         // Create player sprite
         if (this.config.PLAYER && this.config.PLAYER.SPRITE && this.config.PLAYER.SPRITE.USE_SPRITESHEET) {
