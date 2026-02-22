@@ -21,7 +21,6 @@ class Player {
             this.sprite.setScale(scale);
 
             // Set color and animation
-            this.sprite.setTint(this.config.SIZE_TIERS[0].color);
             this.sprite.play('down'); // Default to down
 
             scene.physics.add.existing(this.sprite);
@@ -37,7 +36,7 @@ class Player {
         this.sprite.body.setCollideWorldBounds(true);
 
         // Create mouth indicator (small circle at the front)
-        this.mouthIndicator = scene.add.circle(x, y - this.radius, 5, 0xFFFFFF);
+        this.mouthIndicator = scene.add.circle(x, y - this.radius, 5, 0xFFFFFF, 0.0);
 
         // Track consumed item types for scoring
         this.consumedTypes = {};
@@ -166,7 +165,6 @@ class Player {
             const targetDiameter = newRadius * 2;
             const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
             this.sprite.setScale(scale);
-            this.sprite.setTint(newTierConfig.color);
         } else {
             this.sprite.setRadius(newRadius);
             this.sprite.setFillStyle(newTierConfig.color);

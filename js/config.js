@@ -32,13 +32,13 @@ const LEVEL_1_CONFIG = {
         SPRITE: {
             USE_SPRITESHEET: true,
             KEY: 'player_sheet',
-            FRAME_WIDTH: 352,
-            FRAME_HEIGHT: 384,
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
             ANIMATIONS: {
-                DOWN: { start: 0, end: 7, rate: 10 },
-                UP: { start: 8, end: 15, rate: 10 },
-                RIGHT: { start: 16, end: 23, rate: 10 },
-                LEFT: { start: 24, end: 31, rate: 10 }
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
             }
         }
     },
@@ -58,6 +58,8 @@ const LEVEL_1_CONFIG = {
         'player_sheet': 'assets/images/ghost.png',
         'teadrop': 'assets/images/teadrop.png',
         'crumb': 'assets/images/crumb.png',
+        'coin': 'assets/images/coin.png',
+        'cube': 'assets/images/cube.png',
     },
   
     // Entities configuration per tier
@@ -66,8 +68,8 @@ const LEVEL_1_CONFIG = {
         1: [
             { type: "Tea drop", count: 10, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop' },
             { type: "Cookie crumb", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb' },
-            { type: "Virus", count: 3, value: 5, shape: 'triangle', color: 0x8BC34A, isHazard: false },
-
+            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin' },
+            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube' },
         ],
         2: [
             // Edibles
@@ -145,13 +147,19 @@ LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;
 
 const GameConfig = {
     WORLDS: [
-        { name: "The Kitchen" },
-        { name: "The Garden" }
+        { name: "Ghost" },
+        { name: "Stingray" },
+        { name: "Snake" },
+        { name: "Pigeon" },
+        { name: "Jaguar" },
+        { name: "Seagull" },
+        { name: "Goo" },
+
     ],
     LEVELS: [
         {
             id: 'level1',
-            name: 'Kitchen',
+            name: 'The Haunted Tea Shop',
             ...LEVEL_1_CONFIG
         },
         {
