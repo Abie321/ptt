@@ -99,6 +99,12 @@ describe('EdibleItem', () => {
 
       expect(size5).toBeGreaterThan(size1);
     });
+
+    test('should use explicit size from config if provided', () => {
+      const config = { ...mockConfig, size: 50 };
+      const item = new EdibleItem(scene, 100, 100, config);
+      expect(item.radius).toBe(50);
+    });
   });
 
   describe('Position', () => {

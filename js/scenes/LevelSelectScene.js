@@ -35,7 +35,7 @@ class LevelSelectScene extends Phaser.Scene {
 
         // Add dummy levels for layout testing
         const allLevels = [...realLevels];
-        const totalSlots = 11; // Ensure we have enough to show 3 rows
+        const totalSlots = 24; // Ensure we have enough to show 3 rows
         for (let i = realLevels.length; i < totalSlots; i++) {
             allLevels.push({ dummy: true });
         }

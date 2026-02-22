@@ -8,10 +8,9 @@ class EdibleItem {
         this.itemType = config.type; // Maintaining property for compatibility/debugging
         this.itemData = config; // Standardize on itemData holding the config
 
-        // Visual representation based on config and tier
-        const baseSize = 8;
-        // Calculate size/radius (used for collision and growth)
-        this.radius = baseSize + (this.tier * 3);
+        // Visual representation based on config
+        // Use configured size if available, otherwise fallback to old formula
+        this.radius = config.size !== undefined ? config.size : (8 + (this.tier * 3));
         const size = this.radius;
 
         const shape = config.shape;
@@ -19,6 +18,9 @@ class EdibleItem {
 
         if (config.image) {
             this.sprite = scene.add.sprite(x, y, config.image);
+            // Scale sprite to match the desired radius (diameter = size * 2)
+            const scale = (size * 2) / Math.max(1, this.sprite.width);
+            this.sprite.setScale(scale);
         } else if (shape === 'circle') {
             this.sprite = scene.add.circle(x, y, size, color);
         } else if (shape === 'square') {

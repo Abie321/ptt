@@ -270,6 +270,27 @@ describe('GameScene', () => {
 
       expect(gameScene.score).toBeGreaterThan(initialScore);
     });
+
+    test('should NOT consume item if player is not larger than item', () => {
+      const initialScore = gameScene.score;
+      const mouthPos = gameScene.player.getMouthPosition();
+
+      // Player radius 20. Item radius 20 (equal).
+      const mockItem = {
+        x: mouthPos.x,
+        y: mouthPos.y,
+        active: true,
+        radius: 20,
+        itemData: { tier: 1, itemType: 0 },
+        destroy: jest.fn()
+      };
+
+      gameScene.edibleItems[1].getChildren = jest.fn(() => [mockItem]);
+      gameScene.checkConsumption();
+
+      expect(gameScene.score).toBe(initialScore);
+      expect(mockItem.destroy).not.toHaveBeenCalled();
+    });
   });
 
   describe('Hazard Collision System', () => {
@@ -338,6 +359,25 @@ describe('GameScene', () => {
       // Score should increase (hazard consumed)
       expect(gameScene.score).toBeGreaterThan(1000);
       expect(mockHazard.destroy).toHaveBeenCalled();
+    });
+
+    test('should damage player if size is equal', () => {
+      gameScene.score = 1000;
+
+      const mockHazard = {
+        x: gameScene.player.sprite.x,
+        y: gameScene.player.sprite.y,
+        active: true,
+        radius: 20, // Equal to player (20)
+        hazardData: { tier: 3 },
+        destroy: jest.fn()
+      };
+
+      gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
+      gameScene.checkHazardCollisions();
+
+      expect(gameScene.score).toBeLessThan(1000);
+      expect(mockHazard.destroy).not.toHaveBeenCalled();
     });
   });
 

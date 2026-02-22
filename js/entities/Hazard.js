@@ -7,9 +7,8 @@ class Hazard {
         this.tier = config.tier;
         this.hazardData = config; // Standardize on hazardData holding the config
 
-        // Hazards are larger and red-tinted
-        const baseSize = 15;
-        this.radius = baseSize + (this.tier * 5);
+        // Hazards use configured size if available
+        this.radius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
         const size = this.radius;
 
         // Use color from config (defaults to red if not provided, though config should have it)
