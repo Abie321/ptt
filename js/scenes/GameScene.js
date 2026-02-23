@@ -369,6 +369,7 @@ class GameScene extends Phaser.Scene {
         this.updateEntityVisibility();
 
         // Update camera zoom to accommodate larger player
+        // Note: With decoupled size/tier, we might want zoom to follow actual size, but sticking to tier-based zoom for now as requested by user logic
         const tierConfig = this.levelConfig.SIZE_TIERS[newTier - 1];
         if (tierConfig && tierConfig.zoom) {
             this.cameras.main.setZoom(tierConfig.zoom);
@@ -472,13 +473,24 @@ class GameScene extends Phaser.Scene {
 
     checkWinnability() {
         // Size/Area based winnability check
-        const growthFactor = this.player.GROWTH_FACTOR || 0.1;
-        const currentRadius = this.player.getSize();
+        // We check against INTERNAL size (progression) now, as that determines if we reach the max tier
+        const tierGrowthFactor = this.player.TIER_GROWTH_FACTOR || 0.1;
+
+        // Use internal size for progression check
+        const currentRadius = this.player.internalSize || this.player.getSize();
         const currentArea = currentRadius * currentRadius;
 
         // Calculate Target Area (Max Tier Start Size)
         const maxTierConfig = this.levelConfig.SIZE_TIERS[this.levelConfig.SIZE_TIERS.length - 1];
-        const targetRadius = this.levelConfig.PLAYER.INITIAL_SIZE * maxTierConfig.scale;
+
+        // Handle new threshold or legacy scale
+        let targetRadius;
+        if (maxTierConfig.threshold !== undefined) {
+            targetRadius = maxTierConfig.threshold;
+        } else {
+            targetRadius = this.levelConfig.PLAYER.INITIAL_SIZE * maxTierConfig.scale;
+        }
+
         const targetArea = targetRadius * targetRadius;
 
         // Calculate total potential area from all entities
@@ -490,14 +502,14 @@ class GameScene extends Phaser.Scene {
             // Iterate all children (active and inactive)
             this.edibleItems[tier].getChildren().forEach(item => {
                 const size = (item.itemData && item.itemData.size) ? item.itemData.size : (item.radius || item.displayWidth / 2 || 10);
-                potentialAddedArea += (size * size * growthFactor);
+                potentialAddedArea += (size * size * tierGrowthFactor);
             });
         }
 
         // Hazards (eventually edible)
         this.hazards.getChildren().forEach(hazard => {
             const size = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : (hazard.radius || hazard.displayWidth / 2 || 15);
-            potentialAddedArea += (size * size * growthFactor);
+            potentialAddedArea += (size * size * tierGrowthFactor);
         });
 
         // Check if achievable

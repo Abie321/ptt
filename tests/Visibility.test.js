@@ -91,7 +91,9 @@ describe('Entity Visibility System', () => {
             consumedInTier: 0,
             getProgress: jest.fn(() => 0),
             getSize: jest.fn(() => 20),
-            GROWTH_FACTOR: 0.5 // High factor to ensure winnability with few items
+            internalSize: 20,
+            GROWTH_FACTOR: 0.5, // High factor to ensure winnability with few items
+            TIER_GROWTH_FACTOR: 0.5 // High tier factor for winnability calculation
         };
 
         // Setup HUD mocks

@@ -1,0 +1,307 @@
+
+> tasty-planet-fan-game@0.1.0 test
+> jest
+
+FAIL tests/Visibility.test.js
+  Entity Visibility System
+    ✓ REQ-MECH-013 & REQ-DMG-006: Visibility at Tier 1 (51 ms)
+    ✓ REQ-MECH-013: Visibility at Tier 2 (22 ms)
+    ✓ REQ-MECH-013: Visibility at Tier 3 (23 ms)
+    ✕ Winnability Check Integration (8 ms)
+
+  ● Entity Visibility System › Winnability Check Integration
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      254 |         // If it used countActive(true), it would see 0 items and return false.
+      255 |         // If it uses getLength(), it sees items and returns true.
+    > 256 |         expect(winnable).toBe(true);
+          |                          ^
+      257 |     });
+      258 | });
+      259 |
+
+      at Object.toBe (tests/Visibility.test.js:256:26)
+
+FAIL tests/ScoringSystem.test.js
+  Scoring System
+    Base Point Awards
+      ✓ should award 80 base points for first consumption (10 ms)
+      ✓ should have minimum point floor of 1 (2 ms)
+      ✓ should never award less than minimum points (40 ms)
+    Diminishing Returns Algorithm
+      ✓ should decrease points for repeated consumption of same type (2 ms)
+      ✓ should track consumption count per item type (2 ms)
+      ✓ should apply diminishing returns independently per item type (2 ms)
+      ✓ should use decay factor based on consumption count (2 ms)
+      ✓ should factor in tier density for decay calculation (2 ms)
+    Score Penalties
+      ✓ should apply 80 point penalty for hazard collisions (2 ms)
+      ✓ should have equal penalty and max points values (1 ms)
+    3-Star Rating System
+      ✓ should have defined star thresholds (2 ms)
+      ✓ should have increasing thresholds (2 ms)
+      ✕ should be achievable through normal gameplay (2 ms)
+    Item Type Variety Scoring
+      ✓ should reward consuming different item types (2 ms)
+      ✓ should support at least 10 item types per tier (1 ms)
+    Scoring Edge Cases
+      ✓ should handle consuming items from different tiers (1 ms)
+      ✓ should handle very high consumption counts (141 ms)
+      ✓ should handle item type 0 (1 ms)
+      ✓ should floor point values to integers (5 ms)
+    Tier Progression Scoring
+      ✓ should continue scoring across tier boundaries (2 ms)
+      ✓ should maintain consumption history across tiers (2 ms)
+
+  ● Scoring System › 3-Star Rating System › should be achievable through normal gameplay
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 3000
+    Received:   NaN
+
+      179 |
+      180 |       // 3-star threshold should be achievable
+    > 181 |       expect(maxScore).toBeGreaterThan(GameConfig.STAR_THRESHOLDS.THREE_STAR);
+          |                        ^
+      182 |     });
+      183 |   });
+      184 |
+
+      at Object.toBeGreaterThan (tests/ScoringSystem.test.js:181:24)
+
+PASS tests/Player.test.js
+  Player
+    Initialization
+      ✓ should initialize with correct starting values (2 ms)
+      ✓ should start at tier 1 with Micro size (1 ms)
+      ✓ should initialize with default direction facing up (2 ms)
+      ✓ should have WASD and Arrow key controls initialized (2 ms)
+    Movement Controls
+      ✓ should move up when W or Up arrow is pressed (2 ms)
+      ✓ should move down when S or Down arrow is pressed (1 ms)
+      ✓ should move left when A or Left arrow is pressed (2 ms)
+      ✓ should move right when D or Right arrow is pressed (1 ms)
+      ✓ should move diagonally when two keys are pressed (2 ms)
+      ✓ should not move when no keys are pressed (1 ms)
+      ✓ should work with arrow keys (2 ms)
+    Mouth Hitbox
+      ✓ should update mouth position based on movement direction (1 ms)
+      ✓ should position mouth in front of player (1 ms)
+      ✓ should update mouth direction when moving (2 ms)
+    Size Progression System
+      ✓ should start at tier 1 (2 ms)
+      ✓ should advance tier after growing enough (1 ms)
+      ✓ should have 5 tiers total (1 ms)
+      ✓ should reset consumedInTier when advancing (visual only) (1 ms)
+      ✓ should scale player size when growing (1 ms)
+      ✓ should emit tierAdvanced event when advancing (1 ms)
+      ✓ should not advance beyond tier 5 (1 ms)
+    Consumption Mechanics
+      ✓ should consume items and return points (2 ms)
+      ✓ should track consumed item types (1 ms)
+      ✓ should increment consumed count for same item type (1 ms)
+      ✓ should be able to consume current tier items (12 ms)
+      ✓ should be able to consume previous tier items (1 ms)
+    Scoring System
+      ✓ should award maximum points for first consumption (1 ms)
+      ✓ should implement diminishing returns for repeated items (6 ms)
+      ✓ should never award less than minimum points (9 ms)
+      ✓ should apply different scoring for different item types (1 ms)
+    Hazard Damage
+      ✓ should return penalty amount when taking damage (1 ms)
+      ✓ should have correct penalty value (1 ms)
+    Progress Tracking
+      ✓ should calculate progress correctly (1 ms)
+      ✓ should reach 100% progress at next tier threshold (1 ms)
+    Player Size
+      ✓ should return current player size (1 ms)
+      ✓ should increase size when consuming items (13 ms)
+
+PASS tests/Hazard.test.js
+  Hazard
+    Initialization
+      ✓ should create hazard with correct tier (1 ms)
+      ✓ should create hazards for tiers 2-5 (1 ms)
+      ✓ should store hazard data reference on sprite (1 ms)
+      ✓ should be created as red circles by default config (1 ms)
+    Visual Appearance
+      ✓ should have semi-transparent appearance (1 ms)
+      ✓ should be larger than edible items (1 ms)
+      ✓ should increase size based on tier (1 ms)
+      ✓ should use explicit size from config if provided (1 ms)
+    Physics and Movement
+      ✓ should have bounce physics enabled (1 ms)
+      ✓ should have initial velocity set (1 ms)
+      ✓ should collide with world bounds (1 ms)
+      ✓ should bounce when hitting world bounds
+    Destruction
+      ✓ should destroy sprite when hazard is destroyed
+      ✓ should handle destruction safely even if sprite is null (1 ms)
+    Tier System
+      ✓ should create hazards for multiple tiers (1 ms)
+      ✓ should maintain tier identity (8 ms)
+
+PASS tests/LevelSelectScene.test.js
+  LevelSelectScene
+    ✓ should create grid buttons (15 ms)
+    ✓ should create modal container hidden (4 ms)
+    ✓ should show modal when level button clicked (11 ms)
+    ✓ play button should start game scene (6 ms)
+    ✓ cancel button should hide modal (6 ms)
+
+PASS tests/WorldSelectScene.test.js
+  WorldSelectScene
+    ✓ should create 7 world buttons (7 ms)
+    ✓ should have World 1 unlocked (2 ms)
+    ✓ should have World 2 locked (2 ms)
+    ✓ World 1 click should go to LevelSelectScene (2 ms)
+    ✓ Back button should go to MainMenuScene (7 ms)
+    ✓ should use configured world names (8 ms)
+
+PASS tests/GrowthFactor.test.js
+  Player Growth Factor
+    ✓ should use configured GROWTH_FACTOR (2 ms)
+    ✓ should fallback to 0.1 if GROWTH_FACTOR is undefined (1 ms)
+    ✓ should apply different growth amounts based on factor (1 ms)
+
+PASS tests/EdibleItem.test.js
+  EdibleItem
+    Initialization
+      ✓ should create item with correct properties from config (2 ms)
+      ✓ should create items for all 5 tiers (1 ms)
+      ✓ should store item data reference on sprite (1 ms)
+      ✓ should set sprite as immovable
+    Visual Representation
+      ✓ should create different shapes based on config (2 ms)
+      ✓ should use color from config (1 ms)
+      ✓ should increase size based on tier (1 ms)
+      ✓ should use explicit size from config if provided (1 ms)
+    Position
+      ✓ should be created at specified position (1 ms)
+      ✓ should return current position (1 ms)
+    Destruction
+      ✓ should destroy sprite when item is destroyed
+      ✓ should handle destruction safely even if sprite is null
+    Tier Coverage
+      ✓ should create items across all size tiers (1 ms)
+
+PASS tests/UI.test.js
+  UI and HUD Elements
+    HUD Initialization
+      ✓ should create all HUD elements (53 ms)
+      ✓ should initialize HUD elements with scroll factor 0 (29 ms)
+    Size Indicator
+      ✓ should display current tier name (40 ms)
+      ✓ should update when tier changes (30 ms)
+      ✓ should show all tier names correctly (46 ms)
+      ✓ should be positioned in top-left area (37 ms)
+    Progress Bar
+      ✓ should have background and foreground bars (87 ms)
+      ✓ should start with 0 width (23 ms)
+      ✓ should increase width as player consumes items (33 ms)
+      ✓ should fill to 200px width at 100% progress (30 ms)
+      ✓ should show 50% width at 50% progress (44 ms)
+      ✓ should reset when advancing tiers (36 ms)
+      ✓ should be positioned below size indicator (33 ms)
+    Score Display
+      ✓ should display current score (58 ms)
+      ✓ should start at 0 (30 ms)
+      ✓ should update when score changes (35 ms)
+      ✓ should handle negative scores from hazard penalties (32 ms)
+      ✓ should be positioned in top-right area (29 ms)
+    Timer Display
+      ✓ should display elapsed time (38 ms)
+      ✓ should format seconds with leading zero (26 ms)
+      ✓ should format minutes and seconds correctly (14 ms)
+      ✓ should handle times over 10 minutes (66 ms)
+      ✓ should be positioned below score (42 ms)
+      ✓ should be right-aligned (29 ms)
+    HUD Layout
+      ✓ should position elements to not overlap (28 ms)
+      ✓ should use consistent styling (32 ms)
+    HUD Updates
+      ✓ should update all elements each frame (31 ms)
+      ✓ should reflect real-time game state (30 ms)
+    Progress Bar Colors
+      ✓ should have distinct background and foreground colors (33 ms)
+    Tier Color Coding
+      ✓ should have unique colors for each tier (32 ms)
+      ✓ should have defined colors for all tiers (32 ms)
+
+PASS tests/GameScene.test.js
+  GameScene
+    Initialization
+      ✓ should initialize with score of 0 (52 ms)
+      ✓ should track start time (28 ms)
+      ✓ should not be ended initially (42 ms)
+      ✓ should create a player (36 ms)
+      ✓ should set up physics world bounds (34 ms)
+    Asset Loading
+      ✓ should preload background image (31 ms)
+      ✓ should create background image (52 ms)
+    Camera System
+      ✓ should set camera bounds to world size (38 ms)
+      ✓ should start following player (16 ms)
+      ✓ should start with zoom level 1 (48 ms)
+      ✓ should zoom out when player advances tiers (18 ms)
+      ✓ should flash camera on tier advancement (53 ms)
+    Item Spawning
+      ✓ should spawn edible items for all tiers (20 ms)
+      ✓ should spawn correct number of items per tier (50 ms)
+      ✓ should spawn hazards (33 ms)
+    Tier Advancement System
+      ✓ should despawn tier N-2 items when advancing (41 ms)
+      ✓ should not despawn items from invalid tiers (33 ms)
+      ✓ should listen for tierAdvanced event (33 ms)
+    HUD Elements
+      ✓ should create size indicator text (32 ms)
+      ✓ should create progress bar (35 ms)
+      ✓ should create score text (40 ms)
+      ✓ should create timer text (26 ms)
+      ✓ should update size text during gameplay (81 ms)
+      ✓ should update progress bar based on growth (36 ms)
+      ✓ should update score display (40 ms)
+      ✓ should update timer display (41 ms)
+      ✓ should format timer correctly (MM:SS) (33 ms)
+    Consumption Mechanics
+      ✓ should check for consumption each frame (31 ms)
+      ✓ should award points when consuming items (26 ms)
+      ✓ should NOT consume item if player is not larger than item (44 ms)
+    Hazard Collision System
+      ✓ should check for hazard collisions each frame (104 ms)
+      ✓ should deduct points when hitting hazard (Player smaller than hazard) (15 ms)
+      ✓ should shake camera when hitting hazard (45 ms)
+      ✓ should consume and award points for smaller hazards (14 ms)
+      ✓ should damage player if size is equal (29 ms)
+    Win Condition
+      ✓ should check win condition each frame (24 ms)
+      ✓ should end level when reaching max tier target size (36 ms)
+      ✓ should not end level before max tier (25 ms)
+      ✓ should not end level if max tier target not met (40 ms)
+    Star Rating System
+      ✓ should award 0 stars for low scores (25 ms)
+      ✓ should award 1 star for scores >= 500 (21 ms)
+      ✓ should award 2 stars for scores >= 1500 (20 ms)
+      ✓ should award 3 stars for scores >= 3000 (22 ms)
+    End Level Transition
+      ✓ should transition to EndLevelScene when level ends (25 ms)
+      ✓ should pass score data to end scene (37 ms)
+      ✓ should pass time data to end scene (24 ms)
+      ✓ should not end level twice (23 ms)
+    Pause Functionality
+      ✓ should pause scene when ESC is pressed (22 ms)
+    Game Loop
+      ✓ should not update when game has ended (22 ms)
+      ✓ should update player each frame (22 ms)
+      ✓ should update HUD each frame (22 ms)
+
+Test Suites: 2 failed, 8 passed, 10 total
+Tests:       2 failed, 184 passed, 186 total
+Snapshots:   0 total
+Time:        2.821 s, estimated 4 s
+Ran all test suites.

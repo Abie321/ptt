@@ -97,6 +97,7 @@ describe('UI and HUD Elements', () => {
     test('should increase width as player consumes items', () => {
       // Tier 1 (20->30). Set radius 22.
       gameScene.player.size = 22;
+      gameScene.player.internalSize = 22;
       gameScene.player.radius = 22;
       gameScene.updateHUD();
 
@@ -106,6 +107,7 @@ describe('UI and HUD Elements', () => {
     test('should fill to 200px width at 100% progress', () => {
       // Tier 1 Max is 30.
       gameScene.player.size = 30;
+      gameScene.player.internalSize = 30;
       gameScene.player.radius = 30;
       gameScene.player.currentTier = 1;
 
@@ -117,6 +119,7 @@ describe('UI and HUD Elements', () => {
     test('should show 50% width at 50% progress', () => {
       // Tier 1 (20->30). Mid 25.
       gameScene.player.size = 25;
+      gameScene.player.internalSize = 25;
       gameScene.player.radius = 25;
       gameScene.player.currentTier = 1;
 
@@ -128,6 +131,7 @@ describe('UI and HUD Elements', () => {
     test('should reset when advancing tiers', () => {
       // Tier 2 Start is 30.
       gameScene.player.size = 30;
+      gameScene.player.internalSize = 30;
       gameScene.player.radius = 30;
       gameScene.player.currentTier = 2;
 

@@ -1,0 +1,57 @@
+
+> tasty-planet-fan-game@0.1.0 test
+> jest tests/Player.test.js
+
+PASS tests/Player.test.js
+  Player
+    Initialization
+      ✓ should initialize with correct starting values (6 ms)
+      ✓ should start at tier 1 with Micro size (2 ms)
+      ✓ should initialize with default direction facing up (2 ms)
+      ✓ should have WASD and Arrow key controls initialized (2 ms)
+    Movement Controls
+      ✓ should move up when W or Up arrow is pressed (2 ms)
+      ✓ should move down when S or Down arrow is pressed (2 ms)
+      ✓ should move left when A or Left arrow is pressed (1 ms)
+      ✓ should move right when D or Right arrow is pressed (1 ms)
+      ✓ should move diagonally when two keys are pressed (1 ms)
+      ✓ should not move when no keys are pressed (1 ms)
+      ✓ should work with arrow keys (1 ms)
+    Mouth Hitbox
+      ✓ should update mouth position based on movement direction (1 ms)
+      ✓ should position mouth in front of player (1 ms)
+      ✓ should update mouth direction when moving (1 ms)
+    Size Progression System
+      ✓ should start at tier 1 (1 ms)
+      ✓ should advance tier after growing enough (2 ms)
+      ✓ should have 5 tiers total (1 ms)
+      ✓ should reset consumedInTier when advancing (visual only) (1 ms)
+      ✓ should scale player size when growing (1 ms)
+      ✓ should emit tierAdvanced event when advancing (7 ms)
+      ✓ should not advance beyond tier 5 (1 ms)
+    Consumption Mechanics
+      ✓ should consume items and return points (1 ms)
+      ✓ should track consumed item types (1 ms)
+      ✓ should increment consumed count for same item type (1 ms)
+      ✓ should be able to consume current tier items (1 ms)
+      ✓ should be able to consume previous tier items (1 ms)
+    Scoring System
+      ✓ should award maximum points for first consumption (1 ms)
+      ✓ should implement diminishing returns for repeated items (1 ms)
+      ✓ should never award less than minimum points (8 ms)
+      ✓ should apply different scoring for different item types (1 ms)
+    Hazard Damage
+      ✓ should return penalty amount when taking damage (1 ms)
+      ✓ should have correct penalty value (1 ms)
+    Progress Tracking
+      ✓ should calculate progress correctly (5 ms)
+      ✓ should reach 100% progress at next tier threshold
+    Player Size
+      ✓ should return current player size
+      ✓ should increase size when consuming items (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       36 passed, 36 total
+Snapshots:   0 total
+Time:        0.787 s, estimated 1 s
+Ran all test suites matching /tests\/Player.test.js/i.

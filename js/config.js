@@ -3,11 +3,11 @@
 const LEVEL_1_CONFIG = {
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, quota: 10, scale: 1.0, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
-        { tier: 2, quota: 15, scale: 1.5, name: 'Tiny', color: 0x2196F3, zoom: 0.9 },
-        { tier: 3, quota: 20, scale: 2.0, name: 'Small', color: 0xFF9800, zoom: 0.8 },
-        { tier: 4, quota: 25, scale: 2.5, name: 'Medium', color: 0xF44336, zoom: 0.7 },
-        { tier: 5, quota: 30, scale: 3.0, name: 'Large', color: 0x9C27B0, zoom: 0.6 }
+        { tier: 1, threshold: 20, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
+        { tier: 2, threshold: 30, name: 'Tiny', color: 0x2196F3, zoom: 0.9 },
+        { tier: 3, threshold: 40, name: 'Small', color: 0xFF9800, zoom: 0.8 },
+        { tier: 4, threshold: 50, name: 'Medium', color: 0xF44336, zoom: 0.7 },
+        { tier: 5, threshold: 60, name: 'Large', color: 0x9C27B0, zoom: 0.6 }
     ],
 
     // Scoring configuration
@@ -28,6 +28,7 @@ const LEVEL_1_CONFIG = {
     PLAYER: {
         INITIAL_SIZE: 20,
         GROWTH_FACTOR: 0.1,
+        TIER_GROWTH_FACTOR: 0.1,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         SPRITE: {
@@ -137,11 +138,11 @@ const LEVEL_1_CONFIG = {
 
 const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
 LEVEL_2_CONFIG.SIZE_TIERS = [
-    { tier: 1, quota: 15, scale: 1.0, name: 'Nano', color: 0x607D8B, zoom: 1.0 },
-    { tier: 2, quota: 20, scale: 1.5, name: 'Mini', color: 0x9E9E9E, zoom: 0.9 },
-    { tier: 3, quota: 25, scale: 2.0, name: 'Small', color: 0x795548, zoom: 0.8 },
-    { tier: 4, quota: 30, scale: 2.5, name: 'Average', color: 0xFF5722, zoom: 0.7 },
-    { tier: 5, quota: 35, scale: 3.0, name: 'Massive', color: 0xE91E63, zoom: 0.6 }
+    { tier: 1, threshold: 20, name: 'Nano', color: 0x607D8B, zoom: 1.0 },
+    { tier: 2, threshold: 30, name: 'Mini', color: 0x9E9E9E, zoom: 0.9 },
+    { tier: 3, threshold: 40, name: 'Small', color: 0x795548, zoom: 0.8 },
+    { tier: 4, threshold: 50, name: 'Average', color: 0xFF5722, zoom: 0.7 },
+    { tier: 5, threshold: 60, name: 'Massive', color: 0xE91E63, zoom: 0.6 }
 ];
 // Make level 2 slightly harder
 LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;
