@@ -3,11 +3,11 @@
 const LEVEL_1_CONFIG = {
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, threshold: 20, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
-        { tier: 2, threshold: 30, name: 'Tiny', color: 0x2196F3, zoom: 0.9 },
-        { tier: 3, threshold: 40, name: 'Small', color: 0xFF9800, zoom: 0.8 },
-        { tier: 4, threshold: 50, name: 'Medium', color: 0xF44336, zoom: 0.7 },
-        { tier: 5, threshold: 60, name: 'Large', color: 0x9C27B0, zoom: 0.6 }
+        { tier: 1, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0 },
+        { tier: 2, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.9 },
+        { tier: 3, threshold: 70, name: 'Small', color: 0xFF9800, zoom: 0.8 },
+        { tier: 4, threshold: 100, name: 'Medium', color: 0xF44336, zoom: 0.7 },
+        { tier: 5, threshold: 140, name: 'Large', color: 0x9C27B0, zoom: 0.6 }
     ],
 
     // Scoring configuration
@@ -26,9 +26,9 @@ const LEVEL_1_CONFIG = {
 
     // Player configuration
     PLAYER: {
-        INITIAL_SIZE: 20,
-        GROWTH_FACTOR: 0.1,
-        TIER_GROWTH_FACTOR: 0.1,
+        INITIAL_SIZE: 11,
+        GROWTH_FACTOR: 0.4,
+        TIER_GROWTH_FACTOR: 0.4,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         SPRITE: {
@@ -62,31 +62,25 @@ const LEVEL_1_CONFIG = {
         'crumb': 'assets/images/crumb.png',
         'coin': 'assets/images/coin.png',
         'cube': 'assets/images/cube.png',
+        'sandwich': 'assets/images/sandwich.png'
     },
   
     // Entities configuration per tier
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 10, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: 10 },
-            { type: "Cookie crumb", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: 9 },
-            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 11 },
-            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 12 },
+            { type: "Tea drop", count: 15, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: 7 },
+            { type: "Cookie crumb", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: 7 },
+            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 18 },
+            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 20 },
         ],
         2: [
             // Edibles
-            { type: "Ant", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 13 },
-            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 13 },
-            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 12 },
-            { type: "Seed", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 14 },
-            { type: "Flea", count: 2, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 13 },
-            { type: "Gnat", count: 3, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 14 },
-            { type: "Pollen", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 12 },
-            { type: "Sand", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 15 },
-            { type: "Rice", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 14 },
-            { type: "Lint", count: 2, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 13 },
+            { type: "Sandwich", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
+            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 45 },
+            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 45 },
             // Hazards
-            { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 25 }
+            { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],
         3: [
             // Edibles
