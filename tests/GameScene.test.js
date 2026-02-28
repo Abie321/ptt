@@ -206,6 +206,7 @@ describe('GameScene', () => {
       // Tier 1 start 20. Tier 2 start 30.
       // Set radius to 25 (50% progress)
       gameScene.player.size = 25;
+      gameScene.player.internalSize = 25;
       gameScene.player.radius = 25;
       gameScene.updateHUD();
 
@@ -394,6 +395,7 @@ describe('GameScene', () => {
       // Max Tier is 5.
       gameScene.player.currentTier = 5;
       gameScene.player.size = 1000;
+      gameScene.player.internalSize = 1000; // Ensure internal size is also huge
       gameScene.player.radius = 1000; // Huge
 
       const spy = jest.spyOn(gameScene, 'endLevel');
@@ -405,6 +407,7 @@ describe('GameScene', () => {
     test('should not end level before max tier', () => {
       gameScene.player.currentTier = 4;
       gameScene.player.size = 1000;
+      gameScene.player.internalSize = 1000;
       gameScene.player.radius = 1000; // Huge but tier not advanced (should technically be 5 if radius is huge, but checkWinCondition checks currentTier property first)
 
       const spy = jest.spyOn(gameScene, 'endLevel');
@@ -417,8 +420,11 @@ describe('GameScene', () => {
       gameScene.player.currentTier = 5;
       // Set radius to exactly start of Tier 5. Progress should be 0.
       const tier5Config = GameConfig.SIZE_TIERS[4];
-      gameScene.player.size = GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale;
-      gameScene.player.radius = GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale;
+      const threshold = tier5Config.threshold || (GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale);
+
+      gameScene.player.size = threshold;
+      gameScene.player.internalSize = threshold;
+      gameScene.player.radius = threshold;
 
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();

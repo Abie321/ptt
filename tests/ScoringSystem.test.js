@@ -171,10 +171,24 @@ describe('Scoring System', () => {
     test('should be achievable through normal gameplay', () => {
       // Calculate maximum possible score
       let maxScore = 0;
+
+      // Calculate approximated quota based on thresholds
+      // This is a rough estimation for the test
+      let previousThreshold = GameConfig.PLAYER.INITIAL_SIZE;
+
       for (let tier = 1; tier <= 5; tier++) {
-        const quota = GameConfig.SIZE_TIERS[tier - 1].quota;
+        const tierConfig = GameConfig.SIZE_TIERS[tier - 1];
+        const threshold = tierConfig.threshold || (previousThreshold * 1.5);
+
+        // Approximate area needed
+        const areaNeeded = (threshold * threshold) - (previousThreshold * previousThreshold);
+        // Approximate items (area 100 per item, growth 0.1) -> 10 area per item
+        const itemsNeeded = Math.ceil(areaNeeded / 10);
+
         // Assume perfect play with varied items
-        maxScore += quota * GameConfig.SCORING.MAX_POINTS_PER_ITEM;
+        maxScore += itemsNeeded * GameConfig.SCORING.MAX_POINTS_PER_ITEM;
+
+        previousThreshold = threshold;
       }
 
       // 3-star threshold should be achievable
@@ -269,12 +283,15 @@ describe('Scoring System', () => {
       const item = { tier: 1, itemType: 5 };
 
       // Consume items to advance tier
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      for (let i = 0; i < quota; i++) {
-        player.consume({ tier: 1, itemType: i % 10 });
-      }
+      // Force internal size increase to pass threshold
+      player.internalSize = 100;
+      player.size = 100;
+      player.radius = 100;
 
-      // Now in tier 2, consume same item type
+      // Update tier manually or rely on consume checking it
+      player.consume({ tier: 1, itemType: 99 }); // Trigger tier update
+
+      // Now in next tier, consume same item type
       const pointsAfterAdvance = player.consume(item);
 
       // Should still track the item type consumption history
@@ -294,10 +311,8 @@ describe('Scoring System', () => {
       expect(consumptionCount).toBe(3);
 
       // Advance tier
-      const quota = GameConfig.SIZE_TIERS[0].quota;
-      for (let i = 0; i < quota; i++) {
-        player.consume({ tier: 1, itemType: i });
-      }
+      player.internalSize = 100; // Force advance
+      player.consume({ tier: 1, itemType: 99 });
 
       // Consumption history should persist
       expect(player.consumedTypes[5]).toBeGreaterThanOrEqual(3);

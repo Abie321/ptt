@@ -187,6 +187,7 @@ describe('Player', () => {
     test('should not advance beyond tier 5', () => {
       // Set radius huge
       player.size = 1000;
+      player.internalSize = 1000; // Set internal size for tier calculation
       player.radius = 1000;
       // Trigger update
       player.consume({ tier: 5, radius: 10, itemType: 0 });
@@ -228,10 +229,16 @@ describe('Player', () => {
 
     test('should be able to consume previous tier items', () => {
       // Advance to tier 2
-      const tier1Quota = GameConfig.SIZE_TIERS[0].quota;
-      for (let i = 0; i < tier1Quota; i++) {
-        player.consume({ tier: 1, itemType: 0 });
-      }
+      // Need to grow internal size enough to pass threshold of 30 (assuming default start 20)
+      // Base growth is 0.1 per area.
+      // Force advance by setting internal size
+      player.internalSize = 35;
+      player.size = 35;
+      player.radius = 35;
+
+      // Trigger tier update
+      const newTier = player.calculateTier();
+      player.advanceTier(newTier);
 
       const consumableTiers = player.getConsumableTiers();
       expect(consumableTiers).toContain(1);
@@ -315,6 +322,7 @@ describe('Player', () => {
 
       // Set radius to 25 (midpoint)
       player.size = 25;
+      player.internalSize = 25; // Update internal size too
       player.radius = 25;
 
       expect(player.getProgress()).toBeCloseTo(0.5);
@@ -323,6 +331,7 @@ describe('Player', () => {
     test('should reach 100% progress at next tier threshold', () => {
       // Set radius just below 30
       player.size = 29.99;
+      player.internalSize = 29.99; // Update internal size too
       player.radius = 29.99;
       // Current Tier is still 1
       expect(player.getProgress()).toBeCloseTo(1.0, 1);

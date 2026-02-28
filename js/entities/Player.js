@@ -10,15 +10,21 @@ class Player {
         this.consumedInTier = 0;
         this.totalConsumed = 0;
 
-        // Size Property (Logic)
+        // Size Property (Visual/Logic)
         this.size = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
+
+        // Internal Size Property (Tier Progression)
+        this.internalSize = this.size;
 
         // Radius Property (Visual/Physics)
         // Currently 1:1 with size, but kept distinct for architectural separation
         this.radius = this.size;
 
         // Growth Factor: Controls how much area/radius is added per consumed item
-        this.GROWTH_FACTOR = 0.1;
+        this.GROWTH_FACTOR = (this.config.PLAYER && this.config.PLAYER.GROWTH_FACTOR !== undefined) ? this.config.PLAYER.GROWTH_FACTOR : 0.1;
+
+        // Tier Growth Factor: Controls how much internal size is added for tier progression
+        this.TIER_GROWTH_FACTOR = (this.config.PLAYER && this.config.PLAYER.TIER_GROWTH_FACTOR !== undefined) ? this.config.PLAYER.TIER_GROWTH_FACTOR : 0.1;
 
         // Create player sprite
         if (this.config.PLAYER && this.config.PLAYER.SPRITE && this.config.PLAYER.SPRITE.USE_SPRITESHEET) {
@@ -153,11 +159,17 @@ class Player {
         // Area-based growth: NewArea = OldArea + (ItemArea * GrowthFactor)
         // Use SIZE for growth calculation
         const itemSize = item.size !== undefined ? item.size : (item.radius || 10);
-        const currentArea = this.size * this.size;
         const itemArea = itemSize * itemSize;
-        const addedArea = itemArea * this.GROWTH_FACTOR;
 
+        // Visual Growth
+        const currentArea = this.size * this.size;
+        const addedArea = itemArea * this.GROWTH_FACTOR;
         this.size = Math.sqrt(currentArea + addedArea);
+
+        // Internal Growth (for Tier Progression)
+        const currentInternalArea = this.internalSize * this.internalSize;
+        const addedInternalArea = itemArea * this.TIER_GROWTH_FACTOR;
+        this.internalSize = Math.sqrt(currentInternalArea + addedInternalArea);
 
         // Sync radius to size (for now)
         this.radius = this.size;
@@ -175,24 +187,26 @@ class Player {
     }
 
     calculateTier() {
-        // Find the highest tier where current radius exceeds the tier's base size
+        // Find the highest tier where internal size exceeds the tier's threshold
         if (!this.config.SIZE_TIERS) return 1;
 
-        const baseSize = this.config.PLAYER.INITIAL_SIZE;
         let calculatedTier = 1;
 
         for (let i = 0; i < this.config.SIZE_TIERS.length; i++) {
-            const tierConfig = this.config.SIZE_TIERS[i];
-            const tierStartRadius = baseSize * tierConfig.scale;
+             const tierConfig = this.config.SIZE_TIERS[i];
+             let threshold = tierConfig.threshold;
 
-            // Allow small epsilon or exact match
-            // Using size (which is same as radius for now)
-            if (this.size >= tierStartRadius - 0.1) {
-                calculatedTier = tierConfig.tier;
-            } else {
-                break;
-            }
+             // Legacy support: Calculate threshold from scale if missing
+             if (threshold === undefined && tierConfig.scale !== undefined) {
+                 threshold = this.config.PLAYER.INITIAL_SIZE * tierConfig.scale;
+             }
+
+             // Using internalSize for progression check
+             if (this.internalSize >= threshold - 0.1) {
+                 calculatedTier = tierConfig.tier;
+             }
         }
+
         return calculatedTier;
     }
 
@@ -266,21 +280,27 @@ class Player {
         // Next Tier Index
         const nextTierIdx = currentTierIdx + 1;
 
-        const baseSize = this.config.PLAYER.INITIAL_SIZE;
-        const currentTierStartRadius = baseSize * currentTierConfig.scale;
+        // Helper to get threshold
+        const getThreshold = (config) => {
+            if (config.threshold !== undefined) return config.threshold;
+            return this.config.PLAYER.INITIAL_SIZE * (config.scale || 1);
+        };
 
-        let nextTierStartRadius;
+        const currentTierThreshold = getThreshold(currentTierConfig);
+
+        let nextTierThreshold;
         if (nextTierIdx < this.config.SIZE_TIERS.length) {
-            nextTierStartRadius = baseSize * this.config.SIZE_TIERS[nextTierIdx].scale;
+            nextTierThreshold = getThreshold(this.config.SIZE_TIERS[nextTierIdx]);
         } else {
             // Extrapolate for final level so bar fills up
-            const step = this.config.SIZE_TIERS[currentTierIdx].scale - (currentTierIdx > 0 ? this.config.SIZE_TIERS[currentTierIdx-1].scale : 0.5);
-            nextTierStartRadius = baseSize * (currentTierConfig.scale + step);
+            const prevTierThreshold = currentTierIdx > 0 ? getThreshold(this.config.SIZE_TIERS[currentTierIdx-1]) : (currentTierThreshold / 2); // Fallback estimation
+            const step = currentTierThreshold - prevTierThreshold;
+            nextTierThreshold = currentTierThreshold + step;
         }
 
-        const totalNeeded = nextTierStartRadius - currentTierStartRadius;
-        // Progress based on size
-        const currentProgress = this.size - currentTierStartRadius;
+        const totalNeeded = nextTierThreshold - currentTierThreshold;
+        // Progress based on INTERNAL size
+        const currentProgress = this.internalSize - currentTierThreshold;
 
         return Phaser.Math.Clamp(currentProgress / totalNeeded, 0, 1);
     }
