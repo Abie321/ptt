@@ -137,6 +137,9 @@ class GameScene extends Phaser.Scene {
         // Add background
         const bgKey = (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_IMAGE) ? 'background_tier_1' : 'background';
         this.bg = this.add.image(initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2, bgKey);
+        if (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) {
+            this.bg.setScale(initialTierConfig.ASSETS.BACKGROUND_SCALE);
+        }
         this.bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
@@ -458,7 +461,11 @@ class GameScene extends Phaser.Scene {
                     this.bg.setTexture(`background_tier_${newTier}`);
                 }
                 this.bg.setPosition(world.WIDTH / 2, world.HEIGHT / 2);
-                this.bg.setScale(1);
+                if (newTierConfig.ASSETS && newTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) {
+                    this.bg.setScale(newTierConfig.ASSETS.BACKGROUND_SCALE);
+                } else {
+                    this.bg.setScale(1);
+                }
             }
         }
 
