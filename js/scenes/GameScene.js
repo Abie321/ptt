@@ -628,7 +628,7 @@ class GameScene extends Phaser.Scene {
     }
 
     showImpossibleWarning() {
-        if (this.gameEnded) return;
+        if (this.gameEnded || this.hasSeenImpossibleWarning) return;
         this.gameEnded = true;
         this.physics.pause();
 
@@ -647,7 +647,7 @@ class GameScene extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setScrollFactor(0);
 
-        const restartBtn = this.add.text(centerX, centerY + 50, 'Restart Level', {
+        const continueBtn = this.add.text(centerX, centerY + 50, 'Continue Anyway', {
             fontSize: '24px',
             fill: '#ffffff',
             backgroundColor: '#333333',
@@ -657,12 +657,17 @@ class GameScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => {
-            this.scene.restart({ levelConfig: this.levelConfig });
+            this.gameEnded = false;
+            this.hasSeenImpossibleWarning = true;
+            this.physics.resume();
+            bg.destroy();
+            text.destroy();
+            continueBtn.destroy();
         });
 
         bg.setDepth(1000);
         text.setDepth(1001);
-        restartBtn.setDepth(1001);
+        continueBtn.setDepth(1001);
     }
 
     showConsumedItem(itemData) {
