@@ -317,22 +317,24 @@ describe('Player', () => {
 
   describe('Progress Tracking', () => {
     test('should calculate progress correctly', () => {
-      // Tier 1: 20 -> 30.
+      // For level 1 config, tier 1 threshold is 10, tier 2 threshold is 44. Total needed = 34.
+      // So at 10 it should be 0.
+      player.internalSize = 10;
       expect(player.getProgress()).toBe(0);
 
-      // Set radius to 25 (midpoint)
-      player.size = 25;
-      player.internalSize = 25; // Update internal size too
-      player.radius = 25;
+      // Set internalSize to 27 (midpoint between 10 and 44)
+      player.size = 27;
+      player.internalSize = 27; // Update internal size too
+      player.radius = 27;
 
       expect(player.getProgress()).toBeCloseTo(0.5);
     });
 
     test('should reach 100% progress at next tier threshold', () => {
-      // Set radius just below 30
-      player.size = 29.99;
-      player.internalSize = 29.99; // Update internal size too
-      player.radius = 29.99;
+      // Set internalSize just below 44 (the tier 2 threshold)
+      player.size = 43.99;
+      player.internalSize = 43.99; // Update internal size too
+      player.radius = 43.99;
       // Current Tier is still 1
       expect(player.getProgress()).toBeCloseTo(1.0, 1);
     });

@@ -40,7 +40,8 @@ describe('Hazard', () => {
 
     test('should store hazard data reference on sprite', () => {
       const hazard = new Hazard(scene, 100, 100, mockConfig);
-      expect(hazard.sprite.hazardData).toEqual(mockConfig);
+      const expectedData = { ...mockConfig, size: hazard.radius, radius: hazard.radius };
+      expect(hazard.sprite.hazardData).toEqual(expectedData);
     });
 
     test('should be created as red circles by default config', () => {

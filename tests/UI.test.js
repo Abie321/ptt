@@ -105,10 +105,11 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should fill to 200px width at 100% progress', () => {
-      // Tier 1 Max is 30.
-      gameScene.player.size = 30;
-      gameScene.player.internalSize = 30;
-      gameScene.player.radius = 30;
+      // Tier 1 threshold is 10, Tier 2 threshold is 44. Total needed = 34.
+      // So setting internalSize to 44 should yield 100% progress.
+      gameScene.player.size = 44;
+      gameScene.player.internalSize = 44;
+      gameScene.player.radius = 44;
       gameScene.player.currentTier = 1;
 
       gameScene.updateHUD();
@@ -117,10 +118,11 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should show 50% width at 50% progress', () => {
-      // Tier 1 (20->30). Mid 25.
-      gameScene.player.size = 25;
-      gameScene.player.internalSize = 25;
-      gameScene.player.radius = 25;
+      // Tier 1 threshold is 10, Tier 2 threshold is 44. Total needed = 34.
+      // Midpoint is 10 + 17 = 27.
+      gameScene.player.size = 27;
+      gameScene.player.internalSize = 27;
+      gameScene.player.radius = 27;
       gameScene.player.currentTier = 1;
 
       gameScene.updateHUD();

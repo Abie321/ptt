@@ -69,16 +69,16 @@ const LEVEL_1_CONFIG = {
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 15, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: 7 },
-            { type: "Cookie crumb", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: 7 },
-            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 18 },
-            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 20 },
+            { type: "Tea drop", count: 15, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [5, 9] },
+            { type: "Cookie crumb", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [5, 9] },
+            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: [16, 20] },
+            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: [18, 22] },
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
-            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: 45 },
-            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: 45 },
+            { type: "Sandwich", count: 3, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: [40, 50], image: 'sandwich'},
+            { type: "Crumb", count: 3, value: 10, shape: 'square', color: 0x03A9F4, isHazard: false, size: [40, 50] },
+            { type: "Dust", count: 2, value: 10, shape: 'triangle', color: 0x03A9F4, isHazard: false, size: [40, 50] },
             // Hazards
             { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],
