@@ -22,14 +22,14 @@ describe('LevelSelectScene', () => {
   test('should create grid buttons', () => {
     // We expect buttons to be created.
     // In our mock, add.circle is called for each button.
-    // 2 configured levels + dummy levels to reach 24 total.
+    // 2 configured levels + dummy levels to reach 11 total.
     // Each button has a background circle.
 
     // Let's filter calls to find level buttons.
     // Level buttons have radius 30 (min(80, 60) / 2).
     const circleCalls = levelSelectScene.add.circle.mock.calls;
     const levelButtons = circleCalls.filter(call => call[2] === 30);
-    expect(levelButtons.length).toBe(24);
+    expect(levelButtons.length).toBe(11);
   });
 
   test('should create modal container hidden', () => {

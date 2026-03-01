@@ -53,7 +53,7 @@ describe('Entity Visibility System', () => {
                     visible: true,
                     setActive: jest.fn(function(a) { this.active = a; return this; }),
                     setVisible: jest.fn(function(v) { this.visible = v; return this; }),
-                    itemData: { tier: t, itemType: 0 },
+                    itemData: { tier: t, itemType: 0, size: 20 },
                     destroy: jest.fn()
                 };
                 items.push(sprite);
@@ -250,6 +250,11 @@ describe('Entity Visibility System', () => {
         // checkWinnability uses getLength() if we update it, otherwise countActive(true)
         // We will call checkWinnability and see if it returns true (it should, because items exist)
         // Provided we have enough items mock setup (30, 25, 25, 25, 25) which matches config.
+
+        // Fix sizes to guarantee it will exceed the 140 target
+        for(let t=1; t<=5; t++) {
+             gameScene.edibleItems[t].getChildren().forEach(i => i.itemData.size = 20);
+        }
 
         const winnable = gameScene.checkWinnability();
 

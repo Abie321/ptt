@@ -41,12 +41,31 @@ describe('EdibleItem', () => {
 
     test('should store item data reference on sprite', () => {
       const item = new EdibleItem(scene, 100, 100, mockConfig);
-      expect(item.sprite.itemData).toEqual(mockConfig);
+      const expectedData = { ...mockConfig, size: item.radius, radius: item.radius };
+      expect(item.sprite.itemData).toEqual(expectedData);
     });
 
     test('should set sprite as immovable', () => {
       const item = new EdibleItem(scene, 100, 100, mockConfig);
       expect(item.sprite.body.setImmovable).toHaveBeenCalled();
+    });
+
+    test('should pick a random integer size when given a size range array without mutating original config', () => {
+      // Mock Phaser.Math.Between to return a specific value for the test
+      const originalBetween = Phaser.Math.Between;
+      Phaser.Math.Between = jest.fn().mockReturnValue(7);
+
+      const rangeConfig = { ...mockConfig, size: [5, 9] };
+      const item = new EdibleItem(scene, 100, 100, rangeConfig);
+
+      expect(Phaser.Math.Between).toHaveBeenCalledWith(5, 9);
+      expect(item.radius).toBe(7);
+      expect(item.itemData.size).toBe(7);
+      // Original config should remain unchanged
+      expect(rangeConfig.size).toEqual([5, 9]);
+
+      // Restore original function
+      Phaser.Math.Between = originalBetween;
     });
   });
 

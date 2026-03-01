@@ -8,12 +8,15 @@ class Hazard {
         this.hazardData = config; // Standardize on hazardData holding the config
 
         // Hazards use configured size if available
-        this.radius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
-
-        // Ensure size is set in config for consumption logic
-        if (config.size === undefined) {
-            config.size = this.radius;
+        if (Array.isArray(config.size) && config.size.length === 2) {
+            this.radius = Phaser.Math.Between(config.size[0], config.size[1]);
+        } else {
+            this.radius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
         }
+
+        // Clone the config to hazardData to avoid mutating the global configuration.
+        // We ensure `size` is set to the specific randomly generated scalar size for consumption logic.
+        this.hazardData = { ...config, size: this.radius, radius: this.radius };
 
         const size = this.radius;
 
@@ -32,8 +35,7 @@ class Hazard {
         this.sprite.body.setCollideWorldBounds(true);
 
         // Store reference
-        config.radius = this.radius;
-        this.sprite.hazardData = config;
+        this.sprite.hazardData = this.hazardData;
         this.itemType = 'HAZARD';
     }
 
