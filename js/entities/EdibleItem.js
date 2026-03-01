@@ -10,33 +10,38 @@ class EdibleItem {
 
         // Visual representation based on config
         // Use configured size if available, otherwise fallback to old formula
+        let logicalRadius;
         if (Array.isArray(config.size) && config.size.length === 2) {
-            this.radius = Phaser.Math.Between(config.size[0], config.size[1]);
+            logicalRadius = Phaser.Math.Between(config.size[0], config.size[1]);
         } else {
-            this.radius = config.size !== undefined ? config.size : (8 + (this.tier * 3));
+            logicalRadius = config.size !== undefined ? config.size : (8 + (this.tier * 3));
         }
 
-        // Clone the config to itemData to avoid mutating the global configuration.
-        // We ensure `size` is set to the specific randomly generated scalar size for consumption logic.
-        this.itemData = { ...config, size: this.radius, radius: this.radius };
+        // Apply global scale factor if it exists
+        const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
+        this.radius = logicalRadius * scale;
 
-        const size = this.radius;
+        // Clone the config to itemData to avoid mutating the global configuration.
+        // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.
+        this.itemData = { ...config, size: logicalRadius, radius: logicalRadius };
+
+        const visualSize = this.radius;
 
         const shape = config.shape;
         const color = config.color;
 
         if (config.image) {
             this.sprite = scene.add.sprite(x, y, config.image);
-            // Scale sprite to match the desired radius (diameter = size * 2)
-            const scale = (size * 2) / Math.max(1, this.sprite.width);
-            this.sprite.setScale(scale);
+            // Scale sprite to match the desired radius (diameter = visualSize * 2)
+            const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+            this.sprite.setScale(spriteScale);
         } else if (shape === 'circle') {
-            this.sprite = scene.add.circle(x, y, size, color);
+            this.sprite = scene.add.circle(x, y, visualSize, color);
         } else if (shape === 'square') {
-            this.sprite = scene.add.rectangle(x, y, size * 2, size * 2, color);
+            this.sprite = scene.add.rectangle(x, y, visualSize * 2, visualSize * 2, color);
         } else {
             // Triangle approximation with polygon
-            this.sprite = scene.add.triangle(x, y, 0, size * 2, size * 2, size * 2, size, 0, color);
+            this.sprite = scene.add.triangle(x, y, 0, visualSize * 2, visualSize * 2, visualSize * 2, visualSize, 0, color);
         }
 
         scene.physics.add.existing(this.sprite);

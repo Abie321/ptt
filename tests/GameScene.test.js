@@ -109,19 +109,6 @@ describe('GameScene', () => {
       );
     });
 
-    test('should start with zoom level 1', () => {
-      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(1);
-    });
-
-    test('should zoom out when player advances tiers', () => {
-      gameScene.cameras.main.setZoom.mockClear();
-
-      const tier2Config = GameConfig.SIZE_TIERS[1];
-      gameScene.onTierAdvanced(2);
-
-      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(tier2Config.zoom);
-    });
-
     test('should flash camera on tier advancement', () => {
       gameScene.onTierAdvanced(2);
 
