@@ -26,6 +26,9 @@ class Player {
         // Tier Growth Factor: Controls how much internal size is added for tier progression
         this.TIER_GROWTH_FACTOR = (this.config.PLAYER && this.config.PLAYER.TIER_GROWTH_FACTOR !== undefined) ? this.config.PLAYER.TIER_GROWTH_FACTOR : 0.1;
 
+        // Track cumulative visual scale for re-baselining
+        this.currentScale = 1.0;
+
         // Create player sprite
         if (this.config.PLAYER && this.config.PLAYER.SPRITE && this.config.PLAYER.SPRITE.USE_SPRITESHEET) {
             this.sprite = scene.add.sprite(x, y, this.config.PLAYER.SPRITE.KEY);
@@ -212,13 +215,18 @@ class Player {
 
     updateSpriteScale() {
         if (this.sprite instanceof Phaser.GameObjects.Sprite) {
-            // Scale based on size/radius
+            // Scale based on visual size/radius
             const targetDiameter = this.radius * 2;
             const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
             this.sprite.setScale(scale);
         } else {
             this.sprite.setRadius(this.radius);
         }
+    }
+
+    getLogicalSize() {
+        // Returns the unscaled internal size for game mechanics logic
+        return this.internalSize;
     }
 
     advanceTier(newTier) {

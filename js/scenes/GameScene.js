@@ -136,7 +136,6 @@ class GameScene extends Phaser.Scene {
         // Camera follows player
         this.cameras.main.setBounds(0, 0, this.levelConfig.WORLD.WIDTH, this.levelConfig.WORLD.HEIGHT);
         this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
-        this.cameras.main.setZoom(this.levelConfig.SIZE_TIERS[0].zoom);
 
         // Create item groups
         this.edibleItems = {};
@@ -174,32 +173,37 @@ class GameScene extends Phaser.Scene {
             this.edibleItems[tier] = this.add.group();
         }
 
-        // Iterate through all tiers in configuration
-        for (const [tierKey, entities] of Object.entries(this.levelConfig.TIER_ENTITIES)) {
-            const tier = parseInt(tierKey);
+        // Initially spawn only tiers 1 and 2
+        this.spawnTierEntities(1);
+        this.spawnTierEntities(2);
+    }
 
-            entities.forEach(entityConfig => {
-                const count = entityConfig.count || 1;
+    spawnTierEntities(tier) {
+        if (!this.levelConfig.TIER_ENTITIES || !this.levelConfig.TIER_ENTITIES[tier]) return;
 
-                for (let i = 0; i < count; i++) {
-                    const x = Phaser.Math.Between(50, this.levelConfig.WORLD.WIDTH - 50);
-                    const y = Phaser.Math.Between(50, this.levelConfig.WORLD.HEIGHT - 50);
+        const entities = this.levelConfig.TIER_ENTITIES[tier];
 
-                    // Inject tier into the config for the entity to use
-                    const instanceConfig = { ...entityConfig, tier: tier };
+        entities.forEach(entityConfig => {
+            const count = entityConfig.count || 1;
 
-                    if (entityConfig.isHazard) {
-                        const hazard = new Hazard(this, x, y, instanceConfig);
-                        this.hazards.add(hazard.sprite);
-                    } else {
-                        const item = new EdibleItem(this, x, y, instanceConfig);
-                        if (this.edibleItems[tier]) {
-                            this.edibleItems[tier].add(item.sprite);
-                        }
+            for (let i = 0; i < count; i++) {
+                const x = Phaser.Math.Between(50, this.levelConfig.WORLD.WIDTH - 50);
+                const y = Phaser.Math.Between(50, this.levelConfig.WORLD.HEIGHT - 50);
+
+                // Inject tier into the config for the entity to use
+                const instanceConfig = { ...entityConfig, tier: tier };
+
+                if (entityConfig.isHazard) {
+                    const hazard = new Hazard(this, x, y, instanceConfig);
+                    this.hazards.add(hazard.sprite);
+                } else {
+                    const item = new EdibleItem(this, x, y, instanceConfig);
+                    if (this.edibleItems[tier]) {
+                        this.edibleItems[tier].add(item.sprite);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     createHUD() {
@@ -298,10 +302,11 @@ class GameScene extends Phaser.Scene {
                 // Check if mouth touches the item (collision check using visual radii)
                 if (distance < this.player.getCollisionRadius() * 0.5 + itemRadius) {
                     // Check if player is larger than item (size-based consumption)
-                    // Use configured size vs player size
-                    const itemSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
+                    // Use unscaled sizes for mechanics
+                    const itemLogicalSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
+                    const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
-                    if (this.player.getSize() > itemSize) {
+                    if (playerLogicalSize > itemLogicalSize) {
                         const points = this.player.consume(item.itemData);
                         this.score += points;
                         this.showConsumedItem(item.itemData); // Show HUD indicator
@@ -331,9 +336,11 @@ class GameScene extends Phaser.Scene {
             if (distance < this.player.getCollisionRadius() + hazardRadius) {
                 // Size-based Interaction
                 // If Player > Hazard, consume
-                const hazardSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+                // Use unscaled sizes for mechanics
+                const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+                const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
-                if (this.player.getSize() > hazardSize) {
+                if (playerLogicalSize > hazardLogicalSize) {
                     // Consume hazard
                     const points = this.player.consume(hazard.hazardData);
                     this.score += points;
@@ -365,15 +372,68 @@ class GameScene extends Phaser.Scene {
             this.edibleItems[despawnTier].clear(true, true);
         }
 
+        // --- Re-baselining (Scaling) Logic ---
+        // Calculate new scale factor to bring player back down to INITIAL_SIZE visually
+        const initialSize = this.levelConfig.PLAYER.INITIAL_SIZE || 20;
+        const scaleMultiplier = initialSize / this.player.size;
+
+        // Update cumulative global scale
+        this.player.currentScale *= scaleMultiplier;
+
+        // Scale player visually
+        this.player.size *= scaleMultiplier;
+        this.player.radius *= scaleMultiplier;
+        this.player.updateSpriteScale();
+
+        // Scale all existing entities visually
+        // Edibles
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
+            if (!this.edibleItems[tier]) continue;
+            this.edibleItems[tier].getChildren().forEach(item => {
+                if (item) {
+                    item.radius *= scaleMultiplier;
+                    if (item.displayWidth !== undefined) {
+                         const currentScale = item.scale !== undefined ? item.scale : 1;
+                         item.setScale(currentScale * scaleMultiplier);
+                    }
+                    if (item.body) {
+                         // Some logic to rescale physics body if needed, simple approach:
+                         if (item.geom && item.geom.radius !== undefined) {
+                             item.geom.radius = item.radius;
+                         } else if (item.radius !== undefined && typeof item.setRadius === 'function') {
+                             item.setRadius(item.radius);
+                         }
+                    }
+                }
+            });
+        }
+
+        // Hazards
+        this.hazards.getChildren().forEach(hazard => {
+            if (hazard) {
+                hazard.radius *= scaleMultiplier;
+                if (hazard.displayWidth !== undefined) {
+                     const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
+                     hazard.setScale(currentScale * scaleMultiplier);
+                }
+                if (hazard.body) {
+                     if (hazard.geom && hazard.geom.radius !== undefined) {
+                         hazard.geom.radius = hazard.radius;
+                     } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
+                         hazard.setRadius(hazard.radius);
+                     }
+                }
+            }
+        });
+
+        // Spawn items for tier N+1
+        const spawnTier = newTier + 1;
+        if (spawnTier <= this.levelConfig.SIZE_TIERS.length) {
+            this.spawnTierEntities(spawnTier);
+        }
+
         // Update entity visibility based on new tier
         this.updateEntityVisibility();
-
-        // Update camera zoom to accommodate larger player
-        // Note: With decoupled size/tier, we might want zoom to follow actual size, but sticking to tier-based zoom for now as requested by user logic
-        const tierConfig = this.levelConfig.SIZE_TIERS[newTier - 1];
-        if (tierConfig && tierConfig.zoom) {
-            this.cameras.main.setZoom(tierConfig.zoom);
-        }
 
         // Visual feedback
         this.cameras.main.flash(500, 255, 255, 255);
@@ -477,7 +537,7 @@ class GameScene extends Phaser.Scene {
         const tierGrowthFactor = this.player.TIER_GROWTH_FACTOR || 0.1;
 
         // Use internal size for progression check
-        const currentRadius = this.player.internalSize || this.player.getSize();
+        const currentRadius = this.player.getLogicalSize ? this.player.getLogicalSize() : (this.player.internalSize || this.player.getSize());
         const currentArea = currentRadius * currentRadius;
 
         // Calculate Target Area (Max Tier Start Size)
@@ -493,24 +553,33 @@ class GameScene extends Phaser.Scene {
 
         const targetArea = targetRadius * targetRadius;
 
-        // Calculate total potential area from all entities
+        // Calculate total potential area from all entities in the CONFIGURATION
+        // Because items are delayed spawned, we can't count on `edibleItems` or `hazards` children
         let potentialAddedArea = 0;
 
-        // Edibles
-        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
-            if (!this.edibleItems[tier]) continue;
-            // Iterate all children (active and inactive)
-            this.edibleItems[tier].getChildren().forEach(item => {
-                const size = (item.itemData && item.itemData.size) ? item.itemData.size : (item.radius || item.displayWidth / 2 || 10);
-                potentialAddedArea += (size * size * tierGrowthFactor);
-            });
-        }
+        if (this.levelConfig.TIER_ENTITIES) {
+            for (const [tierKey, entities] of Object.entries(this.levelConfig.TIER_ENTITIES)) {
+                entities.forEach(entityConfig => {
+                    const count = entityConfig.count || 1;
 
-        // Hazards (eventually edible)
-        this.hazards.getChildren().forEach(hazard => {
-            const size = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : (hazard.radius || hazard.displayWidth / 2 || 15);
-            potentialAddedArea += (size * size * tierGrowthFactor);
-        });
+                    // Determine logical size
+                    let size = 10;
+                    if (Array.isArray(entityConfig.size) && entityConfig.size.length === 2) {
+                        // Average size for potential calculation
+                        size = (entityConfig.size[0] + entityConfig.size[1]) / 2;
+                    } else if (entityConfig.size !== undefined) {
+                        size = entityConfig.size;
+                    } else if (entityConfig.isHazard) {
+                        size = 15 + (parseInt(tierKey) * 5);
+                    } else {
+                        size = 8 + (parseInt(tierKey) * 3);
+                    }
+
+                    // Add area for all instances
+                    potentialAddedArea += (size * size * tierGrowthFactor) * count;
+                });
+            }
+        }
 
         // Check if achievable
         if (currentArea + potentialAddedArea < targetArea) {

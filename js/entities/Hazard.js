@@ -8,22 +8,27 @@ class Hazard {
         this.hazardData = config; // Standardize on hazardData holding the config
 
         // Hazards use configured size if available
+        let logicalRadius;
         if (Array.isArray(config.size) && config.size.length === 2) {
-            this.radius = Phaser.Math.Between(config.size[0], config.size[1]);
+            logicalRadius = Phaser.Math.Between(config.size[0], config.size[1]);
         } else {
-            this.radius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
+            logicalRadius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
         }
 
-        // Clone the config to hazardData to avoid mutating the global configuration.
-        // We ensure `size` is set to the specific randomly generated scalar size for consumption logic.
-        this.hazardData = { ...config, size: this.radius, radius: this.radius };
+        // Apply global scale factor if it exists
+        const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
+        this.radius = logicalRadius * scale;
 
-        const size = this.radius;
+        // Clone the config to hazardData to avoid mutating the global configuration.
+        // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.
+        this.hazardData = { ...config, size: logicalRadius, radius: logicalRadius };
+
+        const visualSize = this.radius;
 
         // Use color from config (defaults to red if not provided, though config should have it)
         const color = config.color !== undefined ? config.color : 0xFF0000;
 
-        this.sprite = scene.add.circle(x, y, size, color, 0.7);
+        this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
         scene.physics.add.existing(this.sprite);
 
         // Simple movement pattern (optional for prototype)
