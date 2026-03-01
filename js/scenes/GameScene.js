@@ -24,8 +24,12 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        if (this.levelConfig.ASSETS && this.levelConfig.ASSETS.BACKGROUND_IMAGE) {
-            this.load.image('background', this.levelConfig.ASSETS.BACKGROUND_IMAGE);
+        if (this.levelConfig.SIZE_TIERS) {
+            this.levelConfig.SIZE_TIERS.forEach((tier, index) => {
+                if (tier.ASSETS && tier.ASSETS.BACKGROUND_IMAGE) {
+                    this.load.image(`background_tier_${index + 1}`, tier.ASSETS.BACKGROUND_IMAGE);
+                }
+            });
         }
         if (this.levelConfig.ENTITY_IMAGES) {
             for (const [key, path] of Object.entries(this.levelConfig.ENTITY_IMAGES)) {
@@ -123,18 +127,23 @@ class GameScene extends Phaser.Scene {
             this.createPlayerAnimations();
         }
 
+        // Get initial tier config
+        const initialTierConfig = this.levelConfig.SIZE_TIERS[0];
+        const initialWorld = initialTierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+
         // Set world bounds
-        this.physics.world.setBounds(0, 0, this.levelConfig.WORLD.WIDTH, this.levelConfig.WORLD.HEIGHT);
+        this.physics.world.setBounds(0, 0, initialWorld.WIDTH, initialWorld.HEIGHT);
 
         // Add background
-        const bg = this.add.image(this.levelConfig.WORLD.WIDTH / 2, this.levelConfig.WORLD.HEIGHT / 2, 'background');
-        bg.setDepth(-1); // Ensure it's behind everything
+        const bgKey = (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_IMAGE) ? 'background_tier_1' : 'background';
+        this.bg = this.add.image(initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2, bgKey);
+        this.bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
-        this.player = new Player(this, this.levelConfig.WORLD.WIDTH / 2, this.levelConfig.WORLD.HEIGHT / 2);
+        this.player = new Player(this, initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2);
 
         // Camera follows player
-        this.cameras.main.setBounds(0, 0, this.levelConfig.WORLD.WIDTH, this.levelConfig.WORLD.HEIGHT);
+        this.cameras.main.setBounds(0, 0, initialWorld.WIDTH, initialWorld.HEIGHT);
         this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
 
         // Create item groups
@@ -187,8 +196,11 @@ class GameScene extends Phaser.Scene {
             const count = entityConfig.count || 1;
 
             for (let i = 0; i < count; i++) {
-                const x = Phaser.Math.Between(50, this.levelConfig.WORLD.WIDTH - 50);
-                const y = Phaser.Math.Between(50, this.levelConfig.WORLD.HEIGHT - 50);
+                // Determine bounds for this tier
+                const tierConfig = this.levelConfig.SIZE_TIERS[tier - 1] || this.levelConfig.SIZE_TIERS[this.levelConfig.SIZE_TIERS.length - 1];
+                const world = tierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+                const x = Phaser.Math.Between(50, world.WIDTH - 50);
+                const y = Phaser.Math.Between(50, world.HEIGHT - 50);
 
                 // Inject tier into the config for the entity to use
                 const instanceConfig = { ...entityConfig, tier: tier };
@@ -430,6 +442,24 @@ class GameScene extends Phaser.Scene {
         const spawnTier = newTier + 1;
         if (spawnTier <= this.levelConfig.SIZE_TIERS.length) {
             this.spawnTierEntities(spawnTier);
+        }
+
+        // Update world bounds and background for the new tier
+        const newTierConfig = this.levelConfig.SIZE_TIERS[newTier - 1];
+        if (newTierConfig) {
+            const world = newTierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+
+            // Adjust bounds to the actual absolute size of the new tier's world
+            this.physics.world.setBounds(0, 0, world.WIDTH, world.HEIGHT);
+            this.cameras.main.setBounds(0, 0, world.WIDTH, world.HEIGHT);
+
+            if (this.bg) {
+                if (newTierConfig.ASSETS && newTierConfig.ASSETS.BACKGROUND_IMAGE) {
+                    this.bg.setTexture(`background_tier_${newTier}`);
+                }
+                this.bg.setPosition(world.WIDTH / 2, world.HEIGHT / 2);
+                this.bg.setScale(1);
+            }
         }
 
         // Update entity visibility based on new tier

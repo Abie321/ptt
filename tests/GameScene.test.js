@@ -69,8 +69,9 @@ describe('GameScene', () => {
     });
 
     test('should set up physics world bounds', () => {
+      const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
       expect(gameScene.physics.world.setBounds).toHaveBeenCalledWith(
-        0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT
+        0, 0, initialTierConfig.WORLD.WIDTH, initialTierConfig.WORLD.HEIGHT
       );
     });
   });
@@ -78,25 +79,27 @@ describe('GameScene', () => {
   describe('Asset Loading', () => {
     test('should preload background image', () => {
         gameScene.preload();
-        expect(gameScene.load.image).toHaveBeenCalledWith('background', GameConfig.ASSETS.BACKGROUND_IMAGE);
+        expect(gameScene.load.image).toHaveBeenCalledWith('background_tier_1', GameConfig.LEVELS[0].SIZE_TIERS[0].ASSETS.BACKGROUND_IMAGE);
     });
 
     test('should create background image', () => {
         // Checking if add.image was called with correct parameters
         // The mock setup clears after each test in most setups, but here we're inside beforeEach which runs create()
         // so add.image should have been called.
+        const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
         expect(gameScene.add.image).toHaveBeenCalledWith(
-            GameConfig.WORLD.WIDTH / 2,
-            GameConfig.WORLD.HEIGHT / 2,
-            'background'
+            initialTierConfig.WORLD.WIDTH / 2,
+            initialTierConfig.WORLD.HEIGHT / 2,
+            'background_tier_1'
         );
     });
   });
 
   describe('Camera System', () => {
     test('should set camera bounds to world size', () => {
+      const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
       expect(gameScene.cameras.main.setBounds).toHaveBeenCalledWith(
-        0, 0, GameConfig.WORLD.WIDTH, GameConfig.WORLD.HEIGHT
+        0, 0, initialTierConfig.WORLD.WIDTH, initialTierConfig.WORLD.HEIGHT
       );
     });
 
@@ -110,6 +113,12 @@ describe('GameScene', () => {
     });
 
     test('should flash camera on tier advancement', () => {
+      if (gameScene.bg && gameScene.bg.setTexture === undefined) {
+         gameScene.bg.setTexture = jest.fn();
+         gameScene.bg.setPosition = jest.fn();
+         gameScene.bg.setScale = jest.fn();
+      }
+
       gameScene.onTierAdvanced(2);
 
       expect(gameScene.cameras.main.flash).toHaveBeenCalledWith(500, 255, 255, 255);
@@ -137,6 +146,12 @@ describe('GameScene', () => {
 
   describe('Tier Advancement System', () => {
     test('should despawn tier N-2 items when advancing', () => {
+      if (gameScene.bg && gameScene.bg.setTexture === undefined) {
+         gameScene.bg.setTexture = jest.fn();
+         gameScene.bg.setPosition = jest.fn();
+         gameScene.bg.setScale = jest.fn();
+      }
+
       gameScene.edibleItems[1].clear.mockClear();
 
       gameScene.onTierAdvanced(3);
@@ -145,6 +160,12 @@ describe('GameScene', () => {
     });
 
     test('should not despawn items from invalid tiers', () => {
+      if (gameScene.bg && gameScene.bg.setTexture === undefined) {
+         gameScene.bg.setTexture = jest.fn();
+         gameScene.bg.setPosition = jest.fn();
+         gameScene.bg.setScale = jest.fn();
+      }
+
       gameScene.onTierAdvanced(2);
 
       // Tier 0 doesn't exist, so no error should occur
