@@ -149,6 +149,11 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, initialWorld.WIDTH, initialWorld.HEIGHT);
         this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
 
+        // Apply initial camera zoom
+        if (initialTierConfig.zoom !== undefined) {
+            this.cameras.main.setZoom(initialTierConfig.zoom);
+        }
+
         // Create item groups
         this.edibleItems = {};
         this.hazards = this.add.group();
@@ -473,8 +478,25 @@ class GameScene extends Phaser.Scene {
         // Update entity visibility based on new tier
         this.updateEntityVisibility();
 
-        // Visual feedback
-        this.cameras.main.flash(500, 255, 255, 255);
+        // Handle Camera Zoom Animation
+        if (newTierConfig) {
+            const targetZoom = newTierConfig.zoom !== undefined ? newTierConfig.zoom : 1.0;
+
+            if (newTier >= 2 && newTierConfig.zoomInStart !== undefined) {
+                // Set the camera immediately to the zoomed in state
+                this.cameras.main.setZoom(newTierConfig.zoomInStart);
+
+                // Animate zoom to the target zoom level
+                this.tweens.add({
+                    targets: this.cameras.main,
+                    zoom: targetZoom,
+                    duration: 1000,
+                    ease: 'Sine.easeOut'
+                });
+            } else {
+                this.cameras.main.setZoom(targetZoom);
+            }
+        }
 
         // Check winnability
         if (!this.checkWinnability()) {
