@@ -232,9 +232,14 @@ global.Phaser = {
           setZoom: jest.fn(),
           shake: jest.fn(),
           flash: jest.fn(),
+          ignore: jest.fn(),
           width: 800,
           height: 600
-        }
+        },
+        add: jest.fn(() => ({
+          setScrollFactor: jest.fn(),
+          ignore: jest.fn()
+        }))
       };
       this.input = {
         keyboard: {
