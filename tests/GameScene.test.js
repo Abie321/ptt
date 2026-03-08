@@ -112,7 +112,7 @@ describe('GameScene', () => {
       );
     });
 
-    test('should flash camera on tier advancement', () => {
+    test('should animate camera zoom on tier advancement', () => {
       if (gameScene.bg && gameScene.bg.setTexture === undefined) {
          gameScene.bg.setTexture = jest.fn();
          gameScene.bg.setPosition = jest.fn();
@@ -121,7 +121,13 @@ describe('GameScene', () => {
 
       gameScene.onTierAdvanced(2);
 
-      expect(gameScene.cameras.main.flash).toHaveBeenCalledWith(500, 255, 255, 255);
+      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(2.0);
+      expect(gameScene.tweens.add).toHaveBeenCalledWith(expect.objectContaining({
+          targets: gameScene.cameras.main,
+          zoom: 0.5,
+          duration: 1000,
+          ease: 'Sine.easeOut'
+      }));
     });
   });
 
