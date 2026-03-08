@@ -83,15 +83,25 @@ describe('GameScene', () => {
     });
 
     test('should create background image', () => {
-        // Checking if add.image was called with correct parameters
-        // The mock setup clears after each test in most setups, but here we're inside beforeEach which runs create()
-        // so add.image should have been called.
         const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
-        expect(gameScene.add.image).toHaveBeenCalledWith(
-            initialTierConfig.WORLD.WIDTH / 2,
-            initialTierConfig.WORLD.HEIGHT / 2,
-            'background_tier_1'
-        );
+        const isTile = initialTierConfig.ASSETS && initialTierConfig.ASSETS.TILE_BACKGROUND;
+        const bgScale = (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_SCALE) ? initialTierConfig.ASSETS.BACKGROUND_SCALE : 1;
+
+        if (isTile) {
+            expect(gameScene.add.tileSprite).toHaveBeenCalledWith(
+                initialTierConfig.WORLD.WIDTH / 2,
+                initialTierConfig.WORLD.HEIGHT / 2,
+                initialTierConfig.WORLD.WIDTH / bgScale,
+                initialTierConfig.WORLD.HEIGHT / bgScale,
+                'background_tier_1'
+            );
+        } else {
+            expect(gameScene.add.image).toHaveBeenCalledWith(
+                initialTierConfig.WORLD.WIDTH / 2,
+                initialTierConfig.WORLD.HEIGHT / 2,
+                'background_tier_1'
+            );
+        }
     });
   });
 

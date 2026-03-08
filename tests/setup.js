@@ -50,6 +50,7 @@ global.Phaser = {
       this.add = {
         image: jest.fn((x, y, key) => ({
           x, y, key,
+          texture: { key: key },
           active: true,
           visible: true,
           setOrigin: jest.fn().mockReturnThis(),
@@ -59,6 +60,29 @@ global.Phaser = {
           setVisible: jest.fn(function(v) { this.visible = v; return this; }),
           destroy: jest.fn(),
           setScale: jest.fn().mockReturnThis(),
+          setPosition: jest.fn().mockReturnThis(),
+          setTexture: jest.fn().mockReturnThis(),
+          setTint: jest.fn().mockReturnThis(),
+          play: jest.fn().mockReturnThis(),
+          setRotation: jest.fn().mockReturnThis(),
+          anims: {
+            play: jest.fn().mockReturnThis()
+          }
+        })),
+        tileSprite: jest.fn((x, y, width, height, key) => ({
+          x, y, width, height, key,
+          texture: { key: key },
+          active: true,
+          visible: true,
+          setOrigin: jest.fn().mockReturnThis(),
+          setScrollFactor: jest.fn().mockReturnThis(),
+          setDepth: jest.fn().mockReturnThis(),
+          setActive: jest.fn(function(a) { this.active = a; return this; }),
+          setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+          destroy: jest.fn(),
+          setScale: jest.fn().mockReturnThis(),
+          setPosition: jest.fn().mockReturnThis(),
+          setTexture: jest.fn().mockReturnThis(),
           setTint: jest.fn().mockReturnThis(),
           play: jest.fn().mockReturnThis(),
           setRotation: jest.fn().mockReturnThis(),

@@ -136,10 +136,25 @@ class GameScene extends Phaser.Scene {
 
         // Add background
         const bgKey = (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_IMAGE) ? 'background_tier_1' : 'background';
-        this.bg = this.add.image(initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2, bgKey);
+
+        let bgScale = 1;
         if (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) {
-            this.bg.setScale(initialTierConfig.ASSETS.BACKGROUND_SCALE);
+            bgScale = initialTierConfig.ASSETS.BACKGROUND_SCALE;
         }
+
+        if (initialTierConfig.ASSETS && initialTierConfig.ASSETS.TILE_BACKGROUND) {
+            this.bg = this.add.tileSprite(
+                initialWorld.WIDTH / 2,
+                initialWorld.HEIGHT / 2,
+                initialWorld.WIDTH / bgScale,
+                initialWorld.HEIGHT / bgScale,
+                bgKey
+            );
+        } else {
+            this.bg = this.add.image(initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2, bgKey);
+        }
+
+        this.bg.setScale(bgScale);
         this.bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
@@ -463,15 +478,35 @@ class GameScene extends Phaser.Scene {
             this.cameras.main.setBounds(0, 0, world.WIDTH, world.HEIGHT);
 
             if (this.bg) {
+                let bgKey = this.bg.texture.key;
                 if (newTierConfig.ASSETS && newTierConfig.ASSETS.BACKGROUND_IMAGE) {
-                    this.bg.setTexture(`background_tier_${newTier}`);
+                    bgKey = `background_tier_${newTier}`;
                 }
-                this.bg.setPosition(world.WIDTH / 2, world.HEIGHT / 2);
+
+                let bgScale = 1;
                 if (newTierConfig.ASSETS && newTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) {
-                    this.bg.setScale(newTierConfig.ASSETS.BACKGROUND_SCALE);
-                } else {
-                    this.bg.setScale(1);
+                    bgScale = newTierConfig.ASSETS.BACKGROUND_SCALE;
                 }
+
+                const isTileBackground = newTierConfig.ASSETS && newTierConfig.ASSETS.TILE_BACKGROUND;
+
+                // If it needs to be a tileSprite and it currently isn't, or vice-versa, or just for a cleaner refresh
+                this.bg.destroy();
+
+                if (isTileBackground) {
+                    this.bg = this.add.tileSprite(
+                        world.WIDTH / 2,
+                        world.HEIGHT / 2,
+                        world.WIDTH / bgScale,
+                        world.HEIGHT / bgScale,
+                        bgKey
+                    );
+                } else {
+                    this.bg = this.add.image(world.WIDTH / 2, world.HEIGHT / 2, bgKey);
+                }
+
+                this.bg.setScale(bgScale);
+                this.bg.setDepth(-1); // Ensure it's behind everything
             }
         }
 
