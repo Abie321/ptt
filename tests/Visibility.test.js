@@ -240,26 +240,29 @@ describe('Entity Visibility System', () => {
     });
 
     test('Winnability Check Integration', () => {
-        // Ensure checkWinnability counts inactive items
-
-        // Hide all items to simulate visibility rules (or just manual hiding)
-        for(let t=1; t<=5; t++) {
-             gameScene.edibleItems[t].getChildren().forEach(i => i.active = false);
-        }
-
-        // checkWinnability uses getLength() if we update it, otherwise countActive(true)
-        // We will call checkWinnability and see if it returns true (it should, because items exist)
-        // Provided we have enough items mock setup (30, 25, 25, 25, 25) which matches config.
-
-        // Fix sizes to guarantee it will exceed the 140 target
-        for(let t=1; t<=5; t++) {
-             gameScene.edibleItems[t].getChildren().forEach(i => i.itemData.size = 20);
-        }
+        // Now checkWinnability uses gameScene.levelConfig.TIER_ENTITIES rather than edibleItems/hazards groups
+        // So we need to mock gameScene.levelConfig to include enough potential area
+        gameScene.levelConfig = {
+            PLAYER: { INITIAL_SIZE: 20 },
+            SIZE_TIERS: [
+                { tier: 1, threshold: 40 },
+                { tier: 2, threshold: 80 },
+                { tier: 3, threshold: 120 },
+                { tier: 4, threshold: 160 },
+                { tier: 5, threshold: 200 }
+            ],
+            TIER_ENTITIES: {
+                1: [{ size: 20, count: 50 }],
+                2: [{ size: 30, count: 50 }],
+                3: [{ size: 40, count: 50 }],
+                4: [{ size: 50, count: 50 }],
+                5: [{ size: 60, count: 50 }]
+            }
+        };
+        gameScene.player.TIER_GROWTH_FACTOR = 0.5;
 
         const winnable = gameScene.checkWinnability();
 
-        // If it used countActive(true), it would see 0 items and return false.
-        // If it uses getLength(), it sees items and returns true.
         expect(winnable).toBe(true);
     });
 });

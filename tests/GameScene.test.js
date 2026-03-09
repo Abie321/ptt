@@ -70,8 +70,9 @@ describe('GameScene', () => {
 
     test('should set up physics world bounds', () => {
       const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
+      const levelArea = initialTierConfig.LEVEL_AREA || initialTierConfig.WORLD;
       expect(gameScene.physics.world.setBounds).toHaveBeenCalledWith(
-        0, 0, initialTierConfig.WORLD.WIDTH, initialTierConfig.WORLD.HEIGHT
+        0, 0, levelArea.WIDTH, levelArea.HEIGHT
       );
     });
   });
@@ -87,18 +88,19 @@ describe('GameScene', () => {
         const isTile = initialTierConfig.ASSETS && initialTierConfig.ASSETS.TILE_BACKGROUND;
         const bgScale = (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_SCALE) ? initialTierConfig.ASSETS.BACKGROUND_SCALE : 1;
 
+        const levelArea = initialTierConfig.LEVEL_AREA || initialTierConfig.WORLD;
         if (isTile) {
             expect(gameScene.add.tileSprite).toHaveBeenCalledWith(
-                initialTierConfig.WORLD.WIDTH / 2,
-                initialTierConfig.WORLD.HEIGHT / 2,
-                initialTierConfig.WORLD.WIDTH / bgScale,
-                initialTierConfig.WORLD.HEIGHT / bgScale,
+                levelArea.WIDTH / 2,
+                levelArea.HEIGHT / 2,
+                levelArea.WIDTH / bgScale,
+                levelArea.HEIGHT / bgScale,
                 'background_tier_1'
             );
         } else {
             expect(gameScene.add.image).toHaveBeenCalledWith(
-                initialTierConfig.WORLD.WIDTH / 2,
-                initialTierConfig.WORLD.HEIGHT / 2,
+                levelArea.WIDTH / 2,
+                levelArea.HEIGHT / 2,
                 'background_tier_1'
             );
         }
@@ -108,8 +110,9 @@ describe('GameScene', () => {
   describe('Camera System', () => {
     test('should set camera bounds to world size', () => {
       const initialTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[0];
+      const levelArea = initialTierConfig.LEVEL_AREA || initialTierConfig.WORLD;
       expect(gameScene.cameras.main.setBounds).toHaveBeenCalledWith(
-        0, 0, initialTierConfig.WORLD.WIDTH, initialTierConfig.WORLD.HEIGHT
+        0, 0, levelArea.WIDTH, levelArea.HEIGHT
       );
     });
 
