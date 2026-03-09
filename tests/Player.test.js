@@ -149,9 +149,10 @@ describe('Player', () => {
     });
 
     test('should advance tier after growing enough', () => {
-      // Need to grow from 20 to 30.
-      // Force huge growth
-      player.consume({ tier: 1, radius: 100, itemType: 0 }); // Adds lots of area
+      // For level 1, tier 1 threshold is 10, tier 2 threshold is 44.
+      // Set properties so consumption easily pushes internalSize past 44.
+      player.internalSize = 40;
+      player.consume({ tier: 1, radius: 100, size: 100, itemType: 0 });
 
       expect(player.getCurrentTier()).toBeGreaterThan(1);
     });
@@ -161,15 +162,16 @@ describe('Player', () => {
     });
 
     test('should reset consumedInTier when advancing (visual only)', () => {
+      player.internalSize = 40;
       // Force advance
-      player.consume({ tier: 1, radius: 100, itemType: 0 });
+      player.consume({ tier: 1, radius: 100, size: 100, itemType: 0 });
 
       expect(player.consumedInTier).toBe(0);
     });
 
     test('should scale player size when growing', () => {
       const initialRadius = player.getSize();
-      player.consume({ tier: 1, radius: 10, itemType: 0 });
+      player.consume({ tier: 1, radius: 10, size: 10, itemType: 0 });
 
       // Check if setScale was called instead of setRadius
       expect(player.sprite.setScale).toHaveBeenCalled();
@@ -179,7 +181,8 @@ describe('Player', () => {
     });
 
     test('should emit tierAdvanced event when advancing', () => {
-      player.consume({ tier: 1, radius: 100, itemType: 0 });
+      player.internalSize = 40;
+      player.consume({ tier: 1, radius: 100, size: 100, itemType: 0 });
 
       expect(scene.events.emit).toHaveBeenCalledWith('tierAdvanced', expect.any(Number));
     });

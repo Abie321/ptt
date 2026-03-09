@@ -127,9 +127,15 @@ class GameScene extends Phaser.Scene {
             this.createPlayerAnimations();
         }
 
+        // Apply View Area resize
+        const viewArea = this.levelConfig.VIEW_AREA || { WIDTH: 800, HEIGHT: 600 };
+        if (this.scale && this.scale.resize) {
+            this.scale.resize(viewArea.WIDTH, viewArea.HEIGHT);
+        }
+
         // Get initial tier config
         const initialTierConfig = this.levelConfig.SIZE_TIERS[0];
-        const initialWorld = initialTierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+        const initialWorld = initialTierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
 
         // Set world bounds
         this.physics.world.setBounds(0, 0, initialWorld.WIDTH, initialWorld.HEIGHT);
@@ -233,7 +239,7 @@ class GameScene extends Phaser.Scene {
                 // Determine bounds based on player's current tier (N), not the entity's tier (N+1)
                 const currentTierIndex = this.player ? this.player.getCurrentTier() - 1 : 0;
                 const tierConfig = this.levelConfig.SIZE_TIERS[currentTierIndex] || this.levelConfig.SIZE_TIERS[0];
-                const world = tierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+                const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
                 const x = Phaser.Math.Between(50, world.WIDTH - 50);
                 const y = Phaser.Math.Between(50, world.HEIGHT - 50);
 
@@ -497,7 +503,7 @@ class GameScene extends Phaser.Scene {
         // Update world bounds and background for the new tier
         const newTierConfig = this.levelConfig.SIZE_TIERS[newTier - 1];
         if (newTierConfig) {
-            const world = newTierConfig.WORLD || { WIDTH: 1600, HEIGHT: 1200 };
+            const world = newTierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
 
             // Adjust bounds to the actual absolute size of the new tier's world
             this.physics.world.setBounds(0, 0, world.WIDTH, world.HEIGHT);
