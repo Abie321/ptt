@@ -3,8 +3,8 @@
 const LEVEL_1_CONFIG = {
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, WORLD: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 2, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.5, zoomInStart: 2.0, WORLD: { WIDTH: 800, HEIGHT: 600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } },
+        { tier: 1, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, WORLD: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0 } },
+        { tier: 2, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.5, zoomInStart: 2.0, WORLD: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } },
         { tier: 3, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, WORLD: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
         { tier: 4, threshold: 250, name: 'Medium', color: 0xF44336, zoom: 0.7, zoomInStart: 2.0, WORLD: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
         { tier: 5, threshold: 300, name: 'Large', color: 0x9C27B0, zoom: 0.6, zoomInStart: 2.0, WORLD: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
@@ -27,8 +27,8 @@ const LEVEL_1_CONFIG = {
     // Player configuration
     PLAYER: {
         INITIAL_SIZE: 11,
-        GROWTH_FACTOR: 0.2,
-        TIER_GROWTH_FACTOR: 0.2,
+        GROWTH_FACTOR: 0.15,
+        TIER_GROWTH_FACTOR: 0.15,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         SPRITE: {
@@ -59,14 +59,14 @@ const LEVEL_1_CONFIG = {
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 30, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
-            { type: "Cookie crumb", count: 30, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
-            { type: "Coin", count: 20, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
-            { type: "Sugarcube", count: 20, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
+            { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
+            { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
+            { type: "Coin", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
+            { type: "Sugarcube", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 30, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
+            { type: "Sandwich", count: 10, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
             // Hazards
             { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],

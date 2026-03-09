@@ -187,6 +187,17 @@ class GameScene extends Phaser.Scene {
             this.showImpossibleWarning();
         }
 
+        // Create UI camera
+        this.uiCamera = this.cameras.add(0, 0, this.cameras.main.width, this.cameras.main.height);
+
+        // Tell the UI camera to ignore the game world elements so it only renders HUD
+        if (this.bg) this.uiCamera.ignore(this.bg);
+        if (this.player && this.player.sprite) this.uiCamera.ignore(this.player.sprite);
+        if (this.player && this.player.mouthIndicator) this.uiCamera.ignore(this.player.mouthIndicator);
+
+        // Tell uiCamera to ignore all current entities
+        this.updateUICameraIgnore();
+
         // Create HUD (fixed to camera)
         this.createHUD();
 
@@ -290,6 +301,21 @@ class GameScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setDepth(100);
         this.consumedText.alpha = 0;
+
+        // Assign all HUD elements to the UI camera and ignore them on the main camera
+        const hudElements = [
+            this.sizeText,
+            this.progressBarBg,
+            this.progressBar,
+            this.scoreText,
+            this.timerText,
+            this.consumedIcon,
+            this.consumedText
+        ];
+
+        if (this.cameras.main) {
+            this.cameras.main.ignore(hudElements);
+        }
 
         // Helper to manage fade out
         this.consumedFadeEvent = null;
@@ -513,6 +539,10 @@ class GameScene extends Phaser.Scene {
         // Update entity visibility based on new tier
         this.updateEntityVisibility();
 
+        // Tell UI camera to ignore newly spawned entities and the background
+        if (this.bg && this.uiCamera) this.uiCamera.ignore(this.bg);
+        this.updateUICameraIgnore();
+
         // Handle Camera Zoom Animation
         if (newTierConfig) {
             const targetZoom = newTierConfig.zoom !== undefined ? newTierConfig.zoom : 1.0;
@@ -576,6 +606,26 @@ class GameScene extends Phaser.Scene {
             hazard.setActive(isVisible);
             hazard.setVisible(isVisible);
         });
+    }
+
+    updateUICameraIgnore() {
+        if (!this.uiCamera) return;
+
+        const ignoreList = [];
+
+        // Add all edibles
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
+            if (!this.edibleItems[tier]) continue;
+            const items = this.edibleItems[tier].getChildren();
+            ignoreList.push(...items);
+        }
+
+        // Add all hazards
+        ignoreList.push(...this.hazards.getChildren());
+
+        if (ignoreList.length > 0) {
+            this.uiCamera.ignore(ignoreList);
+        }
     }
 
     updateHUD() {
@@ -725,6 +775,11 @@ class GameScene extends Phaser.Scene {
         bg.setDepth(1000);
         text.setDepth(1001);
         continueBtn.setDepth(1001);
+
+        // Assign warning UI to UI camera and ignore on main camera
+        if (this.cameras.main) {
+            this.cameras.main.ignore([bg, text, continueBtn]);
+        }
     }
 
     showConsumedItem(itemData) {
