@@ -319,6 +319,13 @@ class GameScene extends Phaser.Scene {
         .setDepth(100);
         this.consumedText.alpha = 0;
 
+        // Debug size indicator (bottom-left)
+        const initialDebugSize = (this.player.radius * 2).toFixed(2);
+        this.debugSizeText = this.add.text(10, this.cameras.main.height - 40, `Debug Size: ${initialDebugSize}`, hudStyle)
+            .setOrigin(0, 1) // Bottom-left aligned
+            .setScrollFactor(0)
+            .setDepth(100);
+
         // Assign all HUD elements to the UI camera and ignore them on the main camera
         const hudElements = [
             this.sizeText,
@@ -327,7 +334,8 @@ class GameScene extends Phaser.Scene {
             this.scoreText,
             this.timerText,
             this.consumedIcon,
-            this.consumedText
+            this.consumedText,
+            this.debugSizeText
         ];
 
         if (this.cameras.main) {
@@ -686,6 +694,10 @@ class GameScene extends Phaser.Scene {
         const minutes = Math.floor(elapsed / 60);
         const seconds = elapsed % 60;
         this.timerText.setText(`Time: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+
+        // Debug size
+        const debugSize = (this.player.radius * 2).toFixed(2);
+        this.debugSizeText.setText(`Debug Size: ${debugSize}`);
     }
 
     checkWinCondition() {
