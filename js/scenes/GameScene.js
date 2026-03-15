@@ -296,9 +296,9 @@ class GameScene extends Phaser.Scene {
             .setScrollFactor(0);
 
         // REQ-UI-HUD-005: Last Consumed Indicator
-        // Positioned to the left of the score
+        // Positioned to the left of the score, moved down to avoid overlapping with long size text
         const indicatorX = this.cameras.main.width - 250;
-        const indicatorY = 25;
+        const indicatorY = 85;
 
         // Create graphics for the shape
         this.consumedIcon = this.add.graphics();
