@@ -671,7 +671,8 @@ class GameScene extends Phaser.Scene {
     updateHUD() {
         // Size indicator
         const tierConfig = this.levelConfig.SIZE_TIERS[this.player.getCurrentTier() - 1];
-        this.sizeText.setText(`Size: ${tierConfig.name} (Tier ${this.player.getCurrentTier()})`);
+        const internalSize = this.player.internalSize.toFixed(2);
+        this.sizeText.setText(`Size: ${tierConfig.name} (Tier ${this.player.getCurrentTier()}) - Internal Size: ${internalSize}`);
 
         // Progress bar
         const progress = this.player.getProgress();
