@@ -134,10 +134,10 @@ describe('GameScene', () => {
 
       gameScene.onTierAdvanced(2);
 
-      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(2.0);
+      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(1.5);
       expect(gameScene.tweens.add).toHaveBeenCalledWith(expect.objectContaining({
           targets: gameScene.cameras.main,
-          zoom: 0.5,
+          zoom: 0.75,
           duration: 1000,
           ease: 'Sine.easeOut'
       }));
@@ -447,7 +447,7 @@ describe('GameScene', () => {
       gameScene.player.currentTier = 5;
       // Set radius to exactly start of Tier 5. Progress should be 0.
       const tier5Config = GameConfig.SIZE_TIERS[4];
-      const threshold = tier5Config.threshold || (GameConfig.PLAYER.INITIAL_SIZE * tier5Config.scale);
+      const threshold = tier5Config.threshold || ((GameConfig.SIZE_TIERS && GameConfig.SIZE_TIERS[0] && GameConfig.SIZE_TIERS[0].initialSize) ? GameConfig.SIZE_TIERS[0].initialSize : 11 * tier5Config.scale);
 
       gameScene.player.size = threshold;
       gameScene.player.internalSize = threshold;

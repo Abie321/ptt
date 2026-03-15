@@ -11,7 +11,7 @@ class Player {
         this.totalConsumed = 0;
 
         // Size Property (Visual/Logic)
-        this.size = this.config.PLAYER ? this.config.PLAYER.INITIAL_SIZE : 20;
+        this.size = (this.config.SIZE_TIERS && this.config.SIZE_TIERS[0] && this.config.SIZE_TIERS[0].initialSize) ? this.config.SIZE_TIERS[0].initialSize : 11;
 
         // Internal Size Property (Tier Progression)
         this.internalSize = this.size;
@@ -201,7 +201,8 @@ class Player {
 
              // Legacy support: Calculate threshold from scale if missing
              if (threshold === undefined && tierConfig.scale !== undefined) {
-                 threshold = this.config.PLAYER.INITIAL_SIZE * tierConfig.scale;
+                 const initialSize = (this.config.SIZE_TIERS && this.config.SIZE_TIERS[0] && this.config.SIZE_TIERS[0].initialSize) ? this.config.SIZE_TIERS[0].initialSize : 11;
+                 threshold = initialSize * tierConfig.scale;
              }
 
              // Using internalSize for progression check
@@ -291,7 +292,8 @@ class Player {
         // Helper to get threshold
         const getThreshold = (config) => {
             if (config.threshold !== undefined) return config.threshold;
-            return this.config.PLAYER.INITIAL_SIZE * (config.scale || 1);
+            const initialSize = (this.config.SIZE_TIERS && this.config.SIZE_TIERS[0] && this.config.SIZE_TIERS[0].initialSize) ? this.config.SIZE_TIERS[0].initialSize : 11;
+            return initialSize * (config.scale || 1);
         };
 
         const currentTierThreshold = getThreshold(currentTierConfig);
