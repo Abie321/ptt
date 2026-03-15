@@ -4,11 +4,11 @@ const LEVEL_1_CONFIG = {
     VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 2, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.75, TILE_BACKGROUND: true } },
-        { tier: 3, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 4, threshold: 250, name: 'Medium', color: 0xF44336, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 5, threshold: 300, name: 'Large', color: 0x9C27B0, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
+        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0 } },
+        { tier: 2, initialSize: 11, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.75, TILE_BACKGROUND: true } },
+        { tier: 3, initialSize: 11, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+        { tier: 4, initialSize: 11, threshold: 250, name: 'Medium', color: 0xF44336, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+        { tier: 5, initialSize: 11, threshold: 300, name: 'Large', color: 0x9C27B0, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
     ],
 
     // Scoring configuration
@@ -27,7 +27,6 @@ const LEVEL_1_CONFIG = {
 
     // Player configuration
     PLAYER: {
-        INITIAL_SIZE: 11,
         GROWTH_FACTOR: 0.15,
         TIER_GROWTH_FACTOR: 0.15,
         SPEED: 200,
@@ -115,11 +114,11 @@ const LEVEL_1_CONFIG = {
 const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
 LEVEL_2_CONFIG.VIEW_AREA = { WIDTH: 800, HEIGHT: 600 };
 LEVEL_2_CONFIG.SIZE_TIERS = [
-    { tier: 1, threshold: 20, name: 'Nano', color: 0x607D8B, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 2, threshold: 30, name: 'Mini', color: 0x9E9E9E, zoom: 0.9, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1400 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 3, threshold: 40, name: 'Small', color: 0x795548, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 4, threshold: 50, name: 'Average', color: 0xFF5722, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 5, threshold: 60, name: 'Massive', color: 0xE91E63, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
+    { tier: 1, initialSize: 11, threshold: 20, name: 'Nano', color: 0x607D8B, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+    { tier: 2, initialSize: 11, threshold: 30, name: 'Mini', color: 0x9E9E9E, zoom: 0.9, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1400 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+    { tier: 3, initialSize: 11, threshold: 40, name: 'Small', color: 0x795548, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+    { tier: 4, initialSize: 11, threshold: 50, name: 'Average', color: 0xFF5722, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+    { tier: 5, initialSize: 11, threshold: 60, name: 'Massive', color: 0xE91E63, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
 ];
 // Make level 2 slightly harder
 LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;

@@ -243,9 +243,8 @@ describe('Entity Visibility System', () => {
         // Now checkWinnability uses gameScene.levelConfig.TIER_ENTITIES rather than edibleItems/hazards groups
         // So we need to mock gameScene.levelConfig to include enough potential area
         gameScene.levelConfig = {
-            PLAYER: { INITIAL_SIZE: 20 },
             SIZE_TIERS: [
-                { tier: 1, threshold: 40 },
+                { tier: 1, initialSize: 20, threshold: 40 },
                 { tier: 2, threshold: 80 },
                 { tier: 3, threshold: 120 },
                 { tier: 4, threshold: 160 },

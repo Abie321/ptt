@@ -452,8 +452,9 @@ class GameScene extends Phaser.Scene {
         }
 
         // --- Re-baselining (Scaling) Logic ---
-        // Calculate new scale factor to bring player back down to INITIAL_SIZE visually
-        const initialSize = this.levelConfig.PLAYER.INITIAL_SIZE || 20;
+        // Calculate new scale factor to bring player back down to new tier's initialSize visually
+        const newTierConfigData = this.levelConfig.SIZE_TIERS[newTier - 1];
+        const initialSize = (newTierConfigData && newTierConfigData.initialSize) ? newTierConfigData.initialSize : 11;
         const scaleMultiplier = initialSize / this.player.size;
 
         // Update cumulative global scale
@@ -732,7 +733,8 @@ class GameScene extends Phaser.Scene {
         if (maxTierConfig.threshold !== undefined) {
             targetRadius = maxTierConfig.threshold;
         } else {
-            targetRadius = this.levelConfig.PLAYER.INITIAL_SIZE * maxTierConfig.scale;
+            const initialSize = (this.levelConfig.SIZE_TIERS && this.levelConfig.SIZE_TIERS[0] && this.levelConfig.SIZE_TIERS[0].initialSize) ? this.levelConfig.SIZE_TIERS[0].initialSize : 11;
+            targetRadius = initialSize * maxTierConfig.scale;
         }
 
         const targetArea = targetRadius * targetRadius;

@@ -174,7 +174,7 @@ describe('Scoring System', () => {
 
       // Calculate approximated quota based on thresholds
       // This is a rough estimation for the test
-      let previousThreshold = GameConfig.PLAYER.INITIAL_SIZE;
+      let previousThreshold = (GameConfig.SIZE_TIERS && GameConfig.SIZE_TIERS[0] && GameConfig.SIZE_TIERS[0].initialSize) ? GameConfig.SIZE_TIERS[0].initialSize : 11;
 
       for (let tier = 1; tier <= 5; tier++) {
         const tierConfig = GameConfig.SIZE_TIERS[tier - 1];
