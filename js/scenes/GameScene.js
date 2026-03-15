@@ -243,8 +243,19 @@ class GameScene extends Phaser.Scene {
                 const x = Phaser.Math.Between(50, world.WIDTH - 50);
                 const y = Phaser.Math.Between(50, world.HEIGHT - 50);
 
-                // Inject tier into the config for the entity to use
-                const instanceConfig = { ...entityConfig, tier: tier };
+                // Calculate subset visibility for Tier N+1 items
+                // Only a fraction of Tier N+1 items should be visible while in Tier N, based on the zoom ratio
+                let earlyVisible = false;
+                if (tier > 1) {
+                    const currentTierZoom = this.levelConfig.SIZE_TIERS[tier - 2].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 2].zoom : 1.0;
+                    const nextTierZoom = this.levelConfig.SIZE_TIERS[tier - 1].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 1].zoom : 1.0;
+                    const zoomRatio = nextTierZoom / currentTierZoom;
+                    const visibilityFraction = zoomRatio * zoomRatio; // Area ratio
+                    earlyVisible = Math.random() < visibilityFraction;
+                }
+
+                // Inject tier and early visibility flag into the config for the entity to use
+                const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible };
 
                 if (entityConfig.isHazard) {
                     const hazard = new Hazard(this, x, y, instanceConfig);
@@ -585,11 +596,22 @@ class GameScene extends Phaser.Scene {
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
 
-            const isVisible = (tier >= playerTier - 1) && (tier <= playerTier + 1);
-
+            // Only fully show N-1 and N. N+1 is conditionally visible
             const items = this.edibleItems[tier].getChildren();
             items.forEach(item => {
                 if (item) {
+                    let isVisible = false;
+                    if (tier === playerTier - 1 || tier === playerTier) {
+                        isVisible = true;
+                    } else if (tier === playerTier + 1) {
+                        // Apply subset visibility if it's tier N+1
+                        if (item.itemData && item.itemData.earlyVisible !== undefined) {
+                            isVisible = item.itemData.earlyVisible;
+                        } else {
+                            isVisible = true; // Fallback
+                        }
+                    }
+
                     item.setActive(isVisible);
                     item.setVisible(isVisible);
                 }
@@ -602,7 +624,18 @@ class GameScene extends Phaser.Scene {
             if (!hazard.hazardData) return;
 
             const tier = hazard.hazardData.tier;
-            let isVisible = (tier >= playerTier - 1) && (tier <= playerTier + 1);
+            let isVisible = false;
+
+            if (tier === playerTier - 1 || tier === playerTier) {
+                isVisible = true;
+            } else if (tier === playerTier + 1) {
+                 // Apply subset visibility if it's tier N+1
+                 if (hazard.hazardData.earlyVisible !== undefined) {
+                     isVisible = hazard.hazardData.earlyVisible;
+                 } else {
+                     isVisible = true; // Fallback
+                 }
+            }
 
             // REQ-DMG-006 Override
             if (playerTier === 1) {
