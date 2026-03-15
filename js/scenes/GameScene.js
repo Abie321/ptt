@@ -250,7 +250,7 @@ class GameScene extends Phaser.Scene {
                     const currentTierZoom = this.levelConfig.SIZE_TIERS[tier - 2].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 2].zoom : 1.0;
                     const nextTierZoom = this.levelConfig.SIZE_TIERS[tier - 1].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 1].zoom : 1.0;
                     const zoomRatio = nextTierZoom / currentTierZoom;
-                    const visibilityFraction = zoomRatio * zoomRatio; // Area ratio
+                    const visibilityFraction = 0.5 * zoomRatio * zoomRatio; // Area ratio
                     earlyVisible = Math.random() < visibilityFraction;
                 }
 
