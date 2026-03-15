@@ -40,8 +40,8 @@ class Player {
             this.sprite.play('down'); // Default to down
 
             scene.physics.add.existing(this.sprite);
-            // Set circular body matching the frame size (will scale with sprite)
-            this.sprite.body.setCircle(this.config.PLAYER.SPRITE.FRAME_WIDTH / 2);
+            // Set circular body matching the sprite size (will scale with sprite)
+            this.sprite.body.setCircle(this.sprite.width / 2);
         } else {
             // Fallback to circle
             const color = (this.config.SIZE_TIERS && this.config.SIZE_TIERS[0]) ? this.config.SIZE_TIERS[0].color : 0x4CAF50;
@@ -218,7 +218,7 @@ class Player {
         if (this.sprite instanceof Phaser.GameObjects.Sprite) {
             // Scale based on visual size/radius
             const targetDiameter = this.radius * 2;
-            const scale = targetDiameter / this.config.PLAYER.SPRITE.FRAME_WIDTH;
+            const scale = targetDiameter / Math.max(1, this.sprite.width);
             this.sprite.setScale(scale);
         } else {
             this.sprite.setRadius(this.radius);
