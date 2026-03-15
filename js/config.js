@@ -5,7 +5,7 @@ const LEVEL_1_CONFIG = {
     // Size tier configuration
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 2, initialSize: 11, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.75, TILE_BACKGROUND: true } },
+        { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.75, TILE_BACKGROUND: true } },
         { tier: 3, initialSize: 11, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
         { tier: 4, initialSize: 11, threshold: 250, name: 'Medium', color: 0xF44336, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
         { tier: 5, initialSize: 11, threshold: 300, name: 'Large', color: 0x9C27B0, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
@@ -54,6 +54,7 @@ const LEVEL_1_CONFIG = {
         'cube': 'assets/images/cube.png',
         'sandwich': 'assets/images/sandwich.png',
         'teabag': 'assets/images/teabag.png',
+        'cake': 'assets/images/cake.png'
     },
   
     // Entities configuration per tier
@@ -62,13 +63,14 @@ const LEVEL_1_CONFIG = {
         1: [
             { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
             { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
-            { type: "Coin", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
-            { type: "Sugarcube", count: 15, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
+            { type: "Coin", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
+            { type: "Sugarcube", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 10, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
-            { type: "Tea bag", count: 10, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Sandwich", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
+            { type: "Tea bag", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Cake", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
             // Hazards
             { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],
