@@ -239,6 +239,42 @@ describe('Entity Visibility System', () => {
         });
     });
 
+    test('hideInPreviousTier: Entities in N-1 tier should be hidden if configured', () => {
+        gameScene.player.currentTier = 2; // Player is tier 2
+
+        // Set up one item in Tier 1 with the flag
+        const item1 = gameScene.edibleItems[1].getChildren()[0];
+        item1.itemData.hideInPreviousTier = true;
+
+        // Set up one hazard in Tier 1 with the flag (if there were hazards in tier 1, we mock one here)
+        const hazard1 = {
+            active: true,
+            visible: true,
+            setActive: jest.fn(function(a) { this.active = a; return this; }),
+            setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+            hazardData: { tier: 1, hideInPreviousTier: true },
+            destroy: jest.fn()
+        };
+        gameScene.hazards.getChildren().push(hazard1);
+
+        if (gameScene.updateEntityVisibility) {
+            gameScene.updateEntityVisibility();
+        }
+
+        // Verify the item with the flag is hidden
+        expect(item1.active).toBe(false);
+        expect(item1.visible).toBe(false);
+
+        // Verify other Tier 1 items (without the flag) are still visible
+        const item2 = gameScene.edibleItems[1].getChildren()[1];
+        expect(item2.active).toBe(true);
+        expect(item2.visible).toBe(true);
+
+        // Verify the hazard with the flag is hidden
+        expect(hazard1.active).toBe(false);
+        expect(hazard1.visible).toBe(false);
+    });
+
     test('Winnability Check Integration', () => {
         // Now checkWinnability uses gameScene.levelConfig.TIER_ENTITIES rather than edibleItems/hazards groups
         // So we need to mock gameScene.levelConfig to include enough potential area
