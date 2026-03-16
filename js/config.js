@@ -63,14 +63,14 @@ const LEVEL_1_CONFIG = {
         1: [
             { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
             { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
-            { type: "Coin", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35, hideInPreviousTier: true },
+            { type: "Coin", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
             { type: "Sugarcube", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
         ],
         2: [
             // Edibles
             { type: "Sandwich", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
             { type: "Tea bag", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
+            { type: "Cake", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
             // Hazards
             { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],

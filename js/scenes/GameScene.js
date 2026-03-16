@@ -610,17 +610,14 @@ class GameScene extends Phaser.Scene {
             items.forEach(item => {
                 if (item) {
                     let isVisible = false;
-                    if (tier === playerTier) {
+                    if (tier === playerTier - 1 || tier === playerTier) {
                         isVisible = true;
-                    } else if (tier === playerTier - 1) {
-                        isVisible = true;
-                        // Check if item is configured to be hidden in N-1 tier
-                        if (item.itemData && item.itemData.hideInPreviousTier) {
-                            isVisible = false;
-                        }
                     } else if (tier === playerTier + 1) {
                         // Apply subset visibility if it's tier N+1
-                        if (item.itemData && item.itemData.earlyVisible !== undefined) {
+                        if (item.itemData && item.itemData.hideInPreviousTier) {
+                            // If it should be hidden in previous tier, do not make it early visible
+                            isVisible = false;
+                        } else if (item.itemData && item.itemData.earlyVisible !== undefined) {
                             isVisible = item.itemData.earlyVisible;
                         } else {
                             isVisible = true; // Fallback
@@ -641,17 +638,13 @@ class GameScene extends Phaser.Scene {
             const tier = hazard.hazardData.tier;
             let isVisible = false;
 
-            if (tier === playerTier) {
+            if (tier === playerTier - 1 || tier === playerTier) {
                 isVisible = true;
-            } else if (tier === playerTier - 1) {
-                isVisible = true;
-                // Check if hazard is configured to be hidden in N-1 tier
-                if (hazard.hazardData && hazard.hazardData.hideInPreviousTier) {
-                    isVisible = false;
-                }
             } else if (tier === playerTier + 1) {
                  // Apply subset visibility if it's tier N+1
-                 if (hazard.hazardData.earlyVisible !== undefined) {
+                 if (hazard.hazardData && hazard.hazardData.hideInPreviousTier) {
+                     isVisible = false;
+                 } else if (hazard.hazardData.earlyVisible !== undefined) {
                      isVisible = hazard.hazardData.earlyVisible;
                  } else {
                      isVisible = true; // Fallback
