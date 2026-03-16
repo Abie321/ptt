@@ -166,7 +166,8 @@ class Player {
 
         // Visual Growth
         const currentArea = this.size * this.size;
-        const addedArea = itemArea * this.GROWTH_FACTOR;
+        // Scale down visual growth by the player's currentScale (squared since it's area)
+        const addedArea = itemArea * (this.currentScale * this.currentScale) * this.GROWTH_FACTOR;
         this.size = Math.sqrt(currentArea + addedArea);
 
         // Internal Growth (for Tier Progression)
