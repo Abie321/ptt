@@ -239,6 +239,65 @@ describe('Entity Visibility System', () => {
         });
     });
 
+    test('hideInPreviousTier: Entities in N+1 tier should be hidden when player is N if configured', () => {
+        gameScene.player.currentTier = 1; // Player is tier 1
+
+        // Set up one item in Tier 2 with the flag
+        const item1 = gameScene.edibleItems[2].getChildren()[0];
+        item1.itemData.hideInPreviousTier = true;
+        // Assume earlyVisible might have made it visible
+        item1.itemData.earlyVisible = true;
+
+        // Set up one hazard in Tier 2 with the flag
+        const hazard1 = {
+            active: true,
+            visible: true,
+            setActive: jest.fn(function(a) { this.active = a; return this; }),
+            setVisible: jest.fn(function(v) { this.visible = v; return this; }),
+            hazardData: { tier: 2, hideInPreviousTier: true, earlyVisible: true },
+            destroy: jest.fn()
+        };
+        gameScene.hazards.getChildren().push(hazard1);
+
+        // Note: REQ-DMG-006 override normally hides all hazards at tier 1 regardless.
+        // We will temporarily test this from player tier 2 looking at tier 3.
+        gameScene.player.currentTier = 2; // Player is tier 2
+
+        // Let's modify the item/hazard tier so it's N+1 relative to 2
+        item1.itemData.tier = 3;
+        // Keep a copy of the original children to append
+        const origChildren = gameScene.edibleItems[3].getChildren();
+        // Overwrite the group just for the test
+        gameScene.edibleItems[3].getChildren = jest.fn(() => [item1, ...origChildren.slice(1)]);
+
+        hazard1.hazardData.tier = 3;
+
+        if (gameScene.updateEntityVisibility) {
+            gameScene.updateEntityVisibility();
+        }
+
+        // Verify the item with the flag is hidden despite earlyVisible
+        expect(item1.active).toBe(false);
+        expect(item1.visible).toBe(false);
+
+        // Verify other Tier 3 items (without the flag, maybe earlyVisible)
+        const currentChildren = gameScene.edibleItems[3].getChildren();
+        const item2 = currentChildren[1];
+        item2.itemData = { tier: 3, earlyVisible: true }; // ensure itemData exists
+
+        // Re-run visibility to ensure item2 earlyVisible takes effect
+        if (gameScene.updateEntityVisibility) {
+            gameScene.updateEntityVisibility();
+        }
+
+        expect(item2.active).toBe(true);
+        expect(item2.visible).toBe(true);
+
+        // Verify the hazard with the flag is hidden despite earlyVisible
+        expect(hazard1.active).toBe(false);
+        expect(hazard1.visible).toBe(false);
+    });
+
     test('Winnability Check Integration', () => {
         // Now checkWinnability uses gameScene.levelConfig.TIER_ENTITIES rather than edibleItems/hazards groups
         // So we need to mock gameScene.levelConfig to include enough potential area

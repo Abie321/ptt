@@ -614,7 +614,10 @@ class GameScene extends Phaser.Scene {
                         isVisible = true;
                     } else if (tier === playerTier + 1) {
                         // Apply subset visibility if it's tier N+1
-                        if (item.itemData && item.itemData.earlyVisible !== undefined) {
+                        if (item.itemData && item.itemData.hideInPreviousTier) {
+                            // If it should be hidden in previous tier, do not make it early visible
+                            isVisible = false;
+                        } else if (item.itemData && item.itemData.earlyVisible !== undefined) {
                             isVisible = item.itemData.earlyVisible;
                         } else {
                             isVisible = true; // Fallback
@@ -639,7 +642,9 @@ class GameScene extends Phaser.Scene {
                 isVisible = true;
             } else if (tier === playerTier + 1) {
                  // Apply subset visibility if it's tier N+1
-                 if (hazard.hazardData.earlyVisible !== undefined) {
+                 if (hazard.hazardData && hazard.hazardData.hideInPreviousTier) {
+                     isVisible = false;
+                 } else if (hazard.hazardData.earlyVisible !== undefined) {
                      isVisible = hazard.hazardData.earlyVisible;
                  } else {
                      isVisible = true; // Fallback
