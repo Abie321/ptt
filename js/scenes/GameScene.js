@@ -610,7 +610,13 @@ class GameScene extends Phaser.Scene {
             items.forEach(item => {
                 if (item) {
                     let isVisible = false;
-                    if (tier === playerTier - 1 || tier === playerTier) {
+                    if (tier === playerTier - 1) {
+                        if (item.itemData && item.itemData.hideInNextTier) {
+                            isVisible = false;
+                        } else {
+                            isVisible = true;
+                        }
+                    } else if (tier === playerTier) {
                         isVisible = true;
                     } else if (tier === playerTier + 1) {
                         // Apply subset visibility if it's tier N+1
@@ -638,7 +644,13 @@ class GameScene extends Phaser.Scene {
             const tier = hazard.hazardData.tier;
             let isVisible = false;
 
-            if (tier === playerTier - 1 || tier === playerTier) {
+            if (tier === playerTier - 1) {
+                if (hazard.hazardData && hazard.hazardData.hideInNextTier) {
+                    isVisible = false;
+                } else {
+                    isVisible = true;
+                }
+            } else if (tier === playerTier) {
                 isVisible = true;
             } else if (tier === playerTier + 1) {
                  // Apply subset visibility if it's tier N+1
