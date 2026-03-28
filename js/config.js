@@ -64,10 +64,10 @@ const LEVEL_1_CONFIG = {
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
-            { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
+            { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17], hideInNextTier: true },
+            { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17], hideInNextTier: true },
             { type: "Coin", count: 12, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
-            { type: "Sugarcube", count: 12, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18, , hideInNextTier: true },
+            { type: "Sugarcube", count: 12, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18},
         ],
         2: [
             // Edibles
