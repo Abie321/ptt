@@ -64,7 +64,7 @@ const LEVEL_1_CONFIG = {
             { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
             { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
             { type: "Coin", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
-            { type: "Sugarcube", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
+            { type: "Sugarcube", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18, hideInNextTier: true },
         ],
         2: [
             // Edibles
