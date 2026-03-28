@@ -99,10 +99,11 @@ describe('GameScene', () => {
             );
         } else {
             expect(gameScene.add.image).toHaveBeenCalledWith(
-                levelArea.WIDTH / 2,
-                levelArea.HEIGHT / 2,
+                0,
+                0,
                 'background_tier_1'
             );
+            expect(gameScene.bg.setOrigin).toHaveBeenCalledWith(0, 0);
         }
     });
   });

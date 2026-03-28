@@ -148,16 +148,30 @@ class GameScene extends Phaser.Scene {
             bgScale = initialTierConfig.ASSETS.BACKGROUND_SCALE;
         }
 
+        let bgX = initialWorld.WIDTH / 2;
+        let bgY = initialWorld.HEIGHT / 2;
+        let useTopLeftOrigin = false;
+
+        if (initialTierConfig.ASSETS && initialTierConfig.ASSETS.BACKGROUND_X !== undefined && initialTierConfig.ASSETS.BACKGROUND_Y !== undefined) {
+            bgX = initialTierConfig.ASSETS.BACKGROUND_X;
+            bgY = initialTierConfig.ASSETS.BACKGROUND_Y;
+            useTopLeftOrigin = true;
+        }
+
         if (initialTierConfig.ASSETS && initialTierConfig.ASSETS.TILE_BACKGROUND) {
             this.bg = this.add.tileSprite(
-                initialWorld.WIDTH / 2,
-                initialWorld.HEIGHT / 2,
+                bgX,
+                bgY,
                 initialWorld.WIDTH / bgScale,
                 initialWorld.HEIGHT / bgScale,
                 bgKey
             );
         } else {
-            this.bg = this.add.image(initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2, bgKey);
+            this.bg = this.add.image(bgX, bgY, bgKey);
+        }
+
+        if (useTopLeftOrigin) {
+            this.bg.setOrigin(0, 0);
         }
 
         this.bg.setScale(bgScale);
@@ -545,16 +559,30 @@ class GameScene extends Phaser.Scene {
                 // If it needs to be a tileSprite and it currently isn't, or vice-versa, or just for a cleaner refresh
                 this.bg.destroy();
 
+                let bgX = world.WIDTH / 2;
+                let bgY = world.HEIGHT / 2;
+                let useTopLeftOrigin = false;
+
+                if (newTierConfig.ASSETS && newTierConfig.ASSETS.BACKGROUND_X !== undefined && newTierConfig.ASSETS.BACKGROUND_Y !== undefined) {
+                    bgX = newTierConfig.ASSETS.BACKGROUND_X;
+                    bgY = newTierConfig.ASSETS.BACKGROUND_Y;
+                    useTopLeftOrigin = true;
+                }
+
                 if (isTileBackground) {
                     this.bg = this.add.tileSprite(
-                        world.WIDTH / 2,
-                        world.HEIGHT / 2,
+                        bgX,
+                        bgY,
                         world.WIDTH / bgScale,
                         world.HEIGHT / bgScale,
                         bgKey
                     );
                 } else {
-                    this.bg = this.add.image(world.WIDTH / 2, world.HEIGHT / 2, bgKey);
+                    this.bg = this.add.image(bgX, bgY, bgKey);
+                }
+
+                if (useTopLeftOrigin) {
+                    this.bg.setOrigin(0, 0);
                 }
 
                 this.bg.setScale(bgScale);
