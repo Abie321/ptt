@@ -55,7 +55,9 @@ const LEVEL_1_CONFIG = {
         'sandwich': 'assets/images/sandwich.png',
         'teabag': 'assets/images/teabag.png',
         'cake': 'assets/images/cake.png',
-        'spoon': 'assets/images/spoon.png'
+        'spoon': 'assets/images/spoon.png',
+        'cup': 'assets/images/cup.png',
+        'teapot': 'assets/images/teapot.png',
     },
   
     // Entities configuration per tier
@@ -64,17 +66,19 @@ const LEVEL_1_CONFIG = {
         1: [
             { type: "Tea drop", count: 25, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17] },
             { type: "Cookie crumb", count: 25, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17] },
-            { type: "Coin", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 35 },
-            { type: "Sugarcube", count: 8, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
+            { type: "Coin", count: 12, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
+            { type: "Sugarcube", count: 12, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18 },
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
+            { type: "Sandwich", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
             { type: "Tea bag", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
             { type: "Cake", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
             { type: "Spoon", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cup", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 50, image: 'cup'},
+            { type: "Teapot", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 150, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
+            { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
         ],
         3: [
             // Edibles
