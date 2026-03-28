@@ -54,7 +54,8 @@ const LEVEL_1_CONFIG = {
         'cube': 'assets/images/cube.png',
         'sandwich': 'assets/images/sandwich.png',
         'teabag': 'assets/images/teabag.png',
-        'cake': 'assets/images/cake.png'
+        'cake': 'assets/images/cake.png',
+        'spoon': 'assets/images/spoon.png'
     },
   
     // Entities configuration per tier
@@ -71,6 +72,7 @@ const LEVEL_1_CONFIG = {
             { type: "Sandwich", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 45, image: 'sandwich'},
             { type: "Tea bag", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
             { type: "Cake", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
+            { type: "Spoon", count: 8, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
             // Hazards
             { type: "Predator Mite", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ],
