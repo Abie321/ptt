@@ -4,11 +4,9 @@ const LEVEL_1_CONFIG = {
     VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 0.75, TILE_BACKGROUND: true } },
-        { tier: 3, initialSize: 11, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 4, initialSize: 11, threshold: 250, name: 'Medium', color: 0xF44336, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 5, initialSize: 11, threshold: 300, name: 'Large', color: 0x9C27B0, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
+        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1200, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.3 } },
+        { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
+        { tier: 3, initialSize: 11, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
     ],
 
     // Scoring configuration
@@ -46,7 +44,6 @@ const LEVEL_1_CONFIG = {
     },
 
     ENTITY_IMAGES: {
-        'apple': 'assets/images/apple.png',
         'player_sheet': 'assets/images/ghost.png',
         'teadrop': 'assets/images/teadrop.png',
         'crumb': 'assets/images/crumb.png',
@@ -85,36 +82,6 @@ const LEVEL_1_CONFIG = {
             { type: "Bug", count: 3, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 100 },
             // Hazards
             { type: "Spider", count: 6, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 30 }
-        ],
-        4: [
-            // Edibles
-            { type: "Mouse", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 21 },
-            { type: "Apple", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, image: 'apple', size: 22 },
-            { type: "Rock", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 23 },
-            { type: "Can", count: 3, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 22 },
-            { type: "Rat", count: 2, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, size: 24 },
-            { type: "Bird", count: 3, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 23 },
-            { type: "Frog", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 22 },
-            { type: "Phone", count: 3, value: 20, shape: 'square', color: 0xFF5722, isHazard: false, size: 25 },
-            { type: "Shoe", count: 2, value: 20, shape: 'triangle', color: 0xFF5722, isHazard: false, size: 24 },
-            { type: "Cup", count: 2, value: 20, shape: 'circle', color: 0xFF5722, isHazard: false, size: 23 },
-            // Hazards
-            { type: "Cat", count: 7, value: 70, shape: 'circle', color: 0xFF0000, isHazard: true, size: 35 }
-        ],
-        5: [
-            // Edibles
-            { type: "Cat", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 30 },
-            { type: "Chair", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 32 },
-            { type: "Bush", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 35 },
-            { type: "Tire", count: 3, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 30 },
-            { type: "Dog", count: 2, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 33 },
-            { type: "Table", count: 3, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 38 },
-            { type: "Fence", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 34 },
-            { type: "Bike", count: 3, value: 25, shape: 'square', color: 0xE91E63, isHazard: false, size: 36 },
-            { type: "Sign", count: 2, value: 25, shape: 'triangle', color: 0xE91E63, isHazard: false, size: 32 },
-            { type: "Box", count: 2, value: 25, shape: 'circle', color: 0xE91E63, isHazard: false, size: 31 },
-            // Hazards
-            { type: "Human", count: 8, value: 80, shape: 'circle', color: 0xFF0000, isHazard: true, size: 45 }
         ]
     }
 };
