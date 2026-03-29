@@ -255,10 +255,17 @@ class GameScene extends Phaser.Scene {
         // Add existing hazards
         if (this.hazards) {
             this.hazards.getChildren().forEach(hazard => {
+                let r = hazard.radius;
+                if (r === undefined && hazard.hazardData && hazard.hazardData.radius !== undefined) {
+                    r = hazard.hazardData.radius;
+                }
+                if (r === undefined || isNaN(r)) {
+                    r = hazard.displayWidth / 2;
+                }
                 existingEntities.push({
                     x: hazard.x,
                     y: hazard.y,
-                    radius: hazard.radius || hazard.displayWidth / 2
+                    radius: r
                 });
             });
         }
@@ -267,10 +274,17 @@ class GameScene extends Phaser.Scene {
         for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
             if (this.edibleItems[t]) {
                 this.edibleItems[t].getChildren().forEach(item => {
+                    let r = item.radius;
+                    if (r === undefined && item.itemData && item.itemData.radius !== undefined) {
+                        r = item.itemData.radius;
+                    }
+                    if (r === undefined || isNaN(r)) {
+                        r = item.displayWidth / 2;
+                    }
                     existingEntities.push({
                         x: item.x,
                         y: item.y,
-                        radius: item.radius || item.displayWidth / 2
+                        radius: r
                     });
                 });
             }
@@ -311,7 +325,8 @@ class GameScene extends Phaser.Scene {
                         let overlaps = false;
                         for (const existing of existingEntities) {
                             const dist = Phaser.Math.Distance.Between(candidateX, candidateY, existing.x, existing.y);
-                            if (dist < radius + existing.radius) {
+                            // Add a 10% + 5px buffer to the radius check to prevent visual overlapping
+                            if (dist < (radius + existing.radius) * 1.1 + 5) {
                                 overlaps = true;
                                 break;
                             }
