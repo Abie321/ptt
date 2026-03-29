@@ -258,15 +258,8 @@ class GameScene extends Phaser.Scene {
                 const y = Phaser.Math.Between(50, world.HEIGHT - 50);
 
                 // Calculate subset visibility for Tier N+1 items
-                // Only a fraction of Tier N+1 items should be visible while in Tier N, based on the zoom ratio
-                let earlyVisible = false;
-                if (tier > 1) {
-                    const currentTierZoom = this.levelConfig.SIZE_TIERS[tier - 2].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 2].zoom : 1.0;
-                    const nextTierZoom = this.levelConfig.SIZE_TIERS[tier - 1].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 1].zoom : 1.0;
-                    const zoomRatio = nextTierZoom / currentTierZoom;
-                    const visibilityFraction = 0.5 * zoomRatio * zoomRatio; // Area ratio
-                    earlyVisible = Math.random() < visibilityFraction;
-                }
+                // The user requested to show all higher tier items at lower tiers
+                let earlyVisible = true;
 
                 // Inject tier and early visibility flag into the config for the entity to use
                 const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible };
