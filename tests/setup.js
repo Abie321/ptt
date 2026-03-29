@@ -217,7 +217,8 @@ global.Phaser = {
               setBounce: jest.fn(),
               setCircle: jest.fn()
             };
-          })
+          }),
+          collider: jest.fn()
         },
         world: {
           setBounds: jest.fn()

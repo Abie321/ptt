@@ -196,6 +196,9 @@ class GameScene extends Phaser.Scene {
         // Spawn entities for all tiers based on new configuration
         this.spawnEntities();
 
+        // Setup item colliders
+        this.setupColliders();
+
         // Listen for tier advancement
         this.events.on('tierAdvanced', this.onTierAdvanced, this);
 
@@ -275,6 +278,37 @@ class GameScene extends Phaser.Scene {
                 }
             }
         });
+    }
+
+    setupColliders() {
+        if (!this.levelConfig.SIZE_TIERS) return;
+
+        // Add a collider between player and each edible item group
+        for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
+            if (this.edibleItems[tier]) {
+                this.physics.add.collider(
+                    this.player.sprite,
+                    this.edibleItems[tier],
+                    null, // No collision callback needed, handled in checkConsumption if they overlap
+                    (playerSprite, itemSprite) => {
+                        // Process callback: return true to collide (solid), false to overlap (pass through)
+                        if (!itemSprite.active) return false;
+
+                        // Use explicit radius if available, fallback to displayWidth/2
+                        const itemRadius = itemSprite.radius || itemSprite.displayWidth / 2;
+
+                        // Use unscaled sizes for mechanics
+                        const itemLogicalSize = (itemSprite.itemData && itemSprite.itemData.size) ? itemSprite.itemData.size : itemRadius;
+                        const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
+
+                        // If player cannot eat it, it's solid (return true)
+                        // If player can eat it, it's NOT solid (return false), allowing overlap for consumption
+                        return playerLogicalSize <= itemLogicalSize;
+                    },
+                    this
+                );
+            }
+        }
     }
 
     createHUD() {
