@@ -645,8 +645,9 @@ class GameScene extends Phaser.Scene {
         // Edibles
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
-            this.edibleItems[tier].getChildren().forEach(item => {
-                if (item && item.active) {
+            const items = this.edibleItems[tier].getChildren();
+            items.forEach(item => {
+                if (item) {
                     // Update the visual property stored on the sprite
                     if (item.radius !== undefined) item.radius *= scaleMultiplier;
                     if (item.itemData && item.itemData.radius !== undefined) {
@@ -674,7 +675,7 @@ class GameScene extends Phaser.Scene {
 
         // Hazards
         this.hazards.getChildren().forEach(hazard => {
-            if (hazard && hazard.active) {
+            if (hazard) {
                 // Update the visual property stored on the sprite
                 if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
                 if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
