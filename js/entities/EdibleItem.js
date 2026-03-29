@@ -48,7 +48,12 @@ class EdibleItem {
         this.sprite.body.setImmovable(true);
 
         // Ensure circular body for circles, otherwise default rectangular body is fine
-        if (shape === 'circle' || config.image) {
+        if (config.image) {
+            // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.
+            // The unscaled radius is half the original width of the texture.
+            this.sprite.body.setCircle(this.sprite.width / 2);
+        } else if (shape === 'circle') {
+            // For primitive circles, visualSize is the unscaled radius.
             this.sprite.body.setCircle(visualSize);
             // Re-center body if necessary depending on origin, but Phaser typically handles circle bodies well when set explicitly
         }
