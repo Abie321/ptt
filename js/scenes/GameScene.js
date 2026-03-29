@@ -250,9 +250,9 @@ class GameScene extends Phaser.Scene {
             const count = entityConfig.count || 1;
 
             for (let i = 0; i < count; i++) {
-                // Determine bounds based on player's current tier (N), not the entity's tier (N+1)
-                const currentTierIndex = this.player ? this.player.getCurrentTier() - 1 : 0;
-                const tierConfig = this.levelConfig.SIZE_TIERS[currentTierIndex] || this.levelConfig.SIZE_TIERS[0];
+                // Determine bounds based on the entity's tier
+                const entityTierIndex = tier - 1;
+                const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
                 const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
                 const x = Phaser.Math.Between(50, world.WIDTH - 50);
                 const y = Phaser.Math.Between(50, world.HEIGHT - 50);

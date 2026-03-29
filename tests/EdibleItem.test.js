@@ -165,11 +165,11 @@ describe('EdibleItem', () => {
 
   describe('Tier Coverage', () => {
     test('should create items across all size tiers', () => {
-      const items = GameConfig.SIZE_TIERS.map((tierConfig, index) => {
+      const items = GameConfig.LEVELS[0].SIZE_TIERS.map((tierConfig, index) => {
         return new EdibleItem(scene, 100, 100, { ...mockConfig, tier: tierConfig.tier });
       });
 
-      expect(items.length).toBe(5);
+      expect(items.length).toBe(GameConfig.LEVELS[0].SIZE_TIERS.length);
       items.forEach((item, index) => {
         expect(item.tier).toBe(index + 1);
       });

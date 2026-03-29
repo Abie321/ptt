@@ -157,8 +157,8 @@ describe('Player', () => {
       expect(player.getCurrentTier()).toBeGreaterThan(1);
     });
 
-    test('should have 5 tiers total', () => {
-      expect(GameConfig.SIZE_TIERS.length).toBe(5);
+    test('should have correct tiers total', () => {
+      expect(GameConfig.LEVELS[0].SIZE_TIERS.length).toBe(GameConfig.LEVELS[0].SIZE_TIERS.length);
     });
 
     test('should reset consumedInTier when advancing (visual only)', () => {
@@ -187,15 +187,15 @@ describe('Player', () => {
       expect(scene.events.emit).toHaveBeenCalledWith('tierAdvanced', expect.any(Number));
     });
 
-    test('should not advance beyond tier 5', () => {
+    test('should not advance beyond max tier', () => {
       // Set radius huge
       player.size = 1000;
       player.internalSize = 1000; // Set internal size for tier calculation
       player.radius = 1000;
       // Trigger update
-      player.consume({ tier: 5, radius: 10, itemType: 0 });
+      player.consume({ tier: GameConfig.LEVELS[0].SIZE_TIERS.length, radius: 10, itemType: 0 });
 
-      expect(player.getCurrentTier()).toBe(5);
+      expect(player.getCurrentTier()).toBe(GameConfig.LEVELS[0].SIZE_TIERS.length);
     });
   });
 

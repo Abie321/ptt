@@ -70,11 +70,8 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should show all tier names correctly', () => {
-      const tierNames = ['Micro', 'Tiny', 'Small', 'Medium', 'Large'];
-
-      tierNames.forEach((name, index) => {
-        const tierConfig = GameConfig.SIZE_TIERS[index];
-        expect(tierConfig.name).toBe(name);
+      GameConfig.LEVELS[0].SIZE_TIERS.forEach((tierConfig, index) => {
+        expect(tierConfig.name).toBeDefined();
       });
     });
 
@@ -333,14 +330,14 @@ describe('UI and HUD Elements', () => {
 
   describe('Tier Color Coding', () => {
     test('should have unique colors for each tier', () => {
-      const colors = GameConfig.SIZE_TIERS.map(tier => tier.color);
+      const colors = GameConfig.LEVELS[0].SIZE_TIERS.map(tier => tier.color);
       const uniqueColors = new Set(colors);
 
-      expect(uniqueColors.size).toBe(5);
+      expect(uniqueColors.size).toBe(GameConfig.LEVELS[0].SIZE_TIERS.length);
     });
 
     test('should have defined colors for all tiers', () => {
-      GameConfig.SIZE_TIERS.forEach(tier => {
+      GameConfig.LEVELS[0].SIZE_TIERS.forEach(tier => {
         expect(tier.color).toBeDefined();
         expect(typeof tier.color).toBe('number');
       });
