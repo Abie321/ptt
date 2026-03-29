@@ -6,7 +6,7 @@ const LEVEL_1_CONFIG = {
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1200, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.3, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
         { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 3, initialSize: 100, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.50, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } }
+        { tier: 3, initialSize: 50, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.33, zoomInStart: 3.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } }
     ],
 
     // Scoring configuration
@@ -70,19 +70,19 @@ const LEVEL_1_CONFIG = {
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
-            { type: "Tea bag", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
-            { type: "Spoon", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
-            { type: "Biscuit", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 6, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 150, image: 'teapot', hideInPreviousTier: true },
+            { type: "Sandwich", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
+            { type: "Tea bag", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Cake", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
+            { type: "Spoon", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cup", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
+            { type: "Biscuit", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
+            { type: "Teapot", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 150, image: 'teapot', hideInPreviousTier: true },
             // Hazards
             { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
         ],
         3: [
             // Edibles
-            { type: "One pound note", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 225, image: 'onepoundnote' },
+            { type: "One pound note", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 225, image: 'onepoundnote', noCollision: true },
             // Hazards
         ]
     }
