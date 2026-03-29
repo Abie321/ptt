@@ -28,8 +28,24 @@ class Hazard {
         // Use color from config (defaults to red if not provided, though config should have it)
         const color = config.color !== undefined ? config.color : 0xFF0000;
 
-        this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
+        if (config.image) {
+            this.sprite = scene.add.sprite(x, y, config.image);
+            // Scale sprite to match the desired radius (diameter = visualSize * 2)
+            const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+            this.sprite.setScale(spriteScale);
+            this.sprite.setAlpha(0.7);
+        } else {
+            this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
+        }
+
         scene.physics.add.existing(this.sprite);
+
+        // Ensure circular body for hazards as well
+        if (config.image) {
+            this.sprite.body.setCircle(this.sprite.width / 2);
+        } else {
+            this.sprite.body.setCircle(visualSize);
+        }
 
         // Simple movement pattern (optional for prototype)
         this.sprite.body.setVelocity(
