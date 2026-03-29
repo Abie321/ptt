@@ -618,6 +618,17 @@ class GameScene extends Phaser.Scene {
         const initialSize = (newTierConfigData && newTierConfigData.initialSize) ? newTierConfigData.initialSize : 11;
         const scaleMultiplier = initialSize / this.player.size;
 
+        // --- Calculate Background Repositioning Ratio ---
+        // Find the scale of the old tier and the new tier to undo the coordinate multiplication
+        const oldTierConfig = this.levelConfig.SIZE_TIERS[newTier - 2];
+        const oldBgScale = (oldTierConfig && oldTierConfig.ASSETS && oldTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? oldTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        const newBgScale = (newTierConfigData && newTierConfigData.ASSETS && newTierConfigData.ASSETS.BACKGROUND_SCALE !== undefined) ? newTierConfigData.ASSETS.BACKGROUND_SCALE : 1.0;
+
+        // Items were placed at X * (oldBgScale / itemBgScale)
+        // Now they should be at X * (newBgScale / itemBgScale)
+        // To fix this without re-evaluating itemBgScale, we just multiply their current position by (newBgScale / oldBgScale)
+        const repositionRatio = newBgScale / oldBgScale;
+
         // Update cumulative global scale
         this.player.currentScale *= scaleMultiplier;
 
@@ -626,44 +637,65 @@ class GameScene extends Phaser.Scene {
         this.player.radius *= scaleMultiplier;
         this.player.updateSpriteScale();
 
-        // Scale all existing entities visually
+        // Update player coordinates to keep relative position in the newly scaled world
+        this.player.sprite.x *= repositionRatio;
+        this.player.sprite.y *= repositionRatio;
+
+        // Scale and reposition all existing entities visually
         // Edibles
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
             this.edibleItems[tier].getChildren().forEach(item => {
-                if (item) {
-                    item.radius *= scaleMultiplier;
+                if (item && item.active) {
+                    // Update the visual property stored on the sprite
+                    if (item.radius !== undefined) item.radius *= scaleMultiplier;
+                    if (item.itemData && item.itemData.radius !== undefined) {
+                        item.itemData.radius *= scaleMultiplier;
+                    }
+
                     if (item.displayWidth !== undefined) {
                          const currentScale = item.scale !== undefined ? item.scale : 1;
                          item.setScale(currentScale * scaleMultiplier);
                     }
                     if (item.body) {
-                         // Some logic to rescale physics body if needed, simple approach:
-                         if (item.geom && item.geom.radius !== undefined) {
+                         // Rescale physics body
+                         if (item.geom && item.geom.radius !== undefined && item.radius !== undefined) {
                              item.geom.radius = item.radius;
                          } else if (item.radius !== undefined && typeof item.setRadius === 'function') {
                              item.setRadius(item.radius);
                          }
                     }
+                    // Reposition
+                    item.x *= repositionRatio;
+                    item.y *= repositionRatio;
                 }
             });
         }
 
         // Hazards
         this.hazards.getChildren().forEach(hazard => {
-            if (hazard) {
-                hazard.radius *= scaleMultiplier;
+            if (hazard && hazard.active) {
+                // Update the visual property stored on the sprite
+                if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
+                if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
+                    hazard.hazardData.radius *= scaleMultiplier;
+                }
+
                 if (hazard.displayWidth !== undefined) {
                      const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
                      hazard.setScale(currentScale * scaleMultiplier);
                 }
                 if (hazard.body) {
-                     if (hazard.geom && hazard.geom.radius !== undefined) {
+                     // Rescale physics body
+                     if (hazard.geom && hazard.geom.radius !== undefined && hazard.radius !== undefined) {
                          hazard.geom.radius = hazard.radius;
                      } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
                          hazard.setRadius(hazard.radius);
                      }
                 }
+                // Reposition
+                hazard.x *= repositionRatio;
+                hazard.y *= repositionRatio;
             }
         });
 
