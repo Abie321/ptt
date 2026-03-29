@@ -6,7 +6,7 @@ const LEVEL_1_CONFIG = {
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1200, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.3, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
         { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 3, initialSize: 100, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.50, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } }
+        { tier: 3, initialSize: 100, threshold: 200, name: 'Small', color: 0xFF9800, zoom: 0.50, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5, TILE_BACKGROUND: true } }
     ],
 
     // Scoring configuration
