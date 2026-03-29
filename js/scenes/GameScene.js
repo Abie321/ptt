@@ -344,6 +344,8 @@ class GameScene extends Phaser.Scene {
                             x = candidateX * bgScaleRatio;
                             y = candidateY * bgScaleRatio;
                             foundSpot = true;
+                    // Log spawn info
+                    console.log(`[SPAWN] Tier: ${tier}, Type: ${entityConfig.type}, isHazard: ${entityConfig.isHazard}, x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, bgScaleRatio: ${bgScaleRatio}, bounds: ${world.WIDTH}x${world.HEIGHT}`);
                             break;
                         }
                     }
@@ -355,6 +357,8 @@ class GameScene extends Phaser.Scene {
                     x = Phaser.Math.Between(50, world.WIDTH - 50) * bgScaleRatio;
                     y = Phaser.Math.Between(50, world.HEIGHT - 50) * bgScaleRatio;
                     foundSpot = true;
+                    // Log spawn info
+                    console.log(`[SPAWN] Tier: ${tier}, Type: ${entityConfig.type}, isHazard: ${entityConfig.isHazard}, x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, bgScaleRatio: ${bgScaleRatio}, bounds: ${world.WIDTH}x${world.HEIGHT}`);
                 }
 
                 // Calculate subset visibility for Tier N+1 items
@@ -666,8 +670,11 @@ class GameScene extends Phaser.Scene {
                          }
                     }
                     // Reposition
+                    const oldX = item.x;
+                    const oldY = item.y;
                     item.x *= repositionRatio;
                     item.y *= repositionRatio;
+                    console.log(`[REPOSITION EDIBLE] Tier ${tier}, ${item.itemData ? item.itemData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${item.x.toFixed(2)}, ${item.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
                 }
             });
         }
@@ -694,8 +701,11 @@ class GameScene extends Phaser.Scene {
                      }
                 }
                 // Reposition
+                const oldX = hazard.x;
+                const oldY = hazard.y;
                 hazard.x *= repositionRatio;
                 hazard.y *= repositionRatio;
+                console.log(`[REPOSITION HAZARD] ${hazard.hazardData ? hazard.hazardData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${hazard.x.toFixed(2)}, ${hazard.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
             }
         });
 
