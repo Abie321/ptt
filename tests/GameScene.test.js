@@ -147,7 +147,8 @@ describe('GameScene', () => {
 
   describe('Item Spawning', () => {
     test('should spawn edible items for all tiers', () => {
-      for (let tier = 1; tier <= 5; tier++) {
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      for (let tier = 1; tier <= maxTier; tier++) {
         expect(gameScene.edibleItems[tier]).toBeDefined();
       }
     });
@@ -420,8 +421,8 @@ describe('GameScene', () => {
     });
 
     test('should end level when reaching max tier target size', () => {
-      // Max Tier is 5.
-      gameScene.player.currentTier = 5;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
       gameScene.player.size = 1000;
       gameScene.player.internalSize = 1000; // Ensure internal size is also huge
       gameScene.player.radius = 1000; // Huge
@@ -433,10 +434,11 @@ describe('GameScene', () => {
     });
 
     test('should not end level before max tier', () => {
-      gameScene.player.currentTier = 4;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier - 1;
       gameScene.player.size = 1000;
       gameScene.player.internalSize = 1000;
-      gameScene.player.radius = 1000; // Huge but tier not advanced (should technically be 5 if radius is huge, but checkWinCondition checks currentTier property first)
+      gameScene.player.radius = 1000; // Huge but tier not advanced
 
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();
@@ -445,10 +447,11 @@ describe('GameScene', () => {
     });
 
     test('should not end level if max tier target not met', () => {
-      gameScene.player.currentTier = 5;
-      // Set radius to exactly start of Tier 5. Progress should be 0.
-      const tier5Config = GameConfig.SIZE_TIERS[4];
-      const threshold = tier5Config.threshold || ((GameConfig.SIZE_TIERS && GameConfig.SIZE_TIERS[0] && GameConfig.SIZE_TIERS[0].initialSize) ? GameConfig.SIZE_TIERS[0].initialSize : 11 * tier5Config.scale);
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
+      // Set radius to exactly start of max tier. Progress should be 0.
+      const maxTierConfig = GameConfig.LEVELS[0].SIZE_TIERS[maxTier - 1];
+      const threshold = maxTierConfig.threshold || ((GameConfig.LEVELS[0].SIZE_TIERS && GameConfig.LEVELS[0].SIZE_TIERS[0] && GameConfig.LEVELS[0].SIZE_TIERS[0].initialSize) ? GameConfig.LEVELS[0].SIZE_TIERS[0].initialSize : 11 * maxTierConfig.scale);
 
       gameScene.player.size = threshold;
       gameScene.player.internalSize = threshold;
@@ -464,8 +467,8 @@ describe('GameScene', () => {
   describe('Star Rating System', () => {
     test('should award 0 stars for low scores', () => {
       gameScene.score = 100;
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -476,8 +479,8 @@ describe('GameScene', () => {
 
     test('should award 1 star for scores >= 500', () => {
       gameScene.score = 600;
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -487,8 +490,8 @@ describe('GameScene', () => {
 
     test('should award 2 stars for scores >= 1500', () => {
       gameScene.score = 2000;
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -498,8 +501,8 @@ describe('GameScene', () => {
 
     test('should award 3 stars for scores >= 3000', () => {
       gameScene.score = 3500;
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -510,8 +513,8 @@ describe('GameScene', () => {
 
   describe('End Level Transition', () => {
     test('should transition to EndLevelScene when level ends', () => {
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -523,8 +526,8 @@ describe('GameScene', () => {
 
     test('should pass score data to end scene', () => {
       gameScene.score = 2500;
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -533,8 +536,8 @@ describe('GameScene', () => {
     });
 
     test('should pass time data to end scene', () => {
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
 
@@ -544,8 +547,8 @@ describe('GameScene', () => {
     });
 
     test('should not end level twice', () => {
-      gameScene.player.currentTier = 5;
-      gameScene.player.consumedInTier = GameConfig.SIZE_TIERS[4].quota;
+      const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
+      gameScene.player.currentTier = maxTier;
 
       gameScene.endLevel();
       const firstCallCount = gameScene.scene.start.mock.calls.length;

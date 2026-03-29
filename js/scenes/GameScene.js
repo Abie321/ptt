@@ -250,23 +250,16 @@ class GameScene extends Phaser.Scene {
             const count = entityConfig.count || 1;
 
             for (let i = 0; i < count; i++) {
-                // Determine bounds based on player's current tier (N), not the entity's tier (N+1)
-                const currentTierIndex = this.player ? this.player.getCurrentTier() - 1 : 0;
-                const tierConfig = this.levelConfig.SIZE_TIERS[currentTierIndex] || this.levelConfig.SIZE_TIERS[0];
+                // Determine bounds based on the entity's tier
+                const entityTierIndex = tier - 1;
+                const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
                 const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
                 const x = Phaser.Math.Between(50, world.WIDTH - 50);
                 const y = Phaser.Math.Between(50, world.HEIGHT - 50);
 
                 // Calculate subset visibility for Tier N+1 items
-                // Only a fraction of Tier N+1 items should be visible while in Tier N, based on the zoom ratio
-                let earlyVisible = false;
-                if (tier > 1) {
-                    const currentTierZoom = this.levelConfig.SIZE_TIERS[tier - 2].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 2].zoom : 1.0;
-                    const nextTierZoom = this.levelConfig.SIZE_TIERS[tier - 1].zoom !== undefined ? this.levelConfig.SIZE_TIERS[tier - 1].zoom : 1.0;
-                    const zoomRatio = nextTierZoom / currentTierZoom;
-                    const visibilityFraction = 0.5 * zoomRatio * zoomRatio; // Area ratio
-                    earlyVisible = Math.random() < visibilityFraction;
-                }
+                // The user requested to show all higher tier items at lower tiers
+                let earlyVisible = true;
 
                 // Inject tier and early visibility flag into the config for the entity to use
                 const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible };
