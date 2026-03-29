@@ -249,6 +249,33 @@ class GameScene extends Phaser.Scene {
 
         const entities = this.levelConfig.TIER_ENTITIES[tier];
 
+        // Gather existing entities for overlap checking
+        const existingEntities = [];
+
+        // Add existing hazards
+        if (this.hazards) {
+            this.hazards.getChildren().forEach(hazard => {
+                existingEntities.push({
+                    x: hazard.x,
+                    y: hazard.y,
+                    radius: hazard.radius || hazard.displayWidth / 2
+                });
+            });
+        }
+
+        // Add existing edibles from all tiers
+        for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
+            if (this.edibleItems[t]) {
+                this.edibleItems[t].getChildren().forEach(item => {
+                    existingEntities.push({
+                        x: item.x,
+                        y: item.y,
+                        radius: item.radius || item.displayWidth / 2
+                    });
+                });
+            }
+        }
+
         entities.forEach(entityConfig => {
             const count = entityConfig.count || 1;
 
@@ -257,24 +284,81 @@ class GameScene extends Phaser.Scene {
                 const entityTierIndex = tier - 1;
                 const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
                 const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
-                const x = Phaser.Math.Between(50, world.WIDTH - 50);
-                const y = Phaser.Math.Between(50, world.HEIGHT - 50);
+
+                // Pre-calculate radius
+                let logicalRadius;
+                if (Array.isArray(entityConfig.size) && entityConfig.size.length === 2) {
+                    logicalRadius = Phaser.Math.Between(entityConfig.size[0], entityConfig.size[1]);
+                } else {
+                    if (entityConfig.isHazard) {
+                        logicalRadius = entityConfig.size !== undefined ? entityConfig.size : (15 + (tier * 5));
+                    } else {
+                        logicalRadius = entityConfig.size !== undefined ? entityConfig.size : (8 + (tier * 3));
+                    }
+                }
+
+                const scale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
+                const radius = logicalRadius * scale;
+
+                let x, y;
+                let foundSpot = false;
+
+                if (!entityConfig.isHazard) {
+                    for (let attempt = 0; attempt < 50; attempt++) {
+                        const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
+                        const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
+
+                        let overlaps = false;
+                        for (const existing of existingEntities) {
+                            const dist = Phaser.Math.Distance.Between(candidateX, candidateY, existing.x, existing.y);
+                            if (dist < radius + existing.radius) {
+                                overlaps = true;
+                                break;
+                            }
+                        }
+
+                        if (!overlaps) {
+                            x = candidateX;
+                            y = candidateY;
+                            foundSpot = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundSpot) {
+                        continue; // Skip placing this edible
+                    }
+                } else {
+                    x = Phaser.Math.Between(50, world.WIDTH - 50);
+                    y = Phaser.Math.Between(50, world.HEIGHT - 50);
+                    foundSpot = true;
+                }
 
                 // Calculate subset visibility for Tier N+1 items
                 // The user requested to show all higher tier items at lower tiers
                 let earlyVisible = true;
 
                 // Inject tier and early visibility flag into the config for the entity to use
-                const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible };
+                const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible, size: logicalRadius };
 
                 if (entityConfig.isHazard) {
                     const hazard = new Hazard(this, x, y, instanceConfig);
                     this.hazards.add(hazard.sprite);
+                    existingEntities.push({
+                        x: hazard.sprite.x,
+                        y: hazard.sprite.y,
+                        radius: hazard.radius
+                    });
                 } else {
                     const item = new EdibleItem(this, x, y, instanceConfig);
                     if (this.edibleItems[tier]) {
                         this.edibleItems[tier].add(item.sprite);
                     }
+                    existingEntities.push({
+                        x: item.sprite.x,
+                        y: item.sprite.y,
+                        radius: item.radius
+                    });
                 }
             }
         });
