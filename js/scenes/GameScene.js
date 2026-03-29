@@ -290,6 +290,11 @@ class GameScene extends Phaser.Scene {
             }
         }
 
+        // Get the current player tier config
+        const playerTierIndex = (this.player && this.player.getCurrentTier) ? (this.player.getCurrentTier() - 1) : 0;
+        const playerTierConfig = this.levelConfig.SIZE_TIERS[playerTierIndex] || this.levelConfig.SIZE_TIERS[0];
+        const playerBgScale = (playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
         entities.forEach(entityConfig => {
             const count = entityConfig.count || 1;
 
@@ -298,6 +303,9 @@ class GameScene extends Phaser.Scene {
                 const entityTierIndex = tier - 1;
                 const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
                 const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
+                const itemBgScale = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? tierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+                const bgScaleRatio = playerBgScale / itemBgScale;
 
                 // Pre-calculate radius
                 let logicalRadius;
@@ -324,7 +332,7 @@ class GameScene extends Phaser.Scene {
 
                         let overlaps = false;
                         for (const existing of existingEntities) {
-                            const dist = Phaser.Math.Distance.Between(candidateX, candidateY, existing.x, existing.y);
+                            const dist = Phaser.Math.Distance.Between(candidateX * bgScaleRatio, candidateY * bgScaleRatio, existing.x, existing.y);
                             // Add a 10% + 5px buffer to the radius check to prevent visual overlapping
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
                                 overlaps = true;
@@ -333,8 +341,8 @@ class GameScene extends Phaser.Scene {
                         }
 
                         if (!overlaps) {
-                            x = candidateX;
-                            y = candidateY;
+                            x = candidateX * bgScaleRatio;
+                            y = candidateY * bgScaleRatio;
                             foundSpot = true;
                             break;
                         }
@@ -344,8 +352,8 @@ class GameScene extends Phaser.Scene {
                         continue; // Skip placing this edible
                     }
                 } else {
-                    x = Phaser.Math.Between(50, world.WIDTH - 50);
-                    y = Phaser.Math.Between(50, world.HEIGHT - 50);
+                    x = Phaser.Math.Between(50, world.WIDTH - 50) * bgScaleRatio;
+                    y = Phaser.Math.Between(50, world.HEIGHT - 50) * bgScaleRatio;
                     foundSpot = true;
                 }
 
