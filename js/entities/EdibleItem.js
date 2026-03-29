@@ -47,6 +47,12 @@ class EdibleItem {
         scene.physics.add.existing(this.sprite);
         this.sprite.body.setImmovable(true);
 
+        // Ensure circular body for circles, otherwise default rectangular body is fine
+        if (shape === 'circle' || config.image) {
+            this.sprite.body.setCircle(visualSize);
+            // Re-center body if necessary depending on origin, but Phaser typically handles circle bodies well when set explicitly
+        }
+
         // Store reference
         this.sprite.itemData = this.itemData;
     }
