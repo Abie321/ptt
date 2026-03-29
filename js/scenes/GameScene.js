@@ -396,6 +396,11 @@ class GameScene extends Phaser.Scene {
                         // Use explicit radius if available, fallback to displayWidth/2
                         const itemRadius = itemSprite.radius || itemSprite.displayWidth / 2;
 
+                        // If the item is configured to have no collision, always allow overlap
+                        if (itemSprite.itemData && itemSprite.itemData.noCollision) {
+                            return false;
+                        }
+
                         // Use unscaled sizes for mechanics
                         const itemLogicalSize = (itemSprite.itemData && itemSprite.itemData.size) ? itemSprite.itemData.size : itemRadius;
                         const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
