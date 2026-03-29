@@ -344,8 +344,6 @@ class GameScene extends Phaser.Scene {
                             x = candidateX * bgScaleRatio;
                             y = candidateY * bgScaleRatio;
                             foundSpot = true;
-                    // Log spawn info
-                    console.log(`[SPAWN] Tier: ${tier}, Type: ${entityConfig.type}, isHazard: ${entityConfig.isHazard}, x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, bgScaleRatio: ${bgScaleRatio}, bounds: ${world.WIDTH}x${world.HEIGHT}`);
                             break;
                         }
                     }
@@ -357,8 +355,6 @@ class GameScene extends Phaser.Scene {
                     x = Phaser.Math.Between(50, world.WIDTH - 50) * bgScaleRatio;
                     y = Phaser.Math.Between(50, world.HEIGHT - 50) * bgScaleRatio;
                     foundSpot = true;
-                    // Log spawn info
-                    console.log(`[SPAWN] Tier: ${tier}, Type: ${entityConfig.type}, isHazard: ${entityConfig.isHazard}, x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, bgScaleRatio: ${bgScaleRatio}, bounds: ${world.WIDTH}x${world.HEIGHT}`);
                 }
 
                 // Calculate subset visibility for Tier N+1 items
@@ -650,9 +646,8 @@ class GameScene extends Phaser.Scene {
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
             const items = this.edibleItems[tier].getChildren();
-            console.log(`[GROUP LOG] Tier ${tier} has ${items.length} items tracked in group.`);
             items.forEach(item => {
-                if (item && item.active) {
+                if (item) {
                     // Update the visual property stored on the sprite
                     if (item.radius !== undefined) item.radius *= scaleMultiplier;
                     if (item.itemData && item.itemData.radius !== undefined) {
@@ -672,20 +667,15 @@ class GameScene extends Phaser.Scene {
                          }
                     }
                     // Reposition
-                    const oldX = item.x;
-                    const oldY = item.y;
                     item.x *= repositionRatio;
                     item.y *= repositionRatio;
-                    console.log(`[REPOSITION EDIBLE] Tier ${tier}, ${item.itemData ? item.itemData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${item.x.toFixed(2)}, ${item.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
-                } else {
-                    console.log(`[SKIP EDIBLE] Tier ${tier}, ${item && item.itemData ? item.itemData.type : 'unknown'}, active: ${item ? item.active : 'N/A'}`);
                 }
             });
         }
 
         // Hazards
         this.hazards.getChildren().forEach(hazard => {
-            if (hazard && hazard.active) {
+            if (hazard) {
                 // Update the visual property stored on the sprite
                 if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
                 if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
@@ -705,13 +695,8 @@ class GameScene extends Phaser.Scene {
                      }
                 }
                 // Reposition
-                const oldX = hazard.x;
-                const oldY = hazard.y;
                 hazard.x *= repositionRatio;
                 hazard.y *= repositionRatio;
-                console.log(`[REPOSITION HAZARD] ${hazard.hazardData ? hazard.hazardData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${hazard.x.toFixed(2)}, ${hazard.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
-            } else {
-                console.log(`[SKIP HAZARD] ${hazard && hazard.hazardData ? hazard.hazardData.type : 'unknown'}, active: ${hazard ? hazard.active : 'N/A'}`);
             }
         });
 
