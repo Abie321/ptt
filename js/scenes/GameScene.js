@@ -649,7 +649,9 @@ class GameScene extends Phaser.Scene {
         // Edibles
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
-            this.edibleItems[tier].getChildren().forEach(item => {
+            const items = this.edibleItems[tier].getChildren();
+            console.log(`[GROUP LOG] Tier ${tier} has ${items.length} items tracked in group.`);
+            items.forEach(item => {
                 if (item && item.active) {
                     // Update the visual property stored on the sprite
                     if (item.radius !== undefined) item.radius *= scaleMultiplier;
@@ -675,6 +677,8 @@ class GameScene extends Phaser.Scene {
                     item.x *= repositionRatio;
                     item.y *= repositionRatio;
                     console.log(`[REPOSITION EDIBLE] Tier ${tier}, ${item.itemData ? item.itemData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${item.x.toFixed(2)}, ${item.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
+                } else {
+                    console.log(`[SKIP EDIBLE] Tier ${tier}, ${item && item.itemData ? item.itemData.type : 'unknown'}, active: ${item ? item.active : 'N/A'}`);
                 }
             });
         }
@@ -706,6 +710,8 @@ class GameScene extends Phaser.Scene {
                 hazard.x *= repositionRatio;
                 hazard.y *= repositionRatio;
                 console.log(`[REPOSITION HAZARD] ${hazard.hazardData ? hazard.hazardData.type : 'unknown'}, old: (${oldX.toFixed(2)}, ${oldY.toFixed(2)}), new: (${hazard.x.toFixed(2)}, ${hazard.y.toFixed(2)}), repositionRatio: ${repositionRatio.toFixed(3)}`);
+            } else {
+                console.log(`[SKIP HAZARD] ${hazard && hazard.hazardData ? hazard.hazardData.type : 'unknown'}, active: ${hazard ? hazard.active : 'N/A'}`);
             }
         });
 
