@@ -33,12 +33,38 @@ class GameScene extends Phaser.Scene {
         }
         if (this.levelConfig.ENTITY_IMAGES) {
             for (const [key, path] of Object.entries(this.levelConfig.ENTITY_IMAGES)) {
+                let isSpriteSheet = false;
+                let frameWidth = null;
+                let frameHeight = null;
+
+                // Check if it's the player spritesheet
                 if (this.levelConfig.PLAYER && this.levelConfig.PLAYER.SPRITE &&
                     key === this.levelConfig.PLAYER.SPRITE.KEY &&
                     this.levelConfig.PLAYER.SPRITE.USE_SPRITESHEET) {
+                    isSpriteSheet = true;
+                    frameWidth = this.levelConfig.PLAYER.SPRITE.FRAME_WIDTH;
+                    frameHeight = this.levelConfig.PLAYER.SPRITE.FRAME_HEIGHT;
+                }
+
+                // Check if it's a hazard spritesheet
+                if (!isSpriteSheet && this.levelConfig.TIER_ENTITIES) {
+                    for (const tier in this.levelConfig.TIER_ENTITIES) {
+                        for (const entity of this.levelConfig.TIER_ENTITIES[tier]) {
+                            if (entity.isHazard && entity.SPRITE && entity.SPRITE.KEY === key && entity.SPRITE.USE_SPRITESHEET) {
+                                isSpriteSheet = true;
+                                frameWidth = entity.SPRITE.FRAME_WIDTH;
+                                frameHeight = entity.SPRITE.FRAME_HEIGHT;
+                                break;
+                            }
+                        }
+                        if (isSpriteSheet) break;
+                    }
+                }
+
+                if (isSpriteSheet) {
                     this.load.spritesheet(key, path, {
-                        frameWidth: this.levelConfig.PLAYER.SPRITE.FRAME_WIDTH,
-                        frameHeight: this.levelConfig.PLAYER.SPRITE.FRAME_HEIGHT
+                        frameWidth: frameWidth,
+                        frameHeight: frameHeight
                     });
                 } else {
                     this.load.image(key, path);
@@ -113,6 +139,33 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    createHazardAnimations() {
+        if (!this.levelConfig.TIER_ENTITIES) return;
+
+        for (const tier in this.levelConfig.TIER_ENTITIES) {
+            for (const entity of this.levelConfig.TIER_ENTITIES[tier]) {
+                if (entity.isHazard && entity.SPRITE && entity.SPRITE.USE_SPRITESHEET && entity.SPRITE.ANIMATIONS) {
+                    const anims = entity.SPRITE.ANIMATIONS;
+                    for (const [key, config] of Object.entries(anims)) {
+                        // Create unique animation key for this hazard type
+                        const direction = key.toLowerCase();
+                        const animKey = `${entity.type.replace(/\s+/g, '_').toLowerCase()}_${direction}`;
+
+                        // Only create if it doesn't already exist
+                        if (!this.anims.exists(animKey)) {
+                            this.anims.create({
+                                key: animKey,
+                                frames: this.anims.generateFrameNumbers(entity.SPRITE.KEY, config),
+                                frameRate: config.rate,
+                                repeat: -1
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     create() {
         // Initialize game state
         this.score = 0;
@@ -126,6 +179,9 @@ class GameScene extends Phaser.Scene {
             }
             this.createPlayerAnimations();
         }
+
+        // Create hazard animations
+        this.createHazardAnimations();
 
         // Apply View Area resize
         const viewArea = this.levelConfig.VIEW_AREA || { WIDTH: 800, HEIGHT: 600 };
@@ -505,6 +561,15 @@ class GameScene extends Phaser.Scene {
 
         // Update player
         this.player.update();
+
+        // Update hazards (for animations, etc)
+        if (this.hazards) {
+            this.hazards.getChildren().forEach(hazardSprite => {
+                if (hazardSprite.entityWrapper && typeof hazardSprite.entityWrapper.update === 'function') {
+                    hazardSprite.entityWrapper.update();
+                }
+            });
+        }
 
         // Check for consumption collisions
         this.checkConsumption();
