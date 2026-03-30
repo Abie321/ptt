@@ -4,9 +4,9 @@ const LEVEL_1_CONFIG = {
     VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
     // Size tier configuration
     SIZE_TIERS: [
-        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1200, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.3, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 25, threshold: 44, name: 'Tiny', color: 0x2196F3, zoom: 0.75, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-        { tier: 3, initialSize: 50, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.33, zoomInStart: 3.0, LEVEL_AREA: { WIDTH: 1858, HEIGHT: 1056 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.66, TILE_BACKGROUND: true } }
+        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 2.0, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 20, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 3, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 1536 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } }
     ],
 
     // Scoring configuration
@@ -58,6 +58,7 @@ const LEVEL_1_CONFIG = {
         'biscuit': 'assets/images/biscuit.png',
         'onepoundnote': 'assets/images/onepoundnote.png',
         'beanscan': 'assets/images/beanscan.png',
+        'chair': 'assets/images/chair.png',
     },
   
     // Entities configuration per tier
@@ -77,14 +78,15 @@ const LEVEL_1_CONFIG = {
             { type: "Spoon", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
             { type: "Cup", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 150, image: 'teapot', hideInPreviousTier: true },
+            { type: "Teapot", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
             { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
         ],
         3: [
             // Edibles
-            { type: "One pound note", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 225, image: 'onepoundnote', noCollision: true },
-            { type: "Beans can", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'beanscan'},
+            { type: "One pound note", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
+            { type: "Beans can", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            { type: "Chair", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 500, image: 'chair'},
             // Hazards
         ]
     }
