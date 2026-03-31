@@ -44,6 +44,7 @@ global.Phaser = {
           }))
       };
       this.anims = {
+          exists: jest.fn(() => false),
           create: jest.fn(),
           generateFrameNumbers: jest.fn()
       };
