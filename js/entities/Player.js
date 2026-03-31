@@ -303,10 +303,8 @@ class Player {
         if (nextTierIdx < this.config.SIZE_TIERS.length) {
             nextTierThreshold = getThreshold(this.config.SIZE_TIERS[nextTierIdx]);
         } else {
-            // Extrapolate for final level so bar fills up
-            const prevTierThreshold = currentTierIdx > 0 ? getThreshold(this.config.SIZE_TIERS[currentTierIdx-1]) : (currentTierThreshold / 2); // Fallback estimation
-            const step = currentTierThreshold - prevTierThreshold;
-            nextTierThreshold = currentTierThreshold + step;
+            // Use configured winSize for the final level
+            nextTierThreshold = this.config.winSize;
         }
 
         const totalNeeded = nextTierThreshold - currentTierThreshold;

@@ -115,11 +115,11 @@ describe('UI and HUD Elements', () => {
     });
 
     test('should show 50% width at 50% progress', () => {
-      // Tier 1 threshold is 10, Tier 2 threshold is 44. Total needed = 34.
-      // Midpoint is 10 + 17 = 27.
-      gameScene.player.size = 27;
-      gameScene.player.internalSize = 27;
-      gameScene.player.radius = 27;
+      // Tier 1 threshold is 10, Tier 2 threshold is 40. Total needed = 30.
+      // Midpoint is 10 + 15 = 25.
+      gameScene.player.size = 25;
+      gameScene.player.internalSize = 25;
+      gameScene.player.radius = 25;
       gameScene.player.currentTier = 1;
 
       gameScene.updateHUD();

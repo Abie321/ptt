@@ -983,9 +983,9 @@ class GameScene extends Phaser.Scene {
     }
 
     checkWinCondition() {
-        // Win when player reaches max tier and completes its quota
-        const maxTier = this.levelConfig.SIZE_TIERS.length;
-        if (this.player.getCurrentTier() === maxTier && this.player.getProgress() >= 1) {
+        // Win when player reaches the configured winSize
+        const winSize = this.levelConfig.winSize;
+        if (this.player.getLogicalSize() >= winSize) {
             this.endLevel();
         }
     }

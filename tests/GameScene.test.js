@@ -135,10 +135,11 @@ describe('GameScene', () => {
 
       gameScene.onTierAdvanced(2);
 
-      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(1.5);
+      // Level 1 Tier 2 has zoom: 2.0 and zoomInStart: 4.0
+      expect(gameScene.cameras.main.setZoom).toHaveBeenCalledWith(4.0);
       expect(gameScene.tweens.add).toHaveBeenCalledWith(expect.objectContaining({
           targets: gameScene.cameras.main,
-          zoom: 0.75,
+          zoom: 2.0,
           duration: 1000,
           ease: 'Sine.easeOut'
       }));
@@ -433,7 +434,7 @@ describe('GameScene', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    test('should not end level before max tier', () => {
+    test('should end level if winSize is met regardless of tier', () => {
       const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
       gameScene.player.currentTier = maxTier - 1;
       gameScene.player.size = 1000;
@@ -443,10 +444,10 @@ describe('GameScene', () => {
       const spy = jest.spyOn(gameScene, 'endLevel');
       gameScene.checkWinCondition();
 
-      expect(spy).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
-    test('should not end level if max tier target not met', () => {
+    test('should not end level if winSize target not met', () => {
       const maxTier = GameConfig.LEVELS[0].SIZE_TIERS.length;
       gameScene.player.currentTier = maxTier;
       // Set radius to exactly start of max tier. Progress should be 0.
