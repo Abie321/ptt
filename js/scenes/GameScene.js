@@ -285,6 +285,55 @@ class GameScene extends Phaser.Scene {
             this.scene.pause();
             // In a full implementation, show pause menu here
         });
+
+        // Cleanup on scene shutdown
+        this.events.on('shutdown', this.shutdown, this);
+    }
+
+    shutdown() {
+        if (this.events) {
+            this.events.off('tierAdvanced', this.onTierAdvanced, this);
+            this.events.off('shutdown', this.shutdown, this);
+        }
+
+        if (this.edibleItems) {
+            for (let tier in this.edibleItems) {
+                if (this.edibleItems[tier]) {
+                    this.edibleItems[tier].clear(true, true);
+                    this.edibleItems[tier].destroy(true, true);
+                }
+            }
+            this.edibleItems = {};
+        }
+
+        if (this.hazards) {
+            this.hazards.clear(true, true);
+            this.hazards.destroy(true, true);
+            this.hazards = null;
+        }
+
+        if (this.player && this.player.sprite) {
+            this.player.sprite.destroy();
+            if (this.player.mouthIndicator) {
+                this.player.mouthIndicator.destroy();
+            }
+            this.player = null;
+        }
+
+        if (this.bg) {
+            this.bg.destroy();
+            this.bg = null;
+        }
+
+        // Clean up UI timers/tweens
+        if (this.consumedFadeEvent) {
+            this.consumedFadeEvent.remove();
+            this.consumedFadeEvent = null;
+        }
+        if (this.consumedTween) {
+            this.consumedTween.stop();
+            this.consumedTween = null;
+        }
     }
 
     spawnEntities() {

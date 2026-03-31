@@ -48,19 +48,10 @@ class EndLevelScene extends Phaser.Scene {
         }
 
         // Buttons
-        const playAgainButton = this.add.text(width / 2, height - 150, 'PLAY AGAIN', {
+        const menuButton = this.add.text(width / 2, height - 125, 'MAIN MENU', {
             fontSize: '36px',
             fill: '#4CAF50',
             fontStyle: 'bold'
-        }).setOrigin(0.5).setInteractive();
-
-        playAgainButton.on('pointerover', () => playAgainButton.setScale(1.1));
-        playAgainButton.on('pointerout', () => playAgainButton.setScale(1));
-        playAgainButton.on('pointerdown', () => this.scene.start('GameScene', { levelConfig: this.levelConfig }));
-
-        const menuButton = this.add.text(width / 2, height - 100, 'MAIN MENU', {
-            fontSize: '28px',
-            fill: '#fff'
         }).setOrigin(0.5).setInteractive();
 
         menuButton.on('pointerover', () => menuButton.setScale(1.1));
