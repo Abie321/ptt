@@ -59,6 +59,8 @@ const LEVEL_1_CONFIG = {
         'onepoundnote': 'assets/images/onepoundnote.png',
         'beanscan': 'assets/images/beanscan.png',
         'chair': 'assets/images/chair.png',
+        'waiter': 'assets/images/waiter.png',
+        'customer': 'assets/images/customer.png'
     },
   
     // Entities configuration per tier
@@ -80,14 +82,56 @@ const LEVEL_1_CONFIG = {
             { type: "Biscuit", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
             { type: "Teapot", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
-        ],
+            { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 },
         3: [
             // Edibles
-            { type: "One pound note", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
-            { type: "Beans can", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Chair", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 500, image: 'chair'},
+            { type: "One pound note", count: 12, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
+            { type: "Beans can", count: 12, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            { type: "Chair", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 300, image: 'chair'},
             // Hazards
+            { 
+                    type: "Waiter", 
+                    count: 5, 
+                    value: 50, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true, 
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'waiter', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
+            { 
+                    type: "Customer", 
+                    count: 5, 
+                    value: 50, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true, 
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'customer', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
+        ],
         ]
     }
 };

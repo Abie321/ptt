@@ -28,22 +28,33 @@ class Hazard {
         // Use color from config (defaults to red if not provided, though config should have it)
         const color = config.color !== undefined ? config.color : 0xFF0000;
 
-        if (config.image) {
+        if (config.SPRITE && config.SPRITE.USE_SPRITESHEET) {
+            this.sprite = scene.add.sprite(x, y, config.SPRITE.KEY);
+
+            // Set scale based on visual size/radius
+            const targetDiameter = visualSize * 2;
+            const scale = targetDiameter / config.SPRITE.FRAME_WIDTH;
+            this.sprite.setScale(scale);
+
+            // Set initial animation
+            this.facing = 'down';
+            const animKey = `${config.type.replace(/\s+/g, '_').toLowerCase()}_${this.facing}`;
+            this.sprite.play(animKey);
+
+            scene.physics.add.existing(this.sprite);
+            this.sprite.body.setCircle(config.SPRITE.FRAME_WIDTH / 2);
+        } else if (config.image) {
             this.sprite = scene.add.sprite(x, y, config.image);
             // Scale sprite to match the desired radius (diameter = visualSize * 2)
             const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
             this.sprite.setScale(spriteScale);
             this.sprite.setAlpha(0.7);
-        } else {
-            this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
-        }
 
-        scene.physics.add.existing(this.sprite);
-
-        // Ensure circular body for hazards as well
-        if (config.image) {
+            scene.physics.add.existing(this.sprite);
             this.sprite.body.setCircle(this.sprite.width / 2);
         } else {
+            this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
+            scene.physics.add.existing(this.sprite);
             this.sprite.body.setCircle(visualSize);
         }
 
@@ -57,7 +68,33 @@ class Hazard {
 
         // Store reference
         this.sprite.hazardData = this.hazardData;
+
+        // Circular reference so update can be called on the wrapper
+        this.sprite.entityWrapper = this;
+
         this.itemType = 'HAZARD';
+    }
+
+    update() {
+        if (!this.sprite || !this.sprite.active || !this.sprite.body) return;
+
+        const velocity = this.sprite.body.velocity;
+
+        if (this.config.SPRITE && this.config.SPRITE.USE_SPRITESHEET && this.sprite.anims) {
+            if (velocity.x !== 0 || velocity.y !== 0) {
+                // Determine facing direction based on primary movement axis
+                if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+                    if (velocity.x > 0) this.facing = 'right';
+                    else this.facing = 'left';
+                } else {
+                    if (velocity.y > 0) this.facing = 'down';
+                    else this.facing = 'up';
+                }
+
+                const animKey = `${this.config.type.replace(/\s+/g, '_').toLowerCase()}_${this.facing}`;
+                this.sprite.play(animKey, true);
+            }
+        }
     }
 
     destroy() {
