@@ -293,7 +293,9 @@ class GameScene extends Phaser.Scene {
     shutdown() {
         if (this.events) {
             this.events.off('tierAdvanced', this.onTierAdvanced, this);
-            this.events.off('shutdown', this.shutdown, this);
+            // We should not remove the 'shutdown' listener while the 'shutdown' event is being emitted.
+            // Phaser handles scene event cleanup automatically. Removing it here modifies the internal
+            // event listener Set during iteration, causing the "Cannot read properties of undefined (reading 'entries')" error.
         }
 
         if (this.edibleItems) {
@@ -312,7 +314,8 @@ class GameScene extends Phaser.Scene {
                         }
                     }
                     if (typeof group.destroy === 'function') {
-                        group.destroy(true, true);
+                        // Pass false, false so we don't try to double-destroy already manually destroyed children
+                        group.destroy(false, false);
                     }
                 }
             }
@@ -332,7 +335,8 @@ class GameScene extends Phaser.Scene {
                 }
             }
             if (typeof this.hazards.destroy === 'function') {
-                this.hazards.destroy(true, true);
+                // Pass false, false so we don't try to double-destroy already manually destroyed children
+                this.hazards.destroy(false, false);
             }
             this.hazards = null;
         }
@@ -771,6 +775,7 @@ class GameScene extends Phaser.Scene {
                 }
             }
             if (typeof despawnGroup.clear === 'function') {
+                // Pass false, false so we don't try to double-destroy already manually destroyed children
                 despawnGroup.clear(false, false);
             }
         }
