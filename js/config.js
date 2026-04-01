@@ -2,7 +2,7 @@
 
 const LEVEL_1_CONFIG = {
     VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
-    winSize: 400,
+    winSize: 500,
     // Size tier configuration
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 2.0, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
@@ -14,7 +14,7 @@ const LEVEL_1_CONFIG = {
     SCORING: {
         MAX_POINTS_PER_ITEM: 80,
         MIN_POINTS_PER_ITEM: 1,
-        HAZARD_PENALTY: 80
+        HAZARD_PENALTY: 50
     },
 
     // Star thresholds (per level)
@@ -68,33 +68,33 @@ const LEVEL_1_CONFIG = {
     // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
     TIER_ENTITIES: {
         1: [
-            { type: "Tea drop", count: 18, value: 5, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17], hideInNextTier: true },
-            { type: "Cookie crumb", count: 18, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17], hideInNextTier: true },
-            { type: "Coin", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
-            { type: "Sugarcube", count: 10, value: 5, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18},
+            { type: "Tea drop", count: 18, value: 11, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17], hideInNextTier: true },
+            { type: "Cookie crumb", count: 18, value: 11, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17], hideInNextTier: true },
+            { type: "Coin", count: 10, value: 25, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
+            { type: "Sugarcube", count: 10, value: 18, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18},
         ],
         2: [
             // Edibles
-            { type: "Sandwich", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
-            { type: "Tea bag", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
-            { type: "Spoon", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
-            { type: "Biscuit", count: 5, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 7, value: 10, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            { type: "Sandwich", count: 5, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
+            { type: "Tea bag", count: 5, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Cake", count: 7, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
+            { type: "Spoon", count: 7, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cup", count: 5, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
+            { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
+            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Mouse", count: 5, value: 50, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
+            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
         ],
         3: [
             // Edibles
-            { type: "One pound note", count: 12, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
-            { type: "Beans can", count: 12, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Chair", count: 6, value: 15, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 300, image: 'chair'},
+            { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
+            { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            { type: "Chair", count: 6, value: 300, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 300, image: 'chair'},
             // Hazards
             { 
                     type: "Waiter", 
                     count: 5, 
-                    value: 50, 
+                    value: 350, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true, 
@@ -115,7 +115,7 @@ const LEVEL_1_CONFIG = {
             { 
                     type: "Customer", 
                     count: 5, 
-                    value: 50, 
+                    value: 350, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true, 
