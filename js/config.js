@@ -14,7 +14,7 @@ const LEVEL_1_CONFIG = {
     SCORING: {
         MAX_POINTS_PER_ITEM: 80,
         MIN_POINTS_PER_ITEM: 1,
-        HAZARD_PENALTY: 50
+        HAZARD_PENALTY: 80
     },
 
     // Star thresholds (per level)
@@ -30,6 +30,7 @@ const LEVEL_1_CONFIG = {
         TIER_GROWTH_FACTOR: 0.15,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
         SPRITE: {
             USE_SPRITESHEET: true,
             KEY: 'player_sheet',

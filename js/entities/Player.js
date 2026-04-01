@@ -71,6 +71,10 @@ class Player {
 
         // Track facing direction for animation
         this.facing = 'down';
+
+        // Invulnerability
+        this.isInvulnerable = false;
+        this.invulnerabilityTimer = null;
     }
 
     update() {
@@ -268,6 +272,38 @@ class Player {
 
     takeDamage() {
         return this.config.SCORING ? this.config.SCORING.HAZARD_PENALTY : 80;
+    }
+
+    makeInvulnerable() {
+        if (this.isInvulnerable) return;
+
+        this.isInvulnerable = true;
+
+        // Blink effect
+        const duration = (this.config.PLAYER && this.config.PLAYER.INVULNERABILITY_DURATION !== undefined)
+            ? this.config.PLAYER.INVULNERABILITY_DURATION
+            : 500;
+
+        // Use a simple tween to blink alpha
+        this.scene.tweens.add({
+            targets: this.sprite,
+            alpha: 0.2,
+            yoyo: true,
+            repeat: -1,
+            duration: 100 // blink fast
+        });
+
+        // Clear existing timer if any
+        if (this.invulnerabilityTimer) {
+            this.invulnerabilityTimer.remove();
+        }
+
+        // Set timer to end invulnerability
+        this.invulnerabilityTimer = this.scene.time.delayedCall(duration, () => {
+            this.isInvulnerable = false;
+            this.scene.tweens.killTweensOf(this.sprite);
+            this.sprite.setAlpha(1);
+        }, [], this);
     }
 
     getSize() {

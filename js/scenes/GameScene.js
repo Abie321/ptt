@@ -701,9 +701,19 @@ class GameScene extends Phaser.Scene {
                     this.showConsumedItem(hazard.hazardData); // Show HUD indicator
                     hazard.destroy();
                 } else {
+                    // If player is invulnerable, skip damage and knockback
+                    if (this.player.isInvulnerable) {
+                        continue;
+                    }
+
                     // Damage player
                     const penalty = this.player.takeDamage();
                     this.score -= penalty;
+
+                    // Make player invulnerable temporarily
+                    if (typeof this.player.makeInvulnerable === 'function') {
+                        this.player.makeInvulnerable();
+                    }
 
                     // Visual feedback
                     this.cameras.main.shake(200, 0.01);
