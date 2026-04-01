@@ -301,7 +301,7 @@ class GameScene extends Phaser.Scene {
         if (this.edibleItems) {
             for (let tier in this.edibleItems) {
                 const group = this.edibleItems[tier];
-                if (group) {
+                if (group && group.scene) { // Check group.scene to ensure it hasn't already been destroyed
                     // Destroy all children manually before destroying the group
                     if (typeof group.getChildren === 'function') {
                         const items = group.getChildren();
@@ -319,10 +319,10 @@ class GameScene extends Phaser.Scene {
                     }
                 }
             }
-            this.edibleItems = {};
+            this.edibleItems = null; // Set to null instead of {} so successive calls skip it
         }
 
-        if (this.hazards) {
+        if (this.hazards && this.hazards.scene) {
             // Destroy all children manually before destroying the group
             if (typeof this.hazards.getChildren === 'function') {
                 const hazardItems = this.hazards.getChildren();
@@ -387,7 +387,7 @@ class GameScene extends Phaser.Scene {
         const existingEntities = [];
 
         // Add existing hazards
-        if (this.hazards) {
+        if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
                 let r = hazard.radius;
                 if (r === undefined && hazard.hazardData && hazard.hazardData.radius !== undefined) {
@@ -405,22 +405,24 @@ class GameScene extends Phaser.Scene {
         }
 
         // Add existing edibles from all tiers
-        for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
-            if (this.edibleItems[t]) {
-                this.edibleItems[t].getChildren().forEach(item => {
-                    let r = item.radius;
-                    if (r === undefined && item.itemData && item.itemData.radius !== undefined) {
-                        r = item.itemData.radius;
-                    }
-                    if (r === undefined || isNaN(r)) {
-                        r = item.displayWidth / 2;
-                    }
-                    existingEntities.push({
-                        x: item.x,
-                        y: item.y,
-                        radius: r
+        if (this.edibleItems) {
+            for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
+                if (this.edibleItems[t] && this.edibleItems[t].scene) {
+                    this.edibleItems[t].getChildren().forEach(item => {
+                        let r = item.radius;
+                        if (r === undefined && item.itemData && item.itemData.radius !== undefined) {
+                            r = item.itemData.radius;
+                        }
+                        if (r === undefined || isNaN(r)) {
+                            r = item.displayWidth / 2;
+                        }
+                        existingEntities.push({
+                            x: item.x,
+                            y: item.y,
+                            radius: r
+                        });
                     });
-                });
+                }
             }
         }
 
@@ -641,7 +643,7 @@ class GameScene extends Phaser.Scene {
         this.player.update();
 
         // Update hazards (for animations, etc)
-        if (this.hazards) {
+        if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazardSprite => {
                 if (hazardSprite.entityWrapper && typeof hazardSprite.entityWrapper.update === 'function') {
                     hazardSprite.entityWrapper.update();
@@ -667,7 +669,7 @@ class GameScene extends Phaser.Scene {
         const consumableTiers = this.player.getConsumableTiers();
 
         consumableTiers.forEach(tier => {
-            if (!this.edibleItems[tier]) return;
+            if (!this.edibleItems[tier] || !this.edibleItems[tier].scene) return;
 
             const items = this.edibleItems[tier].getChildren();
             for (let item of items) {
@@ -702,6 +704,8 @@ class GameScene extends Phaser.Scene {
     }
 
     checkHazardCollisions() {
+        if (!this.hazards || !this.hazards.scene) return;
+
         // Create a copy to safely modify the group during iteration
         const hazards = [...this.hazards.getChildren()];
 
@@ -761,8 +765,8 @@ class GameScene extends Phaser.Scene {
     onTierAdvanced(newTier) {
         // Despawn items from tier N-2
         const despawnTier = newTier - 2;
-        const despawnGroup = despawnTier > 0 ? this.edibleItems[despawnTier] : null;
-        if (despawnGroup) {
+        const despawnGroup = (this.edibleItems && despawnTier > 0) ? this.edibleItems[despawnTier] : null;
+        if (despawnGroup && despawnGroup.scene) {
             // Manually destroy children to avoid Phaser clear() size bug
             if (typeof despawnGroup.getChildren === 'function') {
                 const items = despawnGroup.getChildren();
@@ -842,31 +846,33 @@ class GameScene extends Phaser.Scene {
         }
 
         // Hazards
-        this.hazards.getChildren().forEach(hazard => {
-            if (hazard) {
-                // Update the visual property stored on the sprite
-                if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
-                if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
-                    hazard.hazardData.radius *= scaleMultiplier;
-                }
+        if (this.hazards && this.hazards.scene) {
+            this.hazards.getChildren().forEach(hazard => {
+                if (hazard) {
+                    // Update the visual property stored on the sprite
+                    if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
+                    if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
+                        hazard.hazardData.radius *= scaleMultiplier;
+                    }
 
-                if (hazard.displayWidth !== undefined) {
-                     const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
-                     hazard.setScale(currentScale * scaleMultiplier);
+                    if (hazard.displayWidth !== undefined) {
+                         const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
+                         hazard.setScale(currentScale * scaleMultiplier);
+                    }
+                    if (hazard.body) {
+                         // Rescale physics body
+                         if (hazard.geom && hazard.geom.radius !== undefined && hazard.radius !== undefined) {
+                             hazard.geom.radius = hazard.radius;
+                         } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
+                             hazard.setRadius(hazard.radius);
+                         }
+                    }
+                    // Reposition
+                    hazard.x *= repositionRatio;
+                    hazard.y *= repositionRatio;
                 }
-                if (hazard.body) {
-                     // Rescale physics body
-                     if (hazard.geom && hazard.geom.radius !== undefined && hazard.radius !== undefined) {
-                         hazard.geom.radius = hazard.radius;
-                     } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
-                         hazard.setRadius(hazard.radius);
-                     }
-                }
-                // Reposition
-                hazard.x *= repositionRatio;
-                hazard.y *= repositionRatio;
-            }
-        });
+            });
+        }
 
         // Spawn items for tier N+1
         const spawnTier = newTier + 1;

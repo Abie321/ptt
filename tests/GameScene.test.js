@@ -174,6 +174,7 @@ describe('GameScene', () => {
          gameScene.bg.setScale = jest.fn();
       }
 
+      gameScene.edibleItems[1].scene = gameScene;
       gameScene.edibleItems[1].clear.mockClear();
 
       gameScene.onTierAdvanced(3);
@@ -297,6 +298,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.edibleItems[1].scene = gameScene;
       gameScene.edibleItems[1].getChildren = jest.fn(() => [mockItem]);
       gameScene.checkConsumption();
 
@@ -317,6 +319,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.edibleItems[3].scene = gameScene;
       gameScene.edibleItems[1].getChildren = jest.fn(() => [mockItem]);
       gameScene.checkConsumption();
 
@@ -347,6 +350,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.hazards.scene = gameScene;
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
       gameScene.checkHazardCollisions();
 
@@ -365,6 +369,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.hazards.scene = gameScene;
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
       gameScene.checkHazardCollisions();
 
@@ -385,6 +390,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.hazards.scene = gameScene;
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
       gameScene.checkHazardCollisions();
 
@@ -405,6 +411,7 @@ describe('GameScene', () => {
         destroy: jest.fn()
       };
 
+      gameScene.hazards.scene = gameScene;
       gameScene.hazards.getChildren = jest.fn(() => [mockHazard]);
       gameScene.checkHazardCollisions();
 
