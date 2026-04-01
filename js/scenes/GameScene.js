@@ -312,8 +312,7 @@ class GameScene extends Phaser.Scene {
                         }
                     }
                     if (typeof group.destroy === 'function') {
-                        // Pass false, false so we don't try to double-destroy already manually destroyed children
-                        group.destroy(false, false);
+                        group.destroy(true, true);
                     }
                 }
             }
@@ -333,8 +332,7 @@ class GameScene extends Phaser.Scene {
                 }
             }
             if (typeof this.hazards.destroy === 'function') {
-                // Pass false, false so we don't try to double-destroy already manually destroyed children
-                this.hazards.destroy(false, false);
+                this.hazards.destroy(true, true);
             }
             this.hazards = null;
         }
@@ -773,7 +771,6 @@ class GameScene extends Phaser.Scene {
                 }
             }
             if (typeof despawnGroup.clear === 'function') {
-                // Pass false, false so we don't try to double-destroy already manually destroyed children
                 despawnGroup.clear(false, false);
             }
         }
