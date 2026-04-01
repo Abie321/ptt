@@ -298,17 +298,42 @@ class GameScene extends Phaser.Scene {
 
         if (this.edibleItems) {
             for (let tier in this.edibleItems) {
-                if (this.edibleItems[tier]) {
-                    this.edibleItems[tier].clear(true, true);
-                    this.edibleItems[tier].destroy(true, true);
+                const group = this.edibleItems[tier];
+                if (group) {
+                    // Destroy all children manually before destroying the group
+                    if (typeof group.getChildren === 'function') {
+                        const items = group.getChildren();
+                        if (items) {
+                            [...items].forEach(item => {
+                                if (item && typeof item.destroy === 'function') {
+                                    item.destroy();
+                                }
+                            });
+                        }
+                    }
+                    if (typeof group.destroy === 'function') {
+                        group.destroy(true, true);
+                    }
                 }
             }
             this.edibleItems = {};
         }
 
         if (this.hazards) {
-            this.hazards.clear(true, true);
-            this.hazards.destroy(true, true);
+            // Destroy all children manually before destroying the group
+            if (typeof this.hazards.getChildren === 'function') {
+                const hazardItems = this.hazards.getChildren();
+                if (hazardItems) {
+                    [...hazardItems].forEach(hazard => {
+                        if (hazard && typeof hazard.destroy === 'function') {
+                            hazard.destroy();
+                        }
+                    });
+                }
+            }
+            if (typeof this.hazards.destroy === 'function') {
+                this.hazards.destroy(true, true);
+            }
             this.hazards = null;
         }
 
@@ -732,8 +757,22 @@ class GameScene extends Phaser.Scene {
     onTierAdvanced(newTier) {
         // Despawn items from tier N-2
         const despawnTier = newTier - 2;
-        if (despawnTier > 0 && this.edibleItems[despawnTier]) {
-            this.edibleItems[despawnTier].clear(true, true);
+        const despawnGroup = despawnTier > 0 ? this.edibleItems[despawnTier] : null;
+        if (despawnGroup) {
+            // Manually destroy children to avoid Phaser clear() size bug
+            if (typeof despawnGroup.getChildren === 'function') {
+                const items = despawnGroup.getChildren();
+                if (items) {
+                    [...items].forEach(item => {
+                        if (item && typeof item.destroy === 'function') {
+                            item.destroy();
+                        }
+                    });
+                }
+            }
+            if (typeof despawnGroup.clear === 'function') {
+                despawnGroup.clear(false, false);
+            }
         }
 
         // --- Re-baselining (Scaling) Logic ---

@@ -178,7 +178,7 @@ describe('GameScene', () => {
 
       gameScene.onTierAdvanced(3);
 
-      expect(gameScene.edibleItems[1].clear).toHaveBeenCalledWith(true, true);
+      expect(gameScene.edibleItems[1].clear).toHaveBeenCalledWith(false, false);
     });
 
     test('should not despawn items from invalid tiers', () => {
