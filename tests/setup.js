@@ -106,6 +106,7 @@ global.Phaser = {
             destroy: jest.fn(),
             setScale: jest.fn().mockReturnThis(),
             setTint: jest.fn().mockReturnThis(),
+            setAlpha: jest.fn().mockReturnThis(),
             play: jest.fn().mockReturnThis(),
             setRotation: jest.fn().mockReturnThis(),
             anims: {
@@ -263,8 +264,8 @@ global.Phaser = {
       this.time = {
         delayedCall: jest.fn((delay, callback, args, scope) => {
           // Auto-execute callback for simple tests or store it?
-          // For now, just mocking the function is enough to prevent crashes.
-          // In specific tests, we can override this implementation.
+          // We immediately execute it so that deferred actions (like scene transitions) happen in tests
+          if (callback) callback.apply(scope || this, args || []);
           return { remove: jest.fn() };
         })
       };
