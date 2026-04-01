@@ -1106,11 +1106,17 @@ class GameScene extends Phaser.Scene {
         else if (this.score >= this.levelConfig.STAR_THRESHOLDS.ONE_STAR) stars = 1;
 
         // Transition to end scene
-        this.scene.start('EndLevelScene', {
-            score: this.score,
-            time: elapsed,
-            stars: stars,
-            levelConfig: this.levelConfig
+        // We delay the scene transition slightly to allow the current update loop
+        // to finish cleanly. Calling scene.start() synchronously mid-update can cause
+        // "TypeError: Cannot read properties of undefined (reading 'entries')" inside
+        // Phaser's internal list iterators if objects are destroyed while being processed.
+        this.time.delayedCall(50, () => {
+            this.scene.start('EndLevelScene', {
+                score: this.score,
+                time: elapsed,
+                stars: stars,
+                levelConfig: this.levelConfig
+            });
         });
     }
 
