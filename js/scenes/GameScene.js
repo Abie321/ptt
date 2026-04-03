@@ -24,6 +24,10 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        if (this.levelConfig.coverImage) {
+            this.load.image('level_cover_image', this.levelConfig.coverImage);
+        }
+
         if (this.levelConfig.SIZE_TIERS) {
             this.levelConfig.SIZE_TIERS.forEach((tier, index) => {
                 if (tier.ASSETS && tier.ASSETS.BACKGROUND_IMAGE) {
@@ -288,6 +292,11 @@ class GameScene extends Phaser.Scene {
 
         // Cleanup on scene shutdown
         this.events.on('shutdown', this.shutdown, this);
+
+        // Show cover screen if configured, else start timer
+        if (this.levelConfig.coverImage && this.textures.exists('level_cover_image')) {
+            this.showCoverScreen();
+        }
     }
 
     shutdown() {
@@ -637,7 +646,7 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
-        if (this.gameEnded) return;
+        if (this.gameEnded || this.gamePaused) return;
 
         // Update player
         this.player.update();
@@ -1231,6 +1240,70 @@ class GameScene extends Phaser.Scene {
         if (this.cameras.main) {
             this.cameras.main.ignore([bg, text, continueBtn]);
         }
+    }
+
+    showCoverScreen() {
+        // Pause physics and stop tracking time
+        this.physics.pause();
+        this.gamePaused = true;
+
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        // Ensure UI container
+        if (!this.coverContainer) {
+            this.coverContainer = this.add.container(0, 0);
+            this.coverContainer.setScrollFactor(0);
+            this.coverContainer.setDepth(2000); // Higher than impossible warning (1000)
+            if (this.cameras.main) {
+                this.cameras.main.ignore(this.coverContainer);
+            }
+        }
+
+        // Add image
+        const coverImg = this.add.image(centerX, centerY, 'level_cover_image');
+
+        // Calculate scale to fill screen (cover)
+        const scaleX = width / coverImg.width;
+        const scaleY = height / coverImg.height;
+        const scale = Math.max(scaleX, scaleY);
+        coverImg.setScale(scale);
+        this.coverContainer.add(coverImg);
+
+        // Add Continue Button Background
+        const btnWidth = 150;
+        const btnHeight = 50;
+        const btnX = width - btnWidth / 2 - 20; // 20px padding from right
+        const btnY = height - btnHeight / 2 - 20; // 20px padding from bottom
+
+        const continueBtnBg = this.add.rectangle(btnX, btnY, btnWidth, btnHeight, 0x4CAF50);
+        continueBtnBg.setInteractive({ useHandCursor: true });
+
+        // Add Continue Button Text
+        const continueBtnText = this.add.text(btnX, btnY, 'Continue', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        this.coverContainer.add([continueBtnBg, continueBtnText]);
+
+        // Hover effects
+        continueBtnBg.on('pointerover', () => continueBtnBg.setFillStyle(0x66BB6A));
+        continueBtnBg.on('pointerout', () => continueBtnBg.setFillStyle(0x4CAF50));
+
+        // Click action
+        continueBtnBg.on('pointerdown', () => {
+            this.coverContainer.destroy();
+            this.coverContainer = null;
+            this.gamePaused = false;
+            this.physics.resume();
+
+            // Reset start time so timer starts correctly from 0
+            this.startTime = Date.now();
+        });
     }
 
     showConsumedItem(itemData) {

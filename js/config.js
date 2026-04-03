@@ -3,6 +3,7 @@
 const LEVEL_1_CONFIG = {
     VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
     winSize: 500,
+    coverImage: 'assets/images/Level1.png',
     // Size tier configuration
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 2.0, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
