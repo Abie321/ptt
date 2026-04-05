@@ -1321,8 +1321,8 @@ class GameScene extends Phaser.Scene {
         const targetX = mouthPos.x;
         const targetY = mouthPos.y;
 
-        // Create smoke effect immediately at the mouth location
-        this.createSmokeEffect(targetX, targetY);
+        // Create smoke effect immediately at the item's location
+        this.createSmokeEffect(sprite.x, sprite.y);
 
         // Tween to pull and shrink the item
         this.tweens.add({
