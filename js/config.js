@@ -25,12 +25,19 @@ const LEVEL_1_CONFIG = {
         THREE_STAR: 3000
     },
 
+    // Effects configuration
+    EFFECTS: {
+        SMOKE_DURATION_MIN: 100,
+        SMOKE_DURATION_MAX: 200
+    },
+
     // Player configuration
     PLAYER: {
         GROWTH_FACTOR: 0.15,
         TIER_GROWTH_FACTOR: 0.15,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
         INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
         SPRITE: {
             USE_SPRITESHEET: true,

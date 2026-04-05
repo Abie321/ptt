@@ -693,8 +693,10 @@ class GameScene extends Phaser.Scene {
                 // Use explicit radius if available, fallback to displayWidth/2
                 const itemRadius = item.radius || item.displayWidth / 2;
 
+                const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
+
                 // Check if mouth touches the item (collision check using visual radii)
-                if (distance < this.player.getCollisionRadius() * 0.5 + itemRadius) {
+                if (distance < this.player.getCollisionRadius() * 0.5 + itemRadius + consumeBonus) {
                     // Check if player is larger than item (size-based consumption)
                     // Use unscaled sizes for mechanics
                     const itemLogicalSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
@@ -727,20 +729,21 @@ class GameScene extends Phaser.Scene {
 
             const hazardRadius = hazard.radius || hazard.displayWidth / 2;
 
-            // Check collision (Body vs Body) using visual radii
-            if (distance < this.player.getCollisionRadius() + hazardRadius) {
-                // Size-based Interaction
-                // If Player > Hazard, consume
-                // Use unscaled sizes for mechanics
-                const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
-                const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
+            const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
+            const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+            const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
-                if (playerLogicalSize > hazardLogicalSize) {
+            // Check collision for consumption (includes bonus range)
+            if (playerLogicalSize > hazardLogicalSize) {
+                if (distance < this.player.getCollisionRadius() + hazardRadius + consumeBonus) {
                     // Consume hazard
                     if (!hazard.isBeingConsumed) {
                         this.startConsumptionAnimation(hazard, hazard.hazardData);
                     }
-                } else {
+                }
+            } else {
+                // Check collision for damage (no bonus range)
+                if (distance < this.player.getCollisionRadius() + hazardRadius) {
                     // If player is invulnerable, skip damage and knockback
                     if (this.player.isInvulnerable) {
                         continue;
@@ -1338,11 +1341,29 @@ class GameScene extends Phaser.Scene {
     }
 
     createSmokeEffect(x, y) {
-        // Create a procedural smoke effect using a few fading and expanding grey circles
-        for (let i = 0; i < 5; i++) {
-            const offsetX = Phaser.Math.Between(-10, 10);
-            const offsetY = Phaser.Math.Between(-10, 10);
-            const smoke = this.add.circle(x + offsetX, y + offsetY, Phaser.Math.Between(5, 15), 0x888888, 0.8);
+        const effectsConfig = this.levelConfig.EFFECTS || { SMOKE_DURATION_MIN: 400, SMOKE_DURATION_MAX: 800 };
+
+        // Create a procedural smoke effect using a few fading and expanding cloud shapes
+        for (let i = 0; i < 2; i++) {
+            const offsetX = Phaser.Math.Between(-15, 15);
+            const offsetY = Phaser.Math.Between(-15, 15);
+
+            const smoke = this.add.graphics();
+            smoke.x = x + offsetX;
+            smoke.y = y + offsetY;
+            smoke.fillStyle(0x888888, 0.8);
+
+            // Draw a basic cloud shape using overlapping circles
+            // Center
+            smoke.fillCircle(0, 0, 12);
+            // Top left
+            smoke.fillCircle(-8, -6, 8);
+            // Top right
+            smoke.fillCircle(8, -6, 8);
+            // Bottom left
+            smoke.fillCircle(-10, 4, 6);
+            // Bottom right
+            smoke.fillCircle(10, 4, 6);
 
             // Bring smoke to front so it's clearly visible
             smoke.setDepth(10);
@@ -1352,7 +1373,7 @@ class GameScene extends Phaser.Scene {
                 scaleX: 2,
                 scaleY: 2,
                 alpha: 0,
-                duration: Phaser.Math.Between(400, 800),
+                duration: Phaser.Math.Between(effectsConfig.SMOKE_DURATION_MIN, effectsConfig.SMOKE_DURATION_MAX),
                 ease: 'Power1',
                 onComplete: () => {
                     smoke.destroy();
