@@ -1349,8 +1349,8 @@ class GameScene extends Phaser.Scene {
 
         // Create a procedural smoke effect using a few fading and expanding cloud shapes
         for (let i = 0; i < 2; i++) {
-            const offsetX = Phaser.Math.Between(-15, 15);
-            const offsetY = Phaser.Math.Between(-15, 15);
+            const offsetX = Phaser.Math.Between(-3, 3);
+            const offsetY = Phaser.Math.Between(-3, 3);
 
             const smoke = this.add.graphics();
             smoke.x = x + offsetX;
