@@ -1371,6 +1371,11 @@ class GameScene extends Phaser.Scene {
         // Bring smoke to front so it's clearly visible
         smoke.setDepth(10);
 
+        // Ensure the UI camera doesn't render the smoke effect
+        if (this.uiCamera) {
+            this.uiCamera.ignore(smoke);
+        }
+
         this.tweens.add({
             targets: smoke,
             scaleX: 2,
