@@ -271,7 +271,10 @@ global.Phaser = {
       };
       this.tweens = {
         add: jest.fn((config) => {
-          // Execute onComplete immediately if needed? No, let tests handle it.
+          // For GameScene.test.js to work without async delays, instantly invoke onComplete
+          if (config.onComplete) {
+              config.onComplete();
+          }
           return { stop: jest.fn() };
         }),
         killTweensOf: jest.fn()
