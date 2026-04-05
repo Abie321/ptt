@@ -1315,9 +1315,14 @@ class GameScene extends Phaser.Scene {
             sprite.body.checkCollision = { none: true, up: false, down: false, left: false, right: false };
         }
 
-        // Target position is where the player is currently
-        const targetX = this.player.sprite.x;
-        const targetY = this.player.sprite.y;
+        const mouthPos = this.player.getMouthPosition();
+
+        // Target position is the mouth's position at the start of consumption
+        const targetX = mouthPos.x;
+        const targetY = mouthPos.y;
+
+        // Create smoke effect immediately at the mouth location
+        this.createSmokeEffect(targetX, targetY);
 
         // Tween to pull and shrink the item
         this.tweens.add({
@@ -1333,7 +1338,6 @@ class GameScene extends Phaser.Scene {
                     const points = this.player.consume(itemData);
                     this.score += points;
                     this.showConsumedItem(itemData); // Show HUD indicator
-                    this.createSmokeEffect(sprite.x, sprite.y);
                 }
                 sprite.destroy();
             }
