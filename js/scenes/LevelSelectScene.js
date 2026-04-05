@@ -59,9 +59,6 @@ class LevelSelectScene extends Phaser.Scene {
 
              this.createLevelButton(x, y, level, index + 1, buttonWidth, buttonHeight);
         });
-
-        // Initialize modal (hidden)
-        this.createModal(width, height);
     }
 
     createLevelButton(x, y, levelConfig, index, w, h) {
@@ -102,84 +99,8 @@ class LevelSelectScene extends Phaser.Scene {
             });
 
             bg.on('pointerdown', () => {
-                this.showModal(levelConfig, index);
+                this.scene.start('LevelDetailScene', { levelConfig: levelConfig, index: index });
             });
         }
-    }
-
-    createModal(width, height) {
-        this.modalContainer = this.add.container(0, 0);
-        this.modalContainer.setVisible(false);
-        this.modalContainer.setDepth(100); // Ensure it's on top
-
-        // 1. Background Blocker
-        const blocker = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
-        blocker.setInteractive(); // Blocks clicks behind it
-        this.modalContainer.add(blocker);
-
-        // 2. Modal Window
-        const modalWidth = 400;
-        const modalHeight = 300;
-        const modalBg = this.add.rectangle(width / 2, height / 2, modalWidth, modalHeight, 0x222222);
-        modalBg.setStrokeStyle(2, 0xffffff);
-        this.modalContainer.add(modalBg);
-
-        // 3. Level Title (e.g. "Level 1")
-        this.modalLevelTitle = this.add.text(width / 2, height / 2 - 80, 'Level X', {
-            fontSize: '32px',
-            fill: '#fff',
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
-        this.modalContainer.add(this.modalLevelTitle);
-
-        // 4. Level Name (e.g. "Kitchen")
-        this.modalLevelName = this.add.text(width / 2, height / 2 - 30, 'Level Name', {
-            fontSize: '24px',
-            fill: '#aaa',
-            fontStyle: 'italic'
-        }).setOrigin(0.5);
-        this.modalContainer.add(this.modalLevelName);
-
-        // 5. Play Button
-        const playBtnBg = this.add.rectangle(width / 2, height / 2 + 50, 150, 50, 0x4CAF50)
-            .setInteractive({ useHandCursor: true });
-        const playBtnText = this.add.text(width / 2, height / 2 + 50, 'PLAY', {
-            fontSize: '24px',
-            fill: '#fff',
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
-
-        playBtnBg.on('pointerover', () => playBtnBg.setFillStyle(0x66BB6A));
-        playBtnBg.on('pointerout', () => playBtnBg.setFillStyle(0x4CAF50));
-        playBtnBg.on('pointerdown', () => {
-            if (this.currentLevelConfig) {
-                this.scene.start('GameScene', { levelConfig: this.currentLevelConfig });
-            }
-        });
-
-        this.modalContainer.add([playBtnBg, playBtnText]);
-
-        // 6. Cancel Button
-        const cancelBtnBg = this.add.rectangle(width / 2, height / 2 + 110, 150, 40, 0x666666)
-            .setInteractive({ useHandCursor: true });
-        const cancelBtnText = this.add.text(width / 2, height / 2 + 110, 'Cancel', {
-            fontSize: '20px',
-            fill: '#fff'
-        }).setOrigin(0.5);
-
-        cancelBtnBg.on('pointerover', () => cancelBtnBg.setFillStyle(0x888888));
-        cancelBtnBg.on('pointerout', () => cancelBtnBg.setFillStyle(0x666666));
-        cancelBtnBg.on('pointerdown', () => {
-            this.modalContainer.setVisible(false);
-        });
-
-        this.modalContainer.add([cancelBtnBg, cancelBtnText]);
-    }
-
-    showModal(levelConfig, index) {
-        this.currentLevelConfig = levelConfig;
-        this.modalLevelTitle.setText(`Level ${index}`);
-        this.modalLevelName.setText(levelConfig.name || 'Unknown Level');
-        this.modalContainer.setVisible(true);
     }
 }
