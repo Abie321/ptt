@@ -1323,7 +1323,7 @@ class GameScene extends Phaser.Scene {
             y: targetY,
             scaleX: 0,
             scaleY: 0,
-            duration: 500,
+            duration: 250,
             ease: 'Power2',
             onComplete: () => {
                 if (!this.gameEnded && this.player && this.player.sprite) {
