@@ -701,11 +701,10 @@ class GameScene extends Phaser.Scene {
                     const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
                     if (playerLogicalSize > itemLogicalSize) {
-                        const points = this.player.consume(item.itemData);
-                        this.score += points;
-                        this.showConsumedItem(item.itemData); // Show HUD indicator
-                        item.destroy();
-                        break; // Only consume one item per frame
+                        if (!item.isBeingConsumed) {
+                            this.startConsumptionAnimation(item, item.itemData);
+                            break; // Only consume one item per frame
+                        }
                     }
                 }
             }
@@ -738,10 +737,9 @@ class GameScene extends Phaser.Scene {
 
                 if (playerLogicalSize > hazardLogicalSize) {
                     // Consume hazard
-                    const points = this.player.consume(hazard.hazardData);
-                    this.score += points;
-                    this.showConsumedItem(hazard.hazardData); // Show HUD indicator
-                    hazard.destroy();
+                    if (!hazard.isBeingConsumed) {
+                        this.startConsumptionAnimation(hazard, hazard.hazardData);
+                    }
                 } else {
                     // If player is invulnerable, skip damage and knockback
                     if (this.player.isInvulnerable) {
@@ -1304,6 +1302,63 @@ class GameScene extends Phaser.Scene {
             // Reset start time so timer starts correctly from 0
             this.startTime = Date.now();
         });
+    }
+
+    startConsumptionAnimation(sprite, itemData) {
+        sprite.isBeingConsumed = true;
+
+        // Disable physics/collision for the item
+        if (sprite.body) {
+            sprite.body.checkCollision = { none: true, up: false, down: false, left: false, right: false };
+        }
+
+        // Target position is where the player is currently
+        const targetX = this.player.sprite.x;
+        const targetY = this.player.sprite.y;
+
+        // Tween to pull and shrink the item
+        this.tweens.add({
+            targets: sprite,
+            x: targetX,
+            y: targetY,
+            scaleX: 0,
+            scaleY: 0,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => {
+                if (!this.gameEnded && this.player && this.player.sprite) {
+                    const points = this.player.consume(itemData);
+                    this.score += points;
+                    this.showConsumedItem(itemData); // Show HUD indicator
+                    this.createSmokeEffect(sprite.x, sprite.y);
+                }
+                sprite.destroy();
+            }
+        });
+    }
+
+    createSmokeEffect(x, y) {
+        // Create a procedural smoke effect using a few fading and expanding grey circles
+        for (let i = 0; i < 5; i++) {
+            const offsetX = Phaser.Math.Between(-10, 10);
+            const offsetY = Phaser.Math.Between(-10, 10);
+            const smoke = this.add.circle(x + offsetX, y + offsetY, Phaser.Math.Between(5, 15), 0x888888, 0.8);
+
+            // Bring smoke to front so it's clearly visible
+            smoke.setDepth(10);
+
+            this.tweens.add({
+                targets: smoke,
+                scaleX: 2,
+                scaleY: 2,
+                alpha: 0,
+                duration: Phaser.Math.Between(400, 800),
+                ease: 'Power1',
+                onComplete: () => {
+                    smoke.destroy();
+                }
+            });
+        }
     }
 
     showConsumedItem(itemData) {
