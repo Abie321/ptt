@@ -1348,42 +1348,40 @@ class GameScene extends Phaser.Scene {
         const effectsConfig = this.levelConfig.EFFECTS || { SMOKE_DURATION_MIN: 400, SMOKE_DURATION_MAX: 800 };
 
         // Create a procedural smoke effect using a few fading and expanding cloud shapes
-        for (let i = 0; i < 2; i++) {
-            const offsetX = Phaser.Math.Between(-3, 3);
-            const offsetY = Phaser.Math.Between(-3, 3);
+        const offsetX = Phaser.Math.Between(-3, 3);
+        const offsetY = Phaser.Math.Between(-3, 3);
 
-            const smoke = this.add.graphics();
-            smoke.x = x + offsetX;
-            smoke.y = y + offsetY;
-            smoke.fillStyle(0x888888, 0.8);
+        const smoke = this.add.graphics();
+        smoke.x = x + offsetX;
+        smoke.y = y + offsetY;
+        smoke.fillStyle(0x888888, 0.8);
 
-            // Draw a basic cloud shape using overlapping circles
-            // Center
-            smoke.fillCircle(0, 0, 12);
-            // Top left
-            smoke.fillCircle(-8, -6, 8);
-            // Top right
-            smoke.fillCircle(8, -6, 8);
-            // Bottom left
-            smoke.fillCircle(-10, 4, 6);
-            // Bottom right
-            smoke.fillCircle(10, 4, 6);
+        // Draw a basic cloud shape using overlapping circles
+        // Center
+        smoke.fillCircle(0, 0, 12);
+        // Top left
+        smoke.fillCircle(-8, -6, 8);
+        // Top right
+        smoke.fillCircle(8, -6, 8);
+        // Bottom left
+        smoke.fillCircle(-10, 4, 6);
+        // Bottom right
+        smoke.fillCircle(10, 4, 6);
 
-            // Bring smoke to front so it's clearly visible
-            smoke.setDepth(10);
+        // Bring smoke to front so it's clearly visible
+        smoke.setDepth(10);
 
-            this.tweens.add({
-                targets: smoke,
-                scaleX: 2,
-                scaleY: 2,
-                alpha: 0,
-                duration: Phaser.Math.Between(effectsConfig.SMOKE_DURATION_MIN, effectsConfig.SMOKE_DURATION_MAX),
-                ease: 'Power1',
-                onComplete: () => {
-                    smoke.destroy();
-                }
-            });
-        }
+        this.tweens.add({
+            targets: smoke,
+            scaleX: 2,
+            scaleY: 2,
+            alpha: 0,
+            duration: Phaser.Math.Between(effectsConfig.SMOKE_DURATION_MIN, effectsConfig.SMOKE_DURATION_MAX),
+            ease: 'Power1',
+            onComplete: () => {
+                smoke.destroy();
+            }
+        });
     }
 
     showConsumedItem(itemData) {
