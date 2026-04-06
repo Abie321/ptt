@@ -27,8 +27,8 @@ const LEVEL_1_CONFIG = {
 
     // Effects configuration
     EFFECTS: {
-        SMOKE_DURATION_MIN: 100,
-        SMOKE_DURATION_MAX: 200
+        SMOKE_DURATION_MIN: 10,
+        SMOKE_DURATION_MAX: 100
     },
 
     // Player configuration
@@ -177,11 +177,6 @@ const GameConfig = {
             id: 'level1',
             name: 'The Haunted Tea Shop',
             ...LEVEL_1_CONFIG
-        },
-        {
-            id: 'level2',
-            name: 'Garden',
-            ...LEVEL_2_CONFIG
         }
     ]
 };

@@ -13,7 +13,7 @@ class LevelDetailScene extends Phaser.Scene {
         const centerX = width / 2;
 
         // Title
-        const titleText = `Level ${this.levelIndex}: ${this.levelConfig.name || 'Unknown'}`;
+        const titleText = `${this.levelConfig.name || 'Unknown'}`;
         this.add.text(centerX, 100, titleText, {
             fontSize: '48px',
             fill: '#fff',
