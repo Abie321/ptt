@@ -17,13 +17,16 @@ const { chromium } = require('playwright');
   });
 
   // Give GameScene time to spawn things and player
-  await page.waitForTimeout(2000);
+  await page.waitForFunction(() => {
+    const scene = window.game && window.game.scene && window.game.scene.getScene('GameScene');
+    return scene && scene.player && scene.player.sprite && scene.edibleItems;
+  }, { timeout: 10000 });
 
   await page.evaluate(() => {
       // Force an item to be very close and strictly smaller than the player
       const scene = window.game.scene.getScene('GameScene');
       const player = scene.player;
-      const playerLogicalSize = player.getLogicalSize();
+      const playerLogicalSize = player.getLogicalSize ? player.getLogicalSize() : player.getSize();
 
       const ediblesGroup = scene.edibleItems[1] || scene.edibleItems[2];
       const edibles = ediblesGroup ? ediblesGroup.getChildren() : [];
