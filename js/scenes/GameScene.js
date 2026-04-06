@@ -744,8 +744,49 @@ class GameScene extends Phaser.Scene {
         }
 
         if (closestItem) {
+            // Reset position and rotation
+            this.closestIndicator.setPosition(0, 0);
+            this.closestIndicator.setRotation(0);
+
+            // Draw bracket indicator
+            const itemRadius = closestItem.radius || closestItem.displayWidth / 2;
+            const bracketDist = itemRadius + 5; // Little padding
+            const targetX = closestItem.x;
+            const targetY = closestItem.y;
+            const len = Math.max(5, bracketDist * 0.4);
+
+            this.closestIndicator.lineStyle(3, 0x000000, 1);
+
+            // Top Left
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(targetX - bracketDist, targetY - bracketDist + len);
+            this.closestIndicator.lineTo(targetX - bracketDist, targetY - bracketDist);
+            this.closestIndicator.lineTo(targetX - bracketDist + len, targetY - bracketDist);
+            this.closestIndicator.strokePath();
+
+            // Top Right
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(targetX + bracketDist - len, targetY - bracketDist);
+            this.closestIndicator.lineTo(targetX + bracketDist, targetY - bracketDist);
+            this.closestIndicator.lineTo(targetX + bracketDist, targetY - bracketDist + len);
+            this.closestIndicator.strokePath();
+
+            // Bottom Left
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(targetX - bracketDist, targetY + bracketDist - len);
+            this.closestIndicator.lineTo(targetX - bracketDist, targetY + bracketDist);
+            this.closestIndicator.lineTo(targetX - bracketDist + len, targetY + bracketDist);
+            this.closestIndicator.strokePath();
+
+            // Bottom Right
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(targetX + bracketDist - len, targetY + bracketDist);
+            this.closestIndicator.lineTo(targetX + bracketDist, targetY + bracketDist);
+            this.closestIndicator.lineTo(targetX + bracketDist, targetY + bracketDist - len);
+            this.closestIndicator.strokePath();
+
             // Draw pointing arrow orbiting the player
-            const angle = Phaser.Math.Angle.Between(playerX, playerY, closestItem.x, closestItem.y);
+            const angle = Phaser.Math.Angle.Between(playerX, playerY, targetX, targetY);
 
             // Orbit distance: just outside the player's collision radius + some padding
             const orbitDistance = this.player.getCollisionRadius() + 15;
@@ -753,21 +794,30 @@ class GameScene extends Phaser.Scene {
             const arrowX = playerX + Math.cos(angle) * orbitDistance;
             const arrowY = playerY + Math.sin(angle) * orbitDistance;
 
-            // Draw a simple triangle arrow
             this.closestIndicator.fillStyle(0xFFD700, 1); // Gold color arrow
             this.closestIndicator.lineStyle(2, 0x000000, 1); // Black outline
 
-            // Use setPosition and setRotation for Phaser.GameObjects.Graphics
-            this.closestIndicator.setPosition(arrowX, arrowY);
-            // Add PI/2 because the triangle is drawn pointing UP by default (0, -arrowSize)
-            this.closestIndicator.setRotation(angle + Math.PI / 2);
-
             const arrowSize = 10;
-            // Draw a triangle pointing "up"
+            const rotation = angle + Math.PI / 2;
+
+            // Function to rotate a point around origin
+            const rotatePoint = (x, y, rad) => {
+                return {
+                    x: x * Math.cos(rad) - y * Math.sin(rad),
+                    y: x * Math.sin(rad) + y * Math.cos(rad)
+                };
+            };
+
+            // Calculate absolute points for the triangle
+            const pt1 = rotatePoint(0, -arrowSize, rotation);
+            const pt2 = rotatePoint(-arrowSize * 0.7, arrowSize, rotation);
+            const pt3 = rotatePoint(arrowSize * 0.7, arrowSize, rotation);
+
+            // Draw a triangle
             this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(0, -arrowSize); // Tip
-            this.closestIndicator.lineTo(-arrowSize * 0.7, arrowSize); // Bottom left
-            this.closestIndicator.lineTo(arrowSize * 0.7, arrowSize); // Bottom right
+            this.closestIndicator.moveTo(arrowX + pt1.x, arrowY + pt1.y); // Tip
+            this.closestIndicator.lineTo(arrowX + pt2.x, arrowY + pt2.y); // Bottom left
+            this.closestIndicator.lineTo(arrowX + pt3.x, arrowY + pt3.y); // Bottom right
             this.closestIndicator.closePath();
 
             this.closestIndicator.fillPath();
