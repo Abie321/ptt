@@ -284,6 +284,13 @@ class GameScene extends Phaser.Scene {
         // Create HUD (fixed to camera)
         this.createHUD();
 
+        // Create graphics object for the closest consumable indicator
+        this.closestIndicator = this.add.graphics();
+        this.closestIndicator.setDepth(150);
+        if (this.uiCamera) {
+            this.uiCamera.ignore(this.closestIndicator);
+        }
+
         // ESC key for pause
         this.input.keyboard.on('keydown-ESC', () => {
             this.scene.pause();
@@ -361,6 +368,11 @@ class GameScene extends Phaser.Scene {
         if (this.bg) {
             this.bg.destroy();
             this.bg = null;
+        }
+
+        if (this.closestIndicator) {
+            this.closestIndicator.destroy();
+            this.closestIndicator = null;
         }
 
         // Clean up UI timers/tweens
@@ -669,8 +681,106 @@ class GameScene extends Phaser.Scene {
         // Update HUD
         this.updateHUD();
 
+        // Update closest consumable indicator
+        this.updateClosestIndicator();
+
         // Check win condition
         this.checkWinCondition();
+    }
+
+    updateClosestIndicator() {
+        if (!this.closestIndicator) return;
+
+        this.closestIndicator.clear();
+
+        if (!this.player || !this.player.sprite) return;
+
+        let closestItem = null;
+        let minDistance = Infinity;
+
+        const playerX = this.player.sprite.x;
+        const playerY = this.player.sprite.y;
+        const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
+
+        // Check all edible items
+        const consumableTiers = this.player.getConsumableTiers();
+        consumableTiers.forEach(tier => {
+            if (!this.edibleItems || !this.edibleItems[tier] || !this.edibleItems[tier].scene) return;
+
+            const items = this.edibleItems[tier].getChildren();
+            for (let item of items) {
+                if (!item.active || item.isBeingConsumed) continue;
+
+                const itemRadius = item.radius || item.displayWidth / 2;
+                const itemLogicalSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
+
+                if (playerLogicalSize > itemLogicalSize) {
+                    const distance = Phaser.Math.Distance.Between(playerX, playerY, item.x, item.y);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestItem = item;
+                    }
+                }
+            }
+        });
+
+        // Check hazards
+        if (this.hazards && this.hazards.scene && typeof this.hazards.getChildren === 'function') {
+            const hazardItems = this.hazards.getChildren();
+            for (let hazard of hazardItems) {
+                if (!hazard.active || hazard.isBeingConsumed || !hazard.hazardData) continue;
+
+                const hazardRadius = hazard.radius || hazard.displayWidth / 2;
+                const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+
+                if (playerLogicalSize > hazardLogicalSize) {
+                    const distance = Phaser.Math.Distance.Between(playerX, playerY, hazard.x, hazard.y);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestItem = hazard;
+                    }
+                }
+            }
+        }
+
+        if (closestItem) {
+            // Draw bracket indicator
+            const itemRadius = closestItem.radius || closestItem.displayWidth / 2;
+            const bracketDist = itemRadius + 5; // Little padding
+            const x = closestItem.x;
+            const y = closestItem.y;
+            const len = Math.max(5, bracketDist * 0.4);
+
+            this.closestIndicator.lineStyle(3, 0x000000, 1);
+
+            // Top Left
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(x - bracketDist, y - bracketDist + len);
+            this.closestIndicator.lineTo(x - bracketDist, y - bracketDist);
+            this.closestIndicator.lineTo(x - bracketDist + len, y - bracketDist);
+            this.closestIndicator.strokePath();
+
+            // Top Right
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(x + bracketDist - len, y - bracketDist);
+            this.closestIndicator.lineTo(x + bracketDist, y - bracketDist);
+            this.closestIndicator.lineTo(x + bracketDist, y - bracketDist + len);
+            this.closestIndicator.strokePath();
+
+            // Bottom Left
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(x - bracketDist, y + bracketDist - len);
+            this.closestIndicator.lineTo(x - bracketDist, y + bracketDist);
+            this.closestIndicator.lineTo(x - bracketDist + len, y + bracketDist);
+            this.closestIndicator.strokePath();
+
+            // Bottom Right
+            this.closestIndicator.beginPath();
+            this.closestIndicator.moveTo(x + bracketDist - len, y + bracketDist);
+            this.closestIndicator.lineTo(x + bracketDist, y + bracketDist);
+            this.closestIndicator.lineTo(x + bracketDist, y + bracketDist - len);
+            this.closestIndicator.strokePath();
+        }
     }
 
     checkConsumption() {
