@@ -744,41 +744,33 @@ class GameScene extends Phaser.Scene {
         }
 
         if (closestItem) {
-            // Draw bracket indicator
-            const itemRadius = closestItem.radius || closestItem.displayWidth / 2;
-            const bracketDist = itemRadius + 5; // Little padding
-            const x = closestItem.x;
-            const y = closestItem.y;
-            const len = Math.max(5, bracketDist * 0.4);
+            // Draw pointing arrow orbiting the player
+            const angle = Phaser.Math.Angle.Between(playerX, playerY, closestItem.x, closestItem.y);
 
-            this.closestIndicator.lineStyle(3, 0x000000, 1);
+            // Orbit distance: just outside the player's collision radius + some padding
+            const orbitDistance = this.player.getCollisionRadius() + 15;
 
-            // Top Left
+            const arrowX = playerX + Math.cos(angle) * orbitDistance;
+            const arrowY = playerY + Math.sin(angle) * orbitDistance;
+
+            // Draw a simple triangle arrow
+            this.closestIndicator.fillStyle(0xFFD700, 1); // Gold color arrow
+            this.closestIndicator.lineStyle(2, 0x000000, 1); // Black outline
+
+            // Use setPosition and setRotation for Phaser.GameObjects.Graphics
+            this.closestIndicator.setPosition(arrowX, arrowY);
+            // Add PI/2 because the triangle is drawn pointing UP by default (0, -arrowSize)
+            this.closestIndicator.setRotation(angle + Math.PI / 2);
+
+            const arrowSize = 10;
+            // Draw a triangle pointing "up"
             this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(x - bracketDist, y - bracketDist + len);
-            this.closestIndicator.lineTo(x - bracketDist, y - bracketDist);
-            this.closestIndicator.lineTo(x - bracketDist + len, y - bracketDist);
-            this.closestIndicator.strokePath();
+            this.closestIndicator.moveTo(0, -arrowSize); // Tip
+            this.closestIndicator.lineTo(-arrowSize * 0.7, arrowSize); // Bottom left
+            this.closestIndicator.lineTo(arrowSize * 0.7, arrowSize); // Bottom right
+            this.closestIndicator.closePath();
 
-            // Top Right
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(x + bracketDist - len, y - bracketDist);
-            this.closestIndicator.lineTo(x + bracketDist, y - bracketDist);
-            this.closestIndicator.lineTo(x + bracketDist, y - bracketDist + len);
-            this.closestIndicator.strokePath();
-
-            // Bottom Left
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(x - bracketDist, y + bracketDist - len);
-            this.closestIndicator.lineTo(x - bracketDist, y + bracketDist);
-            this.closestIndicator.lineTo(x - bracketDist + len, y + bracketDist);
-            this.closestIndicator.strokePath();
-
-            // Bottom Right
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(x + bracketDist - len, y + bracketDist);
-            this.closestIndicator.lineTo(x + bracketDist, y + bracketDist);
-            this.closestIndicator.lineTo(x + bracketDist, y + bracketDist - len);
+            this.closestIndicator.fillPath();
             this.closestIndicator.strokePath();
         }
     }
