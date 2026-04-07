@@ -70,7 +70,8 @@ const LEVEL_1_CONFIG = {
         'beanscan': 'assets/images/beanscan.png',
         'chair': 'assets/images/chair.png',
         'waiter': 'assets/images/waiter.png',
-        'customer': 'assets/images/customer.png'
+        'customer': 'assets/images/customer.png',
+        'mouse': 'assets/images/mouse.png'
     },
   
     // Entities configuration per tier
@@ -92,7 +93,7 @@ const LEVEL_1_CONFIG = {
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
             { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60 }
+            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
         3: [
             // Edibles
