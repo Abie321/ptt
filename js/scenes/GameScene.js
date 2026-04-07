@@ -785,43 +785,52 @@ class GameScene extends Phaser.Scene {
             this.closestIndicator.lineTo(targetX + bracketDist, targetY + bracketDist - len);
             this.closestIndicator.strokePath();
 
-            // Draw pointing arrow orbiting the player
-            const angle = Phaser.Math.Angle.Between(playerX, playerY, targetX, targetY);
+            // Check if the item is within the camera view
+            const camera = this.cameras.main;
+            const isVisibleOnScreen = targetX >= camera.worldView.x &&
+                                      targetX <= camera.worldView.right &&
+                                      targetY >= camera.worldView.y &&
+                                      targetY <= camera.worldView.bottom;
 
-            // Orbit distance: just outside the player's collision radius + some padding
-            const orbitDistance = this.player.getCollisionRadius() + 15;
+            if (isVisibleOnScreen) {
+                // Draw pointing arrow orbiting the player
+                const angle = Phaser.Math.Angle.Between(playerX, playerY, targetX, targetY);
 
-            const arrowX = playerX + Math.cos(angle) * orbitDistance;
-            const arrowY = playerY + Math.sin(angle) * orbitDistance;
+                // Orbit distance: just outside the player's collision radius + some padding
+                const orbitDistance = this.player.getCollisionRadius() + 15;
 
-            this.closestIndicator.fillStyle(0xFFD700, 1); // Gold color arrow
-            this.closestIndicator.lineStyle(2, 0x000000, 1); // Black outline
+                const arrowX = playerX + Math.cos(angle) * orbitDistance;
+                const arrowY = playerY + Math.sin(angle) * orbitDistance;
 
-            const arrowSize = 10;
-            const rotation = angle + Math.PI / 2;
+                this.closestIndicator.fillStyle(0xFFD700, 1); // Gold color arrow
+                this.closestIndicator.lineStyle(2, 0x000000, 1); // Black outline
 
-            // Function to rotate a point around origin
-            const rotatePoint = (x, y, rad) => {
-                return {
-                    x: x * Math.cos(rad) - y * Math.sin(rad),
-                    y: x * Math.sin(rad) + y * Math.cos(rad)
+                const arrowSize = 10;
+                const rotation = angle + Math.PI / 2;
+
+                // Function to rotate a point around origin
+                const rotatePoint = (x, y, rad) => {
+                    return {
+                        x: x * Math.cos(rad) - y * Math.sin(rad),
+                        y: x * Math.sin(rad) + y * Math.cos(rad)
+                    };
                 };
-            };
 
-            // Calculate absolute points for the triangle
-            const pt1 = rotatePoint(0, -arrowSize, rotation);
-            const pt2 = rotatePoint(-arrowSize * 0.7, arrowSize, rotation);
-            const pt3 = rotatePoint(arrowSize * 0.7, arrowSize, rotation);
+                // Calculate absolute points for the triangle
+                const pt1 = rotatePoint(0, -arrowSize, rotation);
+                const pt2 = rotatePoint(-arrowSize * 0.7, arrowSize, rotation);
+                const pt3 = rotatePoint(arrowSize * 0.7, arrowSize, rotation);
 
-            // Draw a triangle
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(arrowX + pt1.x, arrowY + pt1.y); // Tip
-            this.closestIndicator.lineTo(arrowX + pt2.x, arrowY + pt2.y); // Bottom left
-            this.closestIndicator.lineTo(arrowX + pt3.x, arrowY + pt3.y); // Bottom right
-            this.closestIndicator.closePath();
+                // Draw a triangle
+                this.closestIndicator.beginPath();
+                this.closestIndicator.moveTo(arrowX + pt1.x, arrowY + pt1.y); // Tip
+                this.closestIndicator.lineTo(arrowX + pt2.x, arrowY + pt2.y); // Bottom left
+                this.closestIndicator.lineTo(arrowX + pt3.x, arrowY + pt3.y); // Bottom right
+                this.closestIndicator.closePath();
 
-            this.closestIndicator.fillPath();
-            this.closestIndicator.strokePath();
+                this.closestIndicator.fillPath();
+                this.closestIndicator.strokePath();
+            }
         }
     }
 
