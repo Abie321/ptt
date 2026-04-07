@@ -453,7 +453,8 @@ class GameScene extends Phaser.Scene {
         const playerBgScale = (playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
         entities.forEach(entityConfig => {
-            const count = entityConfig.count || 1;
+            const hasPositions = Array.isArray(entityConfig.positions) && entityConfig.positions.length > 0;
+            const count = hasPositions ? entityConfig.positions.length : (entityConfig.count || 1);
 
             for (let i = 0; i < count; i++) {
                 // Determine bounds based on the entity's tier
@@ -482,7 +483,11 @@ class GameScene extends Phaser.Scene {
                 let x, y;
                 let foundSpot = false;
 
-                if (!entityConfig.isHazard) {
+                if (hasPositions) {
+                    x = entityConfig.positions[i].x * bgScaleRatio;
+                    y = entityConfig.positions[i].y * bgScaleRatio;
+                    foundSpot = true;
+                } else if (!entityConfig.isHazard) {
                     for (let attempt = 0; attempt < 50; attempt++) {
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
