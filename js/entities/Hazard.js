@@ -58,6 +58,10 @@ class Hazard {
             this.sprite.body.setCircle(visualSize);
         }
 
+        if (config.rotation !== undefined) {
+            this.sprite.setAngle(config.rotation);
+        }
+
         // Simple movement pattern (optional for prototype)
         this.sprite.body.setVelocity(
             Phaser.Math.Between(-50, 50),
