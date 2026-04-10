@@ -47,6 +47,10 @@ class EdibleItem {
         scene.physics.add.existing(this.sprite);
         this.sprite.body.setImmovable(true);
 
+        if (config.rotation !== undefined) {
+            this.sprite.setAngle(config.rotation);
+        }
+
         // Ensure circular body for circles, otherwise default rectangular body is fine
         if (config.image) {
             // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.

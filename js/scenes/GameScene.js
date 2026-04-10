@@ -485,12 +485,13 @@ class GameScene extends Phaser.Scene {
                 const scale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
                 const radius = logicalRadius * scale;
 
-                let x, y;
+                let x, y, rotation;
                 let foundSpot = false;
 
                 if (hasPositions) {
                     x = entityConfig.positions[i].x * bgScaleRatio;
                     y = entityConfig.positions[i].y * bgScaleRatio;
+                    rotation = entityConfig.positions[i].rotation;
                     foundSpot = true;
                 } else if (!entityConfig.isHazard) {
                     for (let attempt = 0; attempt < 50; attempt++) {
@@ -530,6 +531,9 @@ class GameScene extends Phaser.Scene {
 
                 // Inject tier and early visibility flag into the config for the entity to use
                 const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: earlyVisible, size: logicalRadius };
+                if (rotation !== undefined) {
+                    instanceConfig.rotation = rotation;
+                }
 
                 if (entityConfig.isHazard) {
                     const hazard = new Hazard(this, x, y, instanceConfig);
