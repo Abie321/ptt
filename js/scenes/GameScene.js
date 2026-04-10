@@ -452,7 +452,12 @@ class GameScene extends Phaser.Scene {
         const playerTierConfig = this.levelConfig.SIZE_TIERS[playerTierIndex] || this.levelConfig.SIZE_TIERS[0];
         const playerBgScale = (playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        entities.forEach(entityConfig => {
+        // Process positioned entities first
+        const positionedEntities = entities.filter(e => Array.isArray(e.positions) && e.positions.length > 0);
+        // Process random entities next
+        const randomEntities = entities.filter(e => !(Array.isArray(e.positions) && e.positions.length > 0));
+
+        [...positionedEntities, ...randomEntities].forEach(entityConfig => {
             const hasPositions = Array.isArray(entityConfig.positions) && entityConfig.positions.length > 0;
             const count = hasPositions ? entityConfig.positions.length : (entityConfig.count || 1);
 
