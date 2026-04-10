@@ -399,7 +399,7 @@ class GameScene extends Phaser.Scene {
         this.spawnTierEntities(2);
     }
 
-    spawnTierEntities(tier) {
+    spawnTierEntities(tier, allowReplacement = false) {
         if (!this.levelConfig.TIER_ENTITIES || !this.levelConfig.TIER_ENTITIES[tier]) return;
 
         const entities = this.levelConfig.TIER_ENTITIES[tier];
@@ -418,6 +418,7 @@ class GameScene extends Phaser.Scene {
                     r = hazard.displayWidth / 2;
                 }
                 existingEntities.push({
+                    sprite: hazard,
                     x: hazard.x,
                     y: hazard.y,
                     radius: r
@@ -438,6 +439,7 @@ class GameScene extends Phaser.Scene {
                             r = item.displayWidth / 2;
                         }
                         existingEntities.push({
+                            sprite: item,
                             x: item.x,
                             y: item.y,
                             radius: r
@@ -492,25 +494,54 @@ class GameScene extends Phaser.Scene {
                     x = entityConfig.positions[i].x * bgScaleRatio;
                     y = entityConfig.positions[i].y * bgScaleRatio;
                     rotation = entityConfig.positions[i].rotation;
+
+                    if (allowReplacement) {
+                        for (let j = existingEntities.length - 1; j >= 0; j--) {
+                            const existing = existingEntities[j];
+                            const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
+                            if (dist < (radius + existing.radius) * 1.1 + 5) {
+                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                    existing.sprite.destroy();
+                                }
+                                existingEntities.splice(j, 1);
+                            }
+                        }
+                    }
                     foundSpot = true;
                 } else if (!entityConfig.isHazard) {
                     for (let attempt = 0; attempt < 50; attempt++) {
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
+                        const testX = candidateX * bgScaleRatio;
+                        const testY = candidateY * bgScaleRatio;
 
                         let overlaps = false;
-                        for (const existing of existingEntities) {
-                            const dist = Phaser.Math.Distance.Between(candidateX * bgScaleRatio, candidateY * bgScaleRatio, existing.x, existing.y);
+                        let overlappedIndex = -1;
+                        for (let j = 0; j < existingEntities.length; j++) {
+                            const existing = existingEntities[j];
+                            const dist = Phaser.Math.Distance.Between(testX, testY, existing.x, existing.y);
                             // Add a 10% + 5px buffer to the radius check to prevent visual overlapping
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
                                 overlaps = true;
+                                overlappedIndex = j;
                                 break;
                             }
                         }
 
                         if (!overlaps) {
-                            x = candidateX * bgScaleRatio;
-                            y = candidateY * bgScaleRatio;
+                            x = testX;
+                            y = testY;
+                            foundSpot = true;
+                            break;
+                        } else if (allowReplacement && overlappedIndex !== -1) {
+                            const existing = existingEntities[overlappedIndex];
+                            if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                existing.sprite.destroy();
+                            }
+                            existingEntities.splice(overlappedIndex, 1);
+
+                            x = testX;
+                            y = testY;
                             foundSpot = true;
                             break;
                         }
@@ -522,6 +553,19 @@ class GameScene extends Phaser.Scene {
                 } else {
                     x = Phaser.Math.Between(50, world.WIDTH - 50) * bgScaleRatio;
                     y = Phaser.Math.Between(50, world.HEIGHT - 50) * bgScaleRatio;
+
+                    if (allowReplacement) {
+                        for (let j = existingEntities.length - 1; j >= 0; j--) {
+                            const existing = existingEntities[j];
+                            const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
+                            if (dist < (radius + existing.radius) * 1.1 + 5) {
+                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                    existing.sprite.destroy();
+                                }
+                                existingEntities.splice(j, 1);
+                            }
+                        }
+                    }
                     foundSpot = true;
                 }
 
@@ -539,6 +583,7 @@ class GameScene extends Phaser.Scene {
                     const hazard = new Hazard(this, x, y, instanceConfig);
                     this.hazards.add(hazard.sprite);
                     existingEntities.push({
+                        sprite: hazard.sprite,
                         x: hazard.sprite.x,
                         y: hazard.sprite.y,
                         radius: hazard.radius
@@ -549,6 +594,7 @@ class GameScene extends Phaser.Scene {
                         this.edibleItems[tier].add(item.sprite);
                     }
                     existingEntities.push({
+                        sprite: item.sprite,
                         x: item.sprite.x,
                         y: item.sprite.y,
                         radius: item.radius
@@ -1062,7 +1108,7 @@ class GameScene extends Phaser.Scene {
         // Spawn items for tier N+1
         const spawnTier = newTier + 1;
         if (spawnTier <= this.levelConfig.SIZE_TIERS.length) {
-            this.spawnTierEntities(spawnTier);
+            this.spawnTierEntities(spawnTier, true);
         }
 
         // Update world bounds and background for the new tier
