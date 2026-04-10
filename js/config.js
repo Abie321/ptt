@@ -8,7 +8,7 @@ const LEVEL_1_CONFIG = {
     SIZE_TIERS: [
         { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 2.0, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
         { tier: 2, initialSize: 20, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 3, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2816, HEIGHT: 1536 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } }
+        { tier: 3, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } }
     ],
 
     // Scoring configuration
@@ -69,6 +69,7 @@ const LEVEL_1_CONFIG = {
         'onepoundnote': 'assets/images/onepoundnote.png',
         'beanscan': 'assets/images/beanscan.png',
         'chair': 'assets/images/chair.png',
+        'table': 'assets/images/table.png',
         'waiter': 'assets/images/waiter.png',
         'customer': 'assets/images/customer.png',
         'mouse': 'assets/images/mouse.png'
@@ -91,7 +92,7 @@ const LEVEL_1_CONFIG = {
             { type: "Spoon", count: 7, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
             { type: "Cup", count: 5, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true, positions: [{x: 400, y: 500}, {x: 800, y: 500}, {x: 1200, y: 500}, {x: 1600, y: 500}, {x: 2000, y: 500}, {x: 1200, y: 800}, {x: 1600, y: 800}] },
+            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
             { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
@@ -99,7 +100,30 @@ const LEVEL_1_CONFIG = {
             // Edibles
             { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
             { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Chair", count: 6, value: 300, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 300, image: 'chair'},
+            { 
+                type: "Chair", 
+                count: 2, 
+                value: 300, 
+                shape: 'circle', 
+                color: 0xFFEB3B, 
+                isHazard: false,
+                hideInPreviousTier: true, 
+                size: 300, 
+                image: 'chair',
+                positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
+            },
+            { 
+                type: "Table", 
+                count: 4, 
+                value: 300, 
+                shape: 'circle', 
+                color: 0xFFEB3B, 
+                isHazard: false,
+                hideInPreviousTier: true, 
+                size: 650, 
+                image: 'table',
+                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
+            },
             // Hazards
             { 
                     type: "Waiter", 
