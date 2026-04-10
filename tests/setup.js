@@ -109,6 +109,7 @@ global.Phaser = {
             setAlpha: jest.fn().mockReturnThis(),
             play: jest.fn().mockReturnThis(),
             setRotation: jest.fn().mockReturnThis(),
+            setAngle: jest.fn().mockReturnThis(),
             anims: {
               play: jest.fn().mockReturnThis()
             }
