@@ -72,7 +72,8 @@ const LEVEL_1_CONFIG = {
         'table': 'assets/images/table.png',
         'waiter': 'assets/images/waiter.png',
         'customer': 'assets/images/customer.png',
-        'mouse': 'assets/images/mouse.png'
+        'mouse': 'assets/images/mouse.png',
+        'emptycounter': 'assets/images/emptycounter.png'
     },
   
     // Entities configuration per tier
@@ -123,6 +124,18 @@ const LEVEL_1_CONFIG = {
                 size: 650, 
                 image: 'table',
                 positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
+            },
+            { 
+                type: "Counter", 
+                count: 4, 
+                value: 300, 
+                shape: 'circle', 
+                color: 0xFFEB3B, 
+                isHazard: false,
+                hideInPreviousTier: true, 
+                size: 700, 
+                image: 'emptycounter',
+                positions: [{x: 1450, y: 100}]
             },
             // Hazards
             { 
