@@ -479,7 +479,7 @@ class GameScene extends Phaser.Scene {
                 }
 
                 const scale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
-                const radius = logicalRadius * scale;
+                let radius = logicalRadius * scale;
 
                 let x, y, rotation;
                 let foundSpot = false;
