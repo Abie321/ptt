@@ -414,11 +414,13 @@ class GameScene extends Phaser.Scene {
                 if (r === undefined || isNaN(r) || r === 0) {
                     r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
                 }
+                const hazardTier = (hazard.hazardData && hazard.hazardData.tier) ? hazard.hazardData.tier : 1;
                 existingEntities.push({
                     sprite: hazard,
                     x: hazard.x,
                     y: hazard.y,
-                    radius: r
+                    radius: r,
+                    tier: hazardTier
                 });
             });
         }
@@ -432,11 +434,13 @@ class GameScene extends Phaser.Scene {
                         if (r === undefined || isNaN(r) || r === 0) {
                             r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
                         }
+                        const itemTier = (item.itemData && item.itemData.tier) ? item.itemData.tier : t;
                         existingEntities.push({
                             sprite: item,
                             x: item.x,
                             y: item.y,
-                            radius: r
+                            radius: r,
+                            tier: itemTier
                         });
                     });
                 }
@@ -521,49 +525,57 @@ class GameScene extends Phaser.Scene {
                     }
                     foundSpot = true;
                 } else if (!entityConfig.isHazard) {
+                    let bestFallback = null;
+
                     for (let attempt = 0; attempt < 50; attempt++) {
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
                         const testX = candidateX * bgScaleRatio;
                         const testY = candidateY * bgScaleRatio;
 
-                        let overlaps = false;
-                        let overlappedIndex = -1;
+                        const overlaps = [];
+                        let hasSameOrHigherTierOverlap = false;
+
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
                             const dist = Phaser.Math.Distance.Between(testX, testY, existing.x, existing.y);
                             // Add a 10% + 5px buffer to the radius check to prevent visual overlapping
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
-                                overlaps = true;
-                                overlappedIndex = j;
-                                break;
+                                overlaps.push(j);
+                                if (existing.tier >= tier) {
+                                    hasSameOrHigherTierOverlap = true;
+                                }
                             }
                         }
 
-                        if (!overlaps) {
+                        // Perfect spot found
+                        if (overlaps.length === 0) {
                             x = testX;
                             y = testY;
                             foundSpot = true;
                             break;
-                        } else if (allowReplacement && overlappedIndex !== -1) {
-                            const existing = existingEntities[overlappedIndex];
+                        }
 
-                            if (entityConfig.hideInPreviousTier) {
-                                // Do not destroy the existing entity, just place it here overlapping
-                                x = testX;
-                                y = testY;
-                                foundSpot = true;
-                                break;
-                            } else {
+                        // If we have allowReplacement and it only overlaps with lower tier entities
+                        if (allowReplacement && !hasSameOrHigherTierOverlap) {
+                            bestFallback = { x: testX, y: testY, overlaps: overlaps };
+                        }
+                    }
+
+                    if (!foundSpot && bestFallback) {
+                        x = bestFallback.x;
+                        y = bestFallback.y;
+                        foundSpot = true;
+
+                        if (!entityConfig.hideInPreviousTier) {
+                            // Sort descending so splicing doesn't mess up indices
+                            bestFallback.overlaps.sort((a, b) => b - a);
+                            for (let idx of bestFallback.overlaps) {
+                                const existing = existingEntities[idx];
                                 if (existing.sprite && typeof existing.sprite.destroy === 'function') {
                                     existing.sprite.destroy();
                                 }
-                                existingEntities.splice(overlappedIndex, 1);
-
-                                x = testX;
-                                y = testY;
-                                foundSpot = true;
-                                break;
+                                existingEntities.splice(idx, 1);
                             }
                         }
                     }
@@ -572,26 +584,63 @@ class GameScene extends Phaser.Scene {
                         continue; // Skip placing this edible
                     }
                 } else {
-                    x = Phaser.Math.Between(50, world.WIDTH - 50) * bgScaleRatio;
-                    y = Phaser.Math.Between(50, world.HEIGHT - 50) * bgScaleRatio;
+                    let bestFallback = null;
 
-                    if (allowReplacement) {
-                        for (let j = existingEntities.length - 1; j >= 0; j--) {
+                    for (let attempt = 0; attempt < 50; attempt++) {
+                        const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
+                        const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
+                        const testX = candidateX * bgScaleRatio;
+                        const testY = candidateY * bgScaleRatio;
+
+                        const overlaps = [];
+                        let hasSameOrHigherTierOverlap = false;
+
+                        for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
+                            const dist = Phaser.Math.Distance.Between(testX, testY, existing.x, existing.y);
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
-                                if (entityConfig.hideInPreviousTier) {
-                                    // Skip replacing if it's hidden
-                                } else {
-                                    if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                        existing.sprite.destroy();
-                                    }
-                                    existingEntities.splice(j, 1);
+                                overlaps.push(j);
+                                if (existing.tier >= tier) {
+                                    hasSameOrHigherTierOverlap = true;
                                 }
                             }
                         }
+
+                        // Perfect spot found
+                        if (overlaps.length === 0) {
+                            x = testX;
+                            y = testY;
+                            foundSpot = true;
+                            break;
+                        }
+
+                        // If we have allowReplacement and it only overlaps with lower tier entities
+                        if (allowReplacement && !hasSameOrHigherTierOverlap) {
+                            bestFallback = { x: testX, y: testY, overlaps: overlaps };
+                        }
                     }
-                    foundSpot = true;
+
+                    if (!foundSpot && bestFallback) {
+                        x = bestFallback.x;
+                        y = bestFallback.y;
+                        foundSpot = true;
+
+                        if (!entityConfig.hideInPreviousTier) {
+                            // Sort descending so splicing doesn't mess up indices
+                            bestFallback.overlaps.sort((a, b) => b - a);
+                            for (let idx of bestFallback.overlaps) {
+                                const existing = existingEntities[idx];
+                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                    existing.sprite.destroy();
+                                }
+                                existingEntities.splice(idx, 1);
+                            }
+                        }
+                    }
+
+                    if (!foundSpot) {
+                        continue; // Skip placing this hazard if no valid spot
+                    }
                 }
 
                 // Calculate subset visibility for Tier N+1 items
@@ -611,7 +660,8 @@ class GameScene extends Phaser.Scene {
                         sprite: hazard.sprite,
                         x: hazard.sprite.x,
                         y: hazard.sprite.y,
-                        radius: hazard.radius
+                        radius: hazard.radius,
+                        tier: tier
                     });
                 } else {
                     const item = new EdibleItem(this, x, y, instanceConfig);
@@ -622,7 +672,8 @@ class GameScene extends Phaser.Scene {
                         sprite: item.sprite,
                         x: item.sprite.x,
                         y: item.sprite.y,
-                        radius: item.radius
+                        radius: item.radius,
+                        tier: tier
                     });
                 }
             }
