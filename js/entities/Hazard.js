@@ -72,6 +72,7 @@ class Hazard {
 
         // Store reference
         this.sprite.hazardData = this.hazardData;
+        this.sprite.radius = this.radius;
 
         // Circular reference so update can be called on the wrapper
         this.sprite.entityWrapper = this;

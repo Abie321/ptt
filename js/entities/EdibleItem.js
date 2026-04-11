@@ -64,6 +64,7 @@ class EdibleItem {
 
         // Store reference
         this.sprite.itemData = this.itemData;
+        this.sprite.radius = this.radius;
     }
 
     destroy() {

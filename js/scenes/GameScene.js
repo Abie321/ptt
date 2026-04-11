@@ -410,12 +410,9 @@ class GameScene extends Phaser.Scene {
         // Add existing hazards
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
-                let r = hazard.radius;
-                if (r === undefined && hazard.hazardData && hazard.hazardData.radius !== undefined) {
-                    r = hazard.hazardData.radius;
-                }
-                if (r === undefined || isNaN(r)) {
-                    r = hazard.displayWidth / 2;
+                let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
+                if (r === undefined || isNaN(r) || r === 0) {
+                    r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
                 }
                 existingEntities.push({
                     sprite: hazard,
@@ -431,12 +428,9 @@ class GameScene extends Phaser.Scene {
             for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
                 if (this.edibleItems[t] && this.edibleItems[t].scene) {
                     this.edibleItems[t].getChildren().forEach(item => {
-                        let r = item.radius;
-                        if (r === undefined && item.itemData && item.itemData.radius !== undefined) {
-                            r = item.itemData.radius;
-                        }
-                        if (r === undefined || isNaN(r)) {
-                            r = item.displayWidth / 2;
+                        let r = Math.max(item.displayWidth, item.displayHeight) / 2;
+                        if (r === undefined || isNaN(r) || r === 0) {
+                            r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
                         }
                         existingEntities.push({
                             sprite: item,
@@ -489,6 +483,20 @@ class GameScene extends Phaser.Scene {
 
                 let x, y, rotation;
                 let foundSpot = false;
+
+                // Pre-calculate an actual visual radius estimation to correctly prevent overlap with large rectangular sprites
+                if (entityConfig.image && this.textures) {
+                    const tex = this.textures.get(entityConfig.image);
+                    if (tex && tex.key !== '__MISSING' && typeof tex.get === 'function') {
+                        const frame = tex.get();
+                        if (frame && frame.width > 0 && frame.height > 0) {
+                            const estimatedScale = (radius * 2) / frame.width;
+                            const estimatedHeight = frame.height * estimatedScale;
+                            const maxDim = Math.max(radius * 2, estimatedHeight);
+                            radius = maxDim / 2;
+                        }
+                    }
+                }
 
                 if (hasPositions) {
                     x = entityConfig.positions[i].x * bgScaleRatio;
@@ -1304,11 +1312,15 @@ class GameScene extends Phaser.Scene {
         if (this.edibleItems && this.edibleItems[tier]) {
             this.edibleItems[tier].getChildren().forEach(item => {
                 if (item.visible) {
+                    let r = Math.max(item.displayWidth, item.displayHeight) / 2;
+                    if (r === undefined || isNaN(r) || r === 0) {
+                        r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
+                    }
                     currentItems.push({
                         sprite: item,
                         x: item.x,
                         y: item.y,
-                        radius: item.itemData ? item.itemData.size : item.displayWidth / 2,
+                        radius: r,
                         isHazard: false
                     });
                 }
@@ -1318,11 +1330,15 @@ class GameScene extends Phaser.Scene {
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
                 if (hazard.visible && hazard.hazardData && hazard.hazardData.tier === tier) {
+                    let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
+                    if (r === undefined || isNaN(r) || r === 0) {
+                        r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
+                    }
                     currentItems.push({
                         sprite: hazard,
                         x: hazard.x,
                         y: hazard.y,
-                        radius: hazard.hazardData.size || hazard.displayWidth / 2,
+                        radius: r,
                         isHazard: true
                     });
                 }
@@ -1335,11 +1351,15 @@ class GameScene extends Phaser.Scene {
             if (this.edibleItems && this.edibleItems[t]) {
                 this.edibleItems[t].getChildren().forEach(item => {
                     if (item.visible) {
+                        let r = Math.max(item.displayWidth, item.displayHeight) / 2;
+                        if (r === undefined || isNaN(r) || r === 0) {
+                            r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
+                        }
                         lowerTierItems.push({
                             sprite: item,
                             x: item.x,
                             y: item.y,
-                            radius: item.itemData ? item.itemData.size : item.displayWidth / 2
+                            radius: r
                         });
                     }
                 });
@@ -1349,11 +1369,15 @@ class GameScene extends Phaser.Scene {
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
                 if (hazard.visible && hazard.hazardData && hazard.hazardData.tier < tier) {
+                    let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
+                    if (r === undefined || isNaN(r) || r === 0) {
+                        r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
+                    }
                     lowerTierItems.push({
                         sprite: hazard,
                         x: hazard.x,
                         y: hazard.y,
-                        radius: hazard.hazardData.size || hazard.displayWidth / 2
+                        radius: r
                     });
                 }
             });
