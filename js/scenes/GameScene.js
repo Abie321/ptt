@@ -500,10 +500,14 @@ class GameScene extends Phaser.Scene {
                             const existing = existingEntities[j];
                             const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
-                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                    existing.sprite.destroy();
+                                if (entityConfig.hideInPreviousTier) {
+                                    // Do not destroy the existing entity, wait for the new entity to become visible
+                                } else {
+                                    if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                        existing.sprite.destroy();
+                                    }
+                                    existingEntities.splice(j, 1);
                                 }
-                                existingEntities.splice(j, 1);
                             }
                         }
                     }
@@ -535,15 +539,24 @@ class GameScene extends Phaser.Scene {
                             break;
                         } else if (allowReplacement && overlappedIndex !== -1) {
                             const existing = existingEntities[overlappedIndex];
-                            if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                existing.sprite.destroy();
-                            }
-                            existingEntities.splice(overlappedIndex, 1);
 
-                            x = testX;
-                            y = testY;
-                            foundSpot = true;
-                            break;
+                            if (entityConfig.hideInPreviousTier) {
+                                // Do not destroy the existing entity, just place it here overlapping
+                                x = testX;
+                                y = testY;
+                                foundSpot = true;
+                                break;
+                            } else {
+                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                    existing.sprite.destroy();
+                                }
+                                existingEntities.splice(overlappedIndex, 1);
+
+                                x = testX;
+                                y = testY;
+                                foundSpot = true;
+                                break;
+                            }
                         }
                     }
 
@@ -559,10 +572,14 @@ class GameScene extends Phaser.Scene {
                             const existing = existingEntities[j];
                             const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
                             if (dist < (radius + existing.radius) * 1.1 + 5) {
-                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                    existing.sprite.destroy();
+                                if (entityConfig.hideInPreviousTier) {
+                                    // Skip replacing if it's hidden
+                                } else {
+                                    if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                        existing.sprite.destroy();
+                                    }
+                                    existingEntities.splice(j, 1);
                                 }
-                                existingEntities.splice(j, 1);
                             }
                         }
                     }
@@ -1170,6 +1187,9 @@ class GameScene extends Phaser.Scene {
         // Update entity visibility based on new tier
         this.updateEntityVisibility();
 
+        // Cleanup overlapping lower-tier entities now that N+1 items have become visible (tier N)
+        this.cleanupOverlappingEntities(newTier);
+
         // Tell UI camera to ignore newly spawned entities and the background
         if (this.bg && this.uiCamera) this.uiCamera.ignore(this.bg);
         this.updateUICameraIgnore();
@@ -1276,6 +1296,88 @@ class GameScene extends Phaser.Scene {
             hazard.setActive(isVisible);
             hazard.setVisible(isVisible);
         });
+    }
+
+    cleanupOverlappingEntities(tier) {
+        // Find visible items in the specified tier
+        const currentItems = [];
+        if (this.edibleItems && this.edibleItems[tier]) {
+            this.edibleItems[tier].getChildren().forEach(item => {
+                if (item.visible) {
+                    currentItems.push({
+                        sprite: item,
+                        x: item.x,
+                        y: item.y,
+                        radius: item.itemData ? item.itemData.size : item.displayWidth / 2,
+                        isHazard: false
+                    });
+                }
+            });
+        }
+
+        if (this.hazards && this.hazards.scene) {
+            this.hazards.getChildren().forEach(hazard => {
+                if (hazard.visible && hazard.hazardData && hazard.hazardData.tier === tier) {
+                    currentItems.push({
+                        sprite: hazard,
+                        x: hazard.x,
+                        y: hazard.y,
+                        radius: hazard.hazardData.size || hazard.displayWidth / 2,
+                        isHazard: true
+                    });
+                }
+            });
+        }
+
+        // We will check against visible lower tier items
+        const lowerTierItems = [];
+        for (let t = 1; t < tier; t++) {
+            if (this.edibleItems && this.edibleItems[t]) {
+                this.edibleItems[t].getChildren().forEach(item => {
+                    if (item.visible) {
+                        lowerTierItems.push({
+                            sprite: item,
+                            x: item.x,
+                            y: item.y,
+                            radius: item.itemData ? item.itemData.size : item.displayWidth / 2
+                        });
+                    }
+                });
+            }
+        }
+
+        if (this.hazards && this.hazards.scene) {
+            this.hazards.getChildren().forEach(hazard => {
+                if (hazard.visible && hazard.hazardData && hazard.hazardData.tier < tier) {
+                    lowerTierItems.push({
+                        sprite: hazard,
+                        x: hazard.x,
+                        y: hazard.y,
+                        radius: hazard.hazardData.size || hazard.displayWidth / 2
+                    });
+                }
+            });
+        }
+
+        // Perform overlap checks
+        for (const current of currentItems) {
+            const currentRadius = current.radius;
+
+            for (let j = lowerTierItems.length - 1; j >= 0; j--) {
+                const lower = lowerTierItems[j];
+                const lowerRadius = lower.radius;
+
+                const dist = Phaser.Math.Distance.Between(current.x, current.y, lower.x, lower.y);
+
+                // Add a buffer to the radius check to prevent visual overlapping (same as spawn logic)
+                if (dist < (currentRadius + lowerRadius) * 1.1 + 5) {
+                    if (lower.sprite && typeof lower.sprite.destroy === 'function') {
+                        lower.sprite.destroy();
+                    }
+                    lowerTierItems.splice(j, 1);
+                }
+            }
+        }
     }
 
     updateUICameraIgnore() {
