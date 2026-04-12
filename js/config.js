@@ -27,8 +27,8 @@ const LEVEL_1_CONFIG = {
 
     // Effects configuration
     EFFECTS: {
-        SMOKE_DURATION_MIN: 10,
-        SMOKE_DURATION_MAX: 100
+        SMOKE_DURATION_MIN: 100,
+        SMOKE_DURATION_MAX: 1000
     },
 
     // Player configuration
@@ -133,7 +133,7 @@ const LEVEL_1_CONFIG = {
                 color: 0xFFEB3B, 
                 isHazard: false,
                 hideInPreviousTier: true, 
-                size: 700, 
+                size: 1200, 
                 image: 'emptycounter',
                 positions: [{x: 1450, y: 100}]
             },
