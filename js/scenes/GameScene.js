@@ -1653,8 +1653,8 @@ class GameScene extends Phaser.Scene {
 
             if (isStar && Phaser.Curves && Phaser.Curves.Path) {
                 // Draw a 5-pointed star
-                const radius1 = 6;
-                const radius2 = 3;
+                const radius1 = 18;
+                const radius2 = 9;
                 let path = new Phaser.Curves.Path(0, -radius1);
                 for (let j = 1; j <= 10; j++) {
                     const angle = (Math.PI / 5) * j - (Math.PI / 2);

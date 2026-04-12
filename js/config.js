@@ -101,17 +101,17 @@ const LEVEL_1_CONFIG = {
             // Edibles
             { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
             { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             { 
                 type: "Chair", 
                 count: 2, 
                 value: 300, 
-                shape: 'square',
+                shape: 'circle',
                 color: 0xFFEB3B, 
                 isHazard: false,
                 hideInPreviousTier: true, 
                 size: 300, 
                 image: 'chair',
-                hitbox: { width: 300, height: 300 },
                 positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
             },
             { 
@@ -124,7 +124,7 @@ const LEVEL_1_CONFIG = {
                 hideInPreviousTier: true, 
                 size: 650, 
                 image: 'table',
-                hitbox: { width: 650, height: 350 },
+                hitbox: { width: 400, height: 200 },
                 positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
             },
             { 
@@ -137,7 +137,7 @@ const LEVEL_1_CONFIG = {
                 hideInPreviousTier: true, 
                 size: 1200, 
                 image: 'emptycounter',
-                hitbox: { width: 1200, height: 300 },
+                hitbox: { width: 600, height: 200 },
                 positions: [{x: 1450, y: 100}]
             },
             // Hazards
