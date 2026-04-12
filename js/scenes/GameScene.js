@@ -420,7 +420,9 @@ class GameScene extends Phaser.Scene {
                     x: hazard.x,
                     y: hazard.y,
                     radius: r,
-                    tier: hazardTier
+                    tier: hazardTier,
+                    hitbox: (hazard.hazardData && hazard.hazardData.hitbox) ? hazard.hazardData.hitbox : null,
+                    scale: hazard.scale
                 });
             });
         }
@@ -440,12 +442,59 @@ class GameScene extends Phaser.Scene {
                             x: item.x,
                             y: item.y,
                             radius: r,
-                            tier: itemTier
+                            tier: itemTier,
+                            hitbox: (item.itemData && item.itemData.hitbox) ? item.itemData.hitbox : null,
+                            scale: item.scale
                         });
                     });
                 }
             }
         }
+
+        // Helper function for geometric overlap checks during spawning
+        const checkEntityOverlap = (x1, y1, radius1, hitbox1, scale1, existingObj) => {
+            if (hitbox1 && existingObj.hitbox) {
+                // Rect to Rect
+                const rect1 = new Phaser.Geom.Rectangle(
+                    x1 - (hitbox1.width * scale1) / 2,
+                    y1 - (hitbox1.height * scale1) / 2,
+                    hitbox1.width * scale1,
+                    hitbox1.height * scale1
+                );
+                const rect2 = new Phaser.Geom.Rectangle(
+                    existingObj.x - (existingObj.hitbox.width * existingObj.scale) / 2,
+                    existingObj.y - (existingObj.hitbox.height * existingObj.scale) / 2,
+                    existingObj.hitbox.width * existingObj.scale,
+                    existingObj.hitbox.height * existingObj.scale
+                );
+                return Phaser.Geom.Intersects.RectangleToRectangle(rect1, rect2);
+            } else if (hitbox1) {
+                // Rect to Circle
+                const rect = new Phaser.Geom.Rectangle(
+                    x1 - (hitbox1.width * scale1) / 2,
+                    y1 - (hitbox1.height * scale1) / 2,
+                    hitbox1.width * scale1,
+                    hitbox1.height * scale1
+                );
+                // Add buffer to existing circular radius
+                const circle = new Phaser.Geom.Circle(existingObj.x, existingObj.y, existingObj.radius * 1.1 + 5);
+                return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
+            } else if (existingObj.hitbox) {
+                // Circle to Rect
+                const circle = new Phaser.Geom.Circle(x1, y1, radius1 * 1.1 + 5);
+                const rect = new Phaser.Geom.Rectangle(
+                    existingObj.x - (existingObj.hitbox.width * existingObj.scale) / 2,
+                    existingObj.y - (existingObj.hitbox.height * existingObj.scale) / 2,
+                    existingObj.hitbox.width * existingObj.scale,
+                    existingObj.hitbox.height * existingObj.scale
+                );
+                return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
+            } else {
+                // Circle to Circle (standard distance check)
+                const dist = Phaser.Math.Distance.Between(x1, y1, existingObj.x, existingObj.y);
+                return dist < (radius1 + existingObj.radius) * 1.1 + 5;
+            }
+        };
 
         // Get the current player tier config
         const playerTierIndex = (this.player && this.player.getCurrentTier) ? (this.player.getCurrentTier() - 1) : 0;
@@ -510,8 +559,7 @@ class GameScene extends Phaser.Scene {
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
-                            const dist = Phaser.Math.Distance.Between(x, y, existing.x, existing.y);
-                            if (dist < (radius + existing.radius) * 1.1 + 5) {
+                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, scale, existing)) {
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
                                 } else {
@@ -538,9 +586,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            const dist = Phaser.Math.Distance.Between(testX, testY, existing.x, existing.y);
-                            // Add a 10% + 5px buffer to the radius check to prevent visual overlapping
-                            if (dist < (radius + existing.radius) * 1.1 + 5) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, scale, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -599,8 +645,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            const dist = Phaser.Math.Distance.Between(testX, testY, existing.x, existing.y);
-                            if (dist < (radius + existing.radius) * 1.1 + 5) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, scale, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -844,6 +889,22 @@ class GameScene extends Phaser.Scene {
         const playerY = this.player.sprite.y;
         const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
+        // Helper to calculate distance from player to entity, handling rectangles properly
+        const getDistanceToEntity = (entity, itemData) => {
+            if (itemData && itemData.hitbox) {
+                // If rectangular, find distance to the closest point on the rectangle
+                const halfWidth = (itemData.hitbox.width * entity.scale) / 2;
+                const halfHeight = (itemData.hitbox.height * entity.scale) / 2;
+
+                const closestX = Phaser.Math.Clamp(playerX, entity.x - halfWidth, entity.x + halfWidth);
+                const closestY = Phaser.Math.Clamp(playerY, entity.y - halfHeight, entity.y + halfHeight);
+
+                return Phaser.Math.Distance.Between(playerX, playerY, closestX, closestY);
+            } else {
+                return Phaser.Math.Distance.Between(playerX, playerY, entity.x, entity.y);
+            }
+        };
+
         // Check all edible items
         const consumableTiers = this.player.getConsumableTiers();
         consumableTiers.forEach(tier => {
@@ -857,7 +918,7 @@ class GameScene extends Phaser.Scene {
                 const itemLogicalSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
 
                 if (playerLogicalSize > itemLogicalSize) {
-                    const distance = Phaser.Math.Distance.Between(playerX, playerY, item.x, item.y);
+                    const distance = getDistanceToEntity(item, item.itemData);
                     if (distance < minDistance) {
                         minDistance = distance;
                         closestItem = item;
@@ -876,7 +937,7 @@ class GameScene extends Phaser.Scene {
                 const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
 
                 if (playerLogicalSize > hazardLogicalSize) {
-                    const distance = Phaser.Math.Distance.Between(playerX, playerY, hazard.x, hazard.y);
+                    const distance = getDistanceToEntity(hazard, hazard.hazardData);
                     if (distance < minDistance) {
                         minDistance = distance;
                         closestItem = hazard;
@@ -980,6 +1041,10 @@ class GameScene extends Phaser.Scene {
         const mouthPos = this.player.getMouthPosition();
         const consumableTiers = this.player.getConsumableTiers();
 
+        const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
+        const playerConsumeRadius = this.player.getCollisionRadius() * 0.5 + consumeBonus;
+        const playerMouthCircle = new Phaser.Geom.Circle(mouthPos.x, mouthPos.y, playerConsumeRadius);
+
         consumableTiers.forEach(tier => {
             if (!this.edibleItems[tier] || !this.edibleItems[tier].scene) return;
 
@@ -987,19 +1052,28 @@ class GameScene extends Phaser.Scene {
             for (let item of items) {
                 if (!item.active) continue;
 
-                const distance = Phaser.Math.Distance.Between(
-                    mouthPos.x, mouthPos.y,
-                    item.x, item.y
-                );
-
-                // Check if mouth touches the item
-                // Use explicit radius if available, fallback to displayWidth/2
+                let isOverlapping = false;
                 const itemRadius = item.radius || item.displayWidth / 2;
 
-                const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
+                if (item.itemData && item.itemData.hitbox) {
+                    // Check intersection with rectangular hitbox
+                    const rect = new Phaser.Geom.Rectangle(
+                        item.x - (item.itemData.hitbox.width * item.scale) / 2,
+                        item.y - (item.itemData.hitbox.height * item.scale) / 2,
+                        item.itemData.hitbox.width * item.scale,
+                        item.itemData.hitbox.height * item.scale
+                    );
+                    isOverlapping = Phaser.Geom.Intersects.CircleToRectangle(playerMouthCircle, rect);
+                } else {
+                    // Check intersection with circular hitbox
+                    const distance = Phaser.Math.Distance.Between(mouthPos.x, mouthPos.y, item.x, item.y);
+                    if (distance < playerConsumeRadius + itemRadius) {
+                        isOverlapping = true;
+                    }
+                }
 
                 // Check if mouth touches the item (collision check using visual radii)
-                if (distance < this.player.getCollisionRadius() * 0.5 + itemRadius + consumeBonus) {
+                if (isOverlapping) {
                     // Check if player is larger than item (size-based consumption)
                     // Use unscaled sizes for mechanics
                     const itemLogicalSize = (item.itemData && item.itemData.size) ? item.itemData.size : itemRadius;
@@ -1022,23 +1096,45 @@ class GameScene extends Phaser.Scene {
         // Create a copy to safely modify the group during iteration
         const hazards = [...this.hazards.getChildren()];
 
+        const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
+        const playerRadius = this.player.getCollisionRadius();
+        const playerCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius);
+        const playerConsumeCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius + consumeBonus);
+
         for (let hazard of hazards) {
             if (!hazard.active || !hazard.hazardData) continue;
 
-            const distance = Phaser.Math.Distance.Between(
-                this.player.sprite.x, this.player.sprite.y,
-                hazard.x, hazard.y
-            );
-
             const hazardRadius = hazard.radius || hazard.displayWidth / 2;
-
-            const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
             const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
             const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
+            let isOverlappingConsume = false;
+            let isOverlappingDamage = false;
+
+            if (hazard.hazardData && hazard.hazardData.hitbox) {
+                // Check intersection with rectangular hitbox
+                const rect = new Phaser.Geom.Rectangle(
+                    hazard.x - (hazard.hazardData.hitbox.width * hazard.scale) / 2,
+                    hazard.y - (hazard.hazardData.hitbox.height * hazard.scale) / 2,
+                    hazard.hazardData.hitbox.width * hazard.scale,
+                    hazard.hazardData.hitbox.height * hazard.scale
+                );
+                isOverlappingConsume = Phaser.Geom.Intersects.CircleToRectangle(playerConsumeCircle, rect);
+                isOverlappingDamage = Phaser.Geom.Intersects.CircleToRectangle(playerCircle, rect);
+            } else {
+                // Check intersection with circular hitbox
+                const distance = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, hazard.x, hazard.y);
+                if (distance < playerRadius + consumeBonus + hazardRadius) {
+                    isOverlappingConsume = true;
+                }
+                if (distance < playerRadius + hazardRadius) {
+                    isOverlappingDamage = true;
+                }
+            }
+
             // Check collision for consumption (includes bonus range)
             if (playerLogicalSize > hazardLogicalSize) {
-                if (distance < this.player.getCollisionRadius() + hazardRadius + consumeBonus) {
+                if (isOverlappingConsume) {
                     // Consume hazard
                     if (!hazard.isBeingConsumed) {
                         this.startConsumptionAnimation(hazard, hazard.hazardData);
@@ -1046,7 +1142,7 @@ class GameScene extends Phaser.Scene {
                 }
             } else {
                 // Check collision for damage (no bonus range)
-                if (distance < this.player.getCollisionRadius() + hazardRadius) {
+                if (isOverlappingDamage) {
                     // If player is invulnerable, skip damage and knockback
                     if (this.player.isInvulnerable) {
                         continue;

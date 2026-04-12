@@ -42,7 +42,6 @@ class Hazard {
             this.sprite.play(animKey);
 
             scene.physics.add.existing(this.sprite);
-            this.sprite.body.setCircle(config.SPRITE.FRAME_WIDTH / 2);
         } else if (config.image) {
             this.sprite = scene.add.sprite(x, y, config.image);
             // Scale sprite to match the desired radius (diameter = visualSize * 2)
@@ -51,15 +50,32 @@ class Hazard {
             this.sprite.setAlpha(0.7);
 
             scene.physics.add.existing(this.sprite);
-            this.sprite.body.setCircle(this.sprite.width / 2);
         } else {
             this.sprite = scene.add.circle(x, y, visualSize, color, 0.7);
             scene.physics.add.existing(this.sprite);
-            this.sprite.body.setCircle(visualSize);
         }
 
         if (config.rotation !== undefined) {
             this.sprite.setAngle(config.rotation);
+        }
+
+        // Setup physics body based on config hitbox or fallback to circle
+        if (config.hitbox) {
+            // If explicit rectangular hitbox is configured (expected in unscaled dimensions)
+            this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
+            // Center the body on the sprite
+            this.sprite.body.setOffset(
+                (this.sprite.width - config.hitbox.width) / 2,
+                (this.sprite.height - config.hitbox.height) / 2
+            );
+        } else {
+            if (config.SPRITE && config.SPRITE.USE_SPRITESHEET) {
+                this.sprite.body.setCircle(config.SPRITE.FRAME_WIDTH / 2);
+            } else if (config.image) {
+                this.sprite.body.setCircle(this.sprite.width / 2);
+            } else {
+                this.sprite.body.setCircle(visualSize);
+            }
         }
 
         // Simple movement pattern (optional for prototype)
