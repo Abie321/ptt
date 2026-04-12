@@ -1506,10 +1506,97 @@ class GameScene extends Phaser.Scene {
     }
 
     checkWinCondition() {
+        if (this.isWinning || this.gameEnded) return;
+
         // Win when player reaches the configured winSize
         const winSize = this.levelConfig.winSize;
         if (this.player.getLogicalSize() >= winSize) {
+            this.triggerWinSequence();
+        }
+    }
+
+    triggerWinSequence() {
+        this.isWinning = true;
+
+        // Create the sparkle eruption effect at the player's current position
+        if (this.player && this.player.sprite) {
+            this.createSparkleEruption(this.player.sprite.x, this.player.sprite.y);
+        }
+
+        // Delay before finally ending the level so the player can see the animation
+        this.time.delayedCall(1500, () => {
             this.endLevel();
+        });
+    }
+
+    createSparkleEruption(x, y) {
+        const numSparkles = 40;
+        const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xffa500, 0xffffff];
+
+        for (let i = 0; i < numSparkles; i++) {
+            // Pick a random color (safely handling tests where Phaser.Utils might be mocked/missing)
+            let color = colors[0];
+            if (Phaser.Utils && Phaser.Utils.Array && Phaser.Utils.Array.GetRandom) {
+                color = Phaser.Utils.Array.GetRandom(colors);
+            } else {
+                color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            // Create a small star or circle shape
+            const isStar = Math.random() > 0.5;
+            const sparkle = this.add.graphics();
+            sparkle.fillStyle(color, 1);
+
+            if (isStar && Phaser.Curves && Phaser.Curves.Path) {
+                // Draw a 5-pointed star
+                const radius1 = 6;
+                const radius2 = 3;
+                let path = new Phaser.Curves.Path(0, -radius1);
+                for (let j = 1; j <= 10; j++) {
+                    const angle = (Math.PI / 5) * j - (Math.PI / 2);
+                    const r = j % 2 === 0 ? radius1 : radius2;
+                    path.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                }
+                path.closePath();
+                sparkle.fillPoints(path.getPoints(), true);
+            } else {
+                // Draw a circle (fallback for tests where Phaser.Curves is missing)
+                sparkle.fillCircle(0, 0, 5);
+            }
+
+            if (sparkle.setPosition) sparkle.setPosition(x, y);
+            else {
+                sparkle.x = x;
+                sparkle.y = y;
+            }
+            if (sparkle.setDepth) sparkle.setDepth(100); // Make sure it renders above everything
+
+            // Calculate random radial velocity
+            const angle = Math.random() * Math.PI * 2;
+            // Adjust the distance based on player's visual radius, ensuring it erupts out far enough
+            const distance = (this.player.radius || 50) + Phaser.Math.Between(100, 300);
+
+            const targetX = x + Math.cos(angle) * distance;
+            const targetY = y + Math.sin(angle) * distance;
+
+            // Randomize rotation for stars
+            const rotationDist = isStar ? Phaser.Math.Between(-Math.PI * 4, Math.PI * 4) : 0;
+
+            // Tween to move and fade out
+            this.tweens.add({
+                targets: sparkle,
+                x: targetX,
+                y: targetY,
+                alpha: 0,
+                rotation: rotationDist,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                duration: Phaser.Math.Between(800, 1500),
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    sparkle.destroy();
+                }
+            });
         }
     }
 
