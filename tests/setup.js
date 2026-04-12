@@ -12,6 +12,26 @@ eval(modifiedConfigCode);
 
 // Mock Phaser for testing
 global.Phaser = {
+  Geom: {
+    Circle: class {
+      constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+      }
+    },
+    Rectangle: class {
+      constructor(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+      }
+    },
+    Intersects: {
+      CircleToRectangle: jest.fn().mockReturnValue(false)
+    }
+  },
   GameObjects: {
     Sprite: class {}
   },
@@ -218,7 +238,9 @@ global.Phaser = {
               setVelocity: jest.fn(),
               setImmovable: jest.fn(),
               setBounce: jest.fn(),
-              setCircle: jest.fn()
+              setCircle: jest.fn(),
+              setSize: jest.fn(),
+              setOffset: jest.fn()
             };
           }),
           collider: jest.fn()

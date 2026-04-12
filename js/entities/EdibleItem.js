@@ -51,15 +51,25 @@ class EdibleItem {
             this.sprite.setAngle(config.rotation);
         }
 
-        // Ensure circular body for circles, otherwise default rectangular body is fine
-        if (config.image) {
-            // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.
-            // The unscaled radius is half the original width of the texture.
-            this.sprite.body.setCircle(this.sprite.width / 2);
-        } else if (shape === 'circle') {
-            // For primitive circles, visualSize is the unscaled radius.
-            this.sprite.body.setCircle(visualSize);
-            // Re-center body if necessary depending on origin, but Phaser typically handles circle bodies well when set explicitly
+        // Setup physics body based on config hitbox or fallback to circle
+        if (config.hitbox) {
+            // If explicit rectangular hitbox is configured (expected in unscaled dimensions)
+            this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
+            // Center the body on the sprite
+            this.sprite.body.setOffset(
+                (this.sprite.width - config.hitbox.width) / 2,
+                (this.sprite.height - config.hitbox.height) / 2
+            );
+        } else {
+            // Ensure circular body for circles, otherwise default rectangular body is fine
+            if (config.image) {
+                // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.
+                // The unscaled radius is half the original width of the texture.
+                this.sprite.body.setCircle(this.sprite.width / 2);
+            } else if (shape === 'circle') {
+                // For primitive circles, visualSize is the unscaled radius.
+                this.sprite.body.setCircle(visualSize);
+            }
         }
 
         // Store reference
