@@ -557,7 +557,9 @@ class GameScene extends Phaser.Scene {
                         }
 
                         // If we have allowReplacement and it only overlaps with lower tier entities
-                        if (allowReplacement && !hasSameOrHigherTierOverlap) {
+                        if (allowReplacement) {
+                            // For hazards we can allow overlap with same/higher tier entities
+                            // to ensure they spawn even if the level is crowded (like level 2 tier 3)
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
                     }
@@ -572,10 +574,12 @@ class GameScene extends Phaser.Scene {
                             bestFallback.overlaps.sort((a, b) => b - a);
                             for (let idx of bestFallback.overlaps) {
                                 const existing = existingEntities[idx];
-                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                    existing.sprite.destroy();
+                                if (existing.tier < tier) {
+                                    if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                        existing.sprite.destroy();
+                                    }
+                                    existingEntities.splice(idx, 1);
                                 }
-                                existingEntities.splice(idx, 1);
                             }
                         }
                     }
@@ -615,7 +619,7 @@ class GameScene extends Phaser.Scene {
                         }
 
                         // If we have allowReplacement and it only overlaps with lower tier entities
-                        if (allowReplacement && !hasSameOrHigherTierOverlap) {
+                        if (allowReplacement) {
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
                     }
@@ -630,10 +634,12 @@ class GameScene extends Phaser.Scene {
                             bestFallback.overlaps.sort((a, b) => b - a);
                             for (let idx of bestFallback.overlaps) {
                                 const existing = existingEntities[idx];
-                                if (existing.sprite && typeof existing.sprite.destroy === 'function') {
-                                    existing.sprite.destroy();
+                                if (existing.tier < tier) {
+                                    if (existing.sprite && typeof existing.sprite.destroy === 'function') {
+                                        existing.sprite.destroy();
+                                    }
+                                    existingEntities.splice(idx, 1);
                                 }
-                                existingEntities.splice(idx, 1);
                             }
                         }
                     }
