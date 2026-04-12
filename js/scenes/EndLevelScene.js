@@ -15,6 +15,9 @@ class EndLevelScene extends Phaser.Scene {
     create() {
         const { width, height } = this.cameras.main;
 
+        // Fade in from black
+        this.cameras.main.fadeIn(500, 0, 0, 0);
+
         // Title
         this.add.text(width / 2, 100, 'LEVEL COMPLETE!', {
             fontSize: '56px',
