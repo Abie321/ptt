@@ -237,12 +237,16 @@ global.Phaser = {
           shake: jest.fn(),
           flash: jest.fn(),
           ignore: jest.fn(),
+          fadeOut: jest.fn(),
+          fadeIn: jest.fn(),
           width: 800,
           height: 600
         },
         add: jest.fn(() => ({
           setScrollFactor: jest.fn(),
-          ignore: jest.fn()
+          ignore: jest.fn(),
+          fadeOut: jest.fn(),
+          fadeIn: jest.fn()
         }))
       };
       this.input = {

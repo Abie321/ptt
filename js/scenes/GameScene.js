@@ -1523,6 +1523,14 @@ class GameScene extends Phaser.Scene {
             this.createSparkleEruption(this.player.sprite.x, this.player.sprite.y);
         }
 
+        // Delay before fading to black
+        this.time.delayedCall(1000, () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            if (this.uiCamera) {
+                this.uiCamera.fadeOut(500, 0, 0, 0);
+            }
+        });
+
         // Delay before finally ending the level so the player can see the animation
         this.time.delayedCall(1500, () => {
             this.endLevel();
