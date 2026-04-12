@@ -557,9 +557,7 @@ class GameScene extends Phaser.Scene {
                         }
 
                         // If we have allowReplacement and it only overlaps with lower tier entities
-                        if (allowReplacement) {
-                            // For hazards we can allow overlap with same/higher tier entities
-                            // to ensure they spawn even if the level is crowded (like level 2 tier 3)
+                        if (allowReplacement && !hasSameOrHigherTierOverlap) {
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
                     }
@@ -620,6 +618,8 @@ class GameScene extends Phaser.Scene {
 
                         // If we have allowReplacement and it only overlaps with lower tier entities
                         if (allowReplacement) {
+                            // For hazards we can allow overlap with same/higher tier entities
+                            // to ensure they spawn even if the level is crowded (like level 2 tier 3)
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
                     }
