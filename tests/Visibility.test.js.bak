@@ -141,9 +141,6 @@ describe('Entity Visibility System', () => {
         gameScene.edibleItems[3].getChildren().forEach(item => {
             expect(item.active).toBe(false);
             expect(item.visible).toBe(false);
-        });
-    });
-
 
     test('REQ-MECH-013: Visibility at Tier 2', () => {
         gameScene.player.currentTier = 2;
