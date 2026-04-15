@@ -190,17 +190,116 @@ const LEVEL_1_CONFIG = {
 };
 
 const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
-LEVEL_2_CONFIG.VIEW_AREA = { WIDTH: 800, HEIGHT: 600 };
-LEVEL_2_CONFIG.winSize = 80;
-LEVEL_2_CONFIG.SIZE_TIERS = [
-    { tier: 1, initialSize: 11, threshold: 20, name: 'Nano', color: 0x607D8B, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1600, HEIGHT: 1200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 2, initialSize: 11, threshold: 30, name: 'Mini', color: 0x9E9E9E, zoom: 0.9, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1400 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 3, initialSize: 11, threshold: 40, name: 'Small', color: 0x795548, zoom: 0.8, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2000, HEIGHT: 1600 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 4, initialSize: 11, threshold: 50, name: 'Average', color: 0xFF5722, zoom: 0.7, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1800 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } },
-    { tier: 5, initialSize: 11, threshold: 60, name: 'Massive', color: 0xE91E63, zoom: 0.6, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/background.png', BACKGROUND_SCALE: 1.0, TILE_BACKGROUND: true } }
-];
-// Make level 2 slightly harder
-LEVEL_2_CONFIG.SCORING.HAZARD_PENALTY = 100;
+LEVEL_2_CONFIG['coverImage'] = undefined;
+LEVEL_2_CONFIG['SIZE_TIERS'] = [
+        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
+        { tier: 3, initialSize: 300, threshold: 600, name: 'Medium', color: 0xFF9800, zoom: 0.25, zoomInStart: 0.5, LEVEL_AREA: { WIDTH: 1400, HEIGHT: 725 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5 } },
+    ];
+LEVEL_2_CONFIG['winSize'] = 1000
+LEVEL_2_CONFIG['TIER_ENTITIES'] = {
+        1: [
+            // Edibles
+            { type: "Sandwich", count: 4, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
+            { type: "Tea bag", count: 4, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Cake", count: 5, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
+            { type: "Spoon", count: 5, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cup", count: 4, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
+            { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
+            { type: "Teapot", count: 5, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
+            // Hazards
+            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
+        ],
+        2: [
+            // Edibles
+            { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
+            { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            { 
+                type: "Chair", 
+                count: 2, 
+                value: 300, 
+                shape: 'circle',
+                color: 0xFFEB3B, 
+                isHazard: false,
+                hideInPreviousTier: true, 
+                size: 300, 
+                image: 'chair',
+                positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
+            },
+            // Hazards
+            { 
+                    type: "Waiter", 
+                    count: 5, 
+                    value: 350, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'waiter', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
+            { 
+                    type: "Customer", 
+                    count: 5, 
+                    value: 350, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'customer', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
+        ],
+        3 : [
+            { 
+                type: "Table", 
+                count: 4, 
+                value: 300, 
+                shape: 'square',
+                color: 0xFFEB3B, 
+                isHazard: false,
+                size: 650, 
+                image: 'table',
+                hitbox: { width: 400, height: 200 },
+                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
+            },
+            { 
+                type: "Counter", 
+                count: 4, 
+                value: 300, 
+                shape: 'square',
+                color: 0xFFEB3B, 
+                isHazard: false, 
+                size: 1200, 
+                image: 'emptycounter',
+                hitbox: { width: 600, height: 200 },
+                positions: [{x: 1450, y: 100}]
+            },
+        ],
+};
 
 const GameConfig = {
     WORLDS: [
@@ -218,6 +317,11 @@ const GameConfig = {
             id: 'level1',
             name: 'The Haunted Tea Shop',
             ...LEVEL_1_CONFIG
-        }
+        },
+        {
+            id: 'level2',
+            name: 'Spot of Tea',
+            ...LEVEL_2_CONFIG
+        },
     ]
 };
