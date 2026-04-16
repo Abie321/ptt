@@ -277,6 +277,7 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
 };
 
 const GameConfig = {
+    DEBUG: true,
     WORLDS: [
         { name: "Ghost" },
         { name: "Stingray" },

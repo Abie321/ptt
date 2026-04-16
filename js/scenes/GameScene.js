@@ -537,6 +537,11 @@ class GameScene extends Phaser.Scene {
                 let x, y, rotation;
                 let foundSpot = false;
 
+                // Logger variables
+                let logAttempts = 0;
+                let logStatus = 'Skipped';
+                let logOverlappedTiers = [];
+
                 // Pre-calculate an actual visual radius estimation to correctly prevent overlap with large rectangular sprites
                 if (entityConfig.image && this.textures) {
                     const tex = this.textures.get(entityConfig.image);
@@ -555,11 +560,13 @@ class GameScene extends Phaser.Scene {
                     x = entityConfig.positions[i].x * bgScaleRatio;
                     y = entityConfig.positions[i].y * bgScaleRatio;
                     rotation = entityConfig.positions[i].rotation;
+                    logAttempts = 1;
 
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
                             if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, scale, existing)) {
+                                logOverlappedTiers.push(existing.tier);
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
                                 } else {
@@ -571,11 +578,14 @@ class GameScene extends Phaser.Scene {
                             }
                         }
                     }
+                    logStatus = logOverlappedTiers.length > 0 ? 'Overlaps (Replaced/Hidden)' : 'Success';
                     foundSpot = true;
                 } else if (!entityConfig.isHazard) {
                     let bestFallback = null;
 
                     for (let attempt = 0; attempt < 50; attempt++) {
+                        logAttempts = attempt + 1;
+                        logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
                         const testX = candidateX * bgScaleRatio;
@@ -599,6 +609,7 @@ class GameScene extends Phaser.Scene {
                             x = testX;
                             y = testY;
                             foundSpot = true;
+                            logStatus = 'Success (0 overlaps)';
                             break;
                         }
 
@@ -612,6 +623,12 @@ class GameScene extends Phaser.Scene {
                         x = bestFallback.x;
                         y = bestFallback.y;
                         foundSpot = true;
+                        logStatus = 'Placed with overlaps';
+
+                        // Always collect overlapped tiers for logging
+                        for (let idx of bestFallback.overlaps) {
+                            logOverlappedTiers.push(existingEntities[idx].tier);
+                        }
 
                         if (!entityConfig.hideInPreviousTier) {
                             // Sort descending so splicing doesn't mess up indices
@@ -629,12 +646,16 @@ class GameScene extends Phaser.Scene {
                     }
 
                     if (!foundSpot) {
+                        if (GameConfig && GameConfig.DEBUG) {
+                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}`);
+                        }
                         continue; // Skip placing this edible
                     }
                 } else {
                     let bestFallback = null;
 
                     for (let attempt = 0; attempt < 50; attempt++) {
+                        logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
                         const testX = candidateX * bgScaleRatio;
@@ -658,6 +679,7 @@ class GameScene extends Phaser.Scene {
                             x = testX;
                             y = testY;
                             foundSpot = true;
+                            logStatus = 'Success (0 overlaps)';
                             break;
                         }
 
@@ -673,6 +695,12 @@ class GameScene extends Phaser.Scene {
                         x = bestFallback.x;
                         y = bestFallback.y;
                         foundSpot = true;
+                        logStatus = 'Placed with overlaps';
+
+                        // Always collect overlapped tiers for logging
+                        for (let idx of bestFallback.overlaps) {
+                            logOverlappedTiers.push(existingEntities[idx].tier);
+                        }
 
                         if (!entityConfig.hideInPreviousTier) {
                             // Sort descending so splicing doesn't mess up indices
@@ -690,8 +718,16 @@ class GameScene extends Phaser.Scene {
                     }
 
                     if (!foundSpot) {
+                        if (GameConfig && GameConfig.DEBUG) {
+                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}`);
+                        }
                         continue; // Skip placing this hazard if no valid spot
                     }
+                }
+
+                if (foundSpot && GameConfig && GameConfig.DEBUG) {
+                    const overlapStr = logOverlappedTiers.length > 0 ? ` Overlapped Tiers: [${logOverlappedTiers.join(', ')}].` : '';
+                    console.log(`[DEBUG PLACEMENT] Placed ${entityConfig.type || 'Unknown'} (Tier ${tier}) at (${x.toFixed(1)}, ${y.toFixed(1)}). Attempts: ${logAttempts}. Status: ${logStatus}.${overlapStr} Scaling Ratio: ${bgScaleRatio.toFixed(2)}. allowReplacement: ${allowReplacement}`);
                 }
 
                 // Calculate subset visibility for Tier N+1 items
