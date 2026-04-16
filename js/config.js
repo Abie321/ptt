@@ -202,11 +202,11 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
             // Edibles
             { type: "Sandwich", count: 4, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
             { type: "Tea bag", count: 4, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 5, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
-            { type: "Spoon", count: 5, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cake", count: 4, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
+            { type: "Spoon", count: 4, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
             { type: "Cup", count: 4, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 5, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
+            { type: "Teapot", count: 3, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
             // Hazards
             { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
@@ -273,32 +273,7 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
                     }
             },
         ],
-        3 : [
-            { 
-                type: "Table", 
-                count: 4, 
-                value: 300, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                size: 650, 
-                image: 'table',
-                hitbox: { width: 400, height: 200 },
-                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
-            },
-            { 
-                type: "Counter", 
-                count: 4, 
-                value: 300, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false, 
-                size: 1200, 
-                image: 'emptycounter',
-                hitbox: { width: 600, height: 200 },
-                positions: [{x: 1450, y: 100}]
-            },
-        ],
+        3 : [],
 };
 
 const GameConfig = {
