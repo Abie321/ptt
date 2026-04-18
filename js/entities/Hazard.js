@@ -15,25 +15,48 @@ class Hazard {
             logicalRadius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
         }
 
-        // Find player tier background scale and item tier background scale
-        let playerTierIndex = (scene.player && scene.player.getCurrentTier) ? (scene.player.getCurrentTier() - 1) : 0;
-        let itemTierIndex = this.tier - 1;
+        this.hazardData = { ...config, size: logicalRadius };
 
-        let playerTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[playerTierIndex] : null;
-        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[itemTierIndex] : null;
+        // Pre-calculate positions and sizes for all tiers
+        this.tierPositions = {};
+        this.tierRadii = {};
+        this.tierHitboxes = {};
 
-        let playerBgScale = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[this.tier - 1] : null;
         let itemBgScale = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        const scaleRatio = playerBgScale / itemBgScale;
+        let playerTier = (scene.player && scene.player.getCurrentTier) ? scene.player.getCurrentTier() : 1;
+        let playerBgScale = (scene.levelConfig && scene.levelConfig.SIZE_TIERS[playerTier - 1] && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE !== undefined) ? scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE : 1.0;
+
+        // Convert input x,y back to the item's native tier space
+        const nativeX = x / (playerBgScale / itemBgScale);
+        const nativeY = y / (playerBgScale / itemBgScale);
+
+        const numTiers = scene.levelConfig && scene.levelConfig.SIZE_TIERS ? scene.levelConfig.SIZE_TIERS.length : 1;
+        for (let t = 1; t <= numTiers; t++) {
+            let targetTierConfig = scene.levelConfig.SIZE_TIERS[t - 1];
+            let targetBgScale = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+            const scaleRatio = targetBgScale / itemBgScale;
+
+            this.tierPositions[t] = {
+                x: nativeX * scaleRatio,
+                y: nativeY * scaleRatio
+            };
+            this.tierRadii[t] = logicalRadius * scaleRatio;
+
+            if (config.hitbox) {
+                this.tierHitboxes[t] = {
+                    width: config.hitbox.width * scaleRatio,
+                    height: config.hitbox.height * scaleRatio
+                };
+            }
+        }
 
         // Apply global scale factor if it exists
         const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
-        this.radius = logicalRadius * scaleRatio * scale;
-
-        // Clone the config to hazardData to avoid mutating the global configuration.
-        // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.
-        this.hazardData = { ...config, size: logicalRadius, radius: logicalRadius };
+        this.radius = this.tierRadii[playerTier] * scale;
+        this.hazardData.radius = logicalRadius;
 
         const visualSize = this.radius;
 

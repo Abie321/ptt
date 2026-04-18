@@ -20,30 +20,72 @@ class EdibleItem {
         // Initial spawning doesn't need currentScale logic applied this way, items are scaled by tier config
         // Actually, we use the background scale ratio for the item relative to the player's current tier
 
-        // Find player tier background scale and item tier background scale
-        let playerTierIndex = (scene.player && scene.player.getCurrentTier) ? (scene.player.getCurrentTier() - 1) : 0;
-        let itemTierIndex = this.tier - 1;
+        this.itemData = { ...config, size: logicalRadius };
 
-        let playerTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[playerTierIndex] : null;
-        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[itemTierIndex] : null;
+        // Pre-calculate positions and sizes for all tiers
+        this.tierPositions = {};
+        this.tierRadii = {};
+        this.tierHitboxes = {};
 
-        let playerBgScale = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[this.tier - 1] : null;
         let itemBgScale = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        const scaleRatio = playerBgScale / itemBgScale;
+        const numTiers = scene.levelConfig && scene.levelConfig.SIZE_TIERS ? scene.levelConfig.SIZE_TIERS.length : 1;
+        for (let t = 1; t <= numTiers; t++) {
+            let targetTierConfig = scene.levelConfig.SIZE_TIERS[t - 1];
+            let targetBgScale = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        // The radius used visually and for placement overlap is scaled by the player's scale factor if mid-game,
-        // however, items should use scaleRatio for base scaling, then be affected by currentScale.
+            const scaleRatio = targetBgScale / itemBgScale;
+
+            this.tierPositions[t] = {
+                x: x * scaleRatio,
+                y: y * scaleRatio
+            };
+            this.tierRadii[t] = logicalRadius * scaleRatio;
+
+            if (config.hitbox) {
+                this.tierHitboxes[t] = {
+                    width: config.hitbox.width * scaleRatio,
+                    height: config.hitbox.height * scaleRatio
+                };
+            }
+        }
+
+        // Set initial state based on player's current tier
+        let playerTier = (scene.player && scene.player.getCurrentTier) ? scene.player.getCurrentTier() : 1;
+
+        // Apply global scale factor if it exists
         const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
-
-        // We only scale visual size, NOT the internal logical radius definition
-        this.radius = logicalRadius * scaleRatio * scale;
-
-        // Clone the config to itemData to avoid mutating the global configuration.
-        // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.
-        this.itemData = { ...config, size: logicalRadius, radius: logicalRadius };
+        this.radius = this.tierRadii[playerTier] * scale;
+        this.itemData.radius = logicalRadius;
 
         const visualSize = this.radius;
+
+        // Visual position based on current tier (ignoring global scale since x,y shouldn't multiply by currentScale,
+        // they are repositioned during tier transitions)
+        // Note: `x` and `y` passed to constructor are already in the player's coordinate space during mid-game spawning.
+        // Wait, the constructor is called with x,y in the PLAYER'S coordinate space. So we need to compute the base item space first.
+        // Let's fix that calculation:
+
+        let playerBgScale = (scene.levelConfig && scene.levelConfig.SIZE_TIERS[playerTier - 1] && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE !== undefined) ? scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE : 1.0;
+
+        // Convert the input x,y (which are in playerTier space) back to the item's native tier space
+        const nativeX = x / (playerBgScale / itemBgScale);
+        const nativeY = y / (playerBgScale / itemBgScale);
+
+        // Recalculate tier mappings accurately from the native coordinates
+        for (let t = 1; t <= numTiers; t++) {
+            let targetTierConfig = scene.levelConfig.SIZE_TIERS[t - 1];
+            let targetBgScale = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+            const scaleRatio = targetBgScale / itemBgScale;
+
+            this.tierPositions[t] = {
+                x: nativeX * scaleRatio,
+                y: nativeY * scaleRatio
+            };
+            // Radii don't depend on input x,y
+        }
 
         const shape = config.shape;
         const color = config.color;
@@ -93,6 +135,7 @@ class EdibleItem {
         // Store reference
         this.sprite.itemData = this.itemData;
         this.sprite.radius = this.radius;
+        this.sprite.entityWrapper = this;
     }
 
     destroy() {
@@ -101,7 +144,10 @@ class EdibleItem {
         }
     }
 
-    getPosition() {
+    getPosition(tier) {
+        if (tier && this.tierPositions[tier]) {
+            return this.tierPositions[tier];
+        }
         return {
             x: this.sprite.x,
             y: this.sprite.y
