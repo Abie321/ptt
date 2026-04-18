@@ -41,7 +41,9 @@ describe('EdibleItem', () => {
 
     test('should store item data reference on sprite', () => {
       const item = new EdibleItem(scene, 100, 100, mockConfig);
-      const expectedData = { ...mockConfig, size: item.radius, radius: item.radius };
+      // Using initial logicalSize before bg scaling is applied
+      const logicalSize = mockConfig.size || (8 + (mockConfig.tier * 3));
+      const expectedData = { ...mockConfig, size: logicalSize, radius: logicalSize };
       expect(item.sprite.itemData).toEqual(expectedData);
     });
 
@@ -56,6 +58,13 @@ describe('EdibleItem', () => {
       Phaser.Math.Between = jest.fn().mockReturnValue(7);
 
       const rangeConfig = { ...mockConfig, size: [5, 9] };
+      scene.levelConfig = {
+        SIZE_TIERS: [
+            { tier: 1, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 2, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 3, ASSETS: { BACKGROUND_SCALE: 1.0 } }
+        ]
+      };
       const item = new EdibleItem(scene, 100, 100, rangeConfig);
 
       expect(Phaser.Math.Between).toHaveBeenCalledWith(5, 9);
@@ -121,7 +130,15 @@ describe('EdibleItem', () => {
     });
 
     test('should use explicit size from config if provided', () => {
+      // Create a mock scene with levelConfig so scaleRatio = 1
       const config = { ...mockConfig, size: 50 };
+      scene.levelConfig = {
+        SIZE_TIERS: [
+            { tier: 1, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 2, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 3, ASSETS: { BACKGROUND_SCALE: 1.0 } }
+        ]
+      };
       const item = new EdibleItem(scene, 100, 100, config);
       expect(item.radius).toBe(50);
     });
