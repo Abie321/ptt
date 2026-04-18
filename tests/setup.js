@@ -29,7 +29,8 @@ global.Phaser = {
       }
     },
     Intersects: {
-      CircleToRectangle: jest.fn().mockReturnValue(false)
+      CircleToRectangle: jest.fn().mockReturnValue(false),
+      RectangleToRectangle: jest.fn().mockReturnValue(false)
     }
   },
   GameObjects: {
