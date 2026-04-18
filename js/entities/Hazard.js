@@ -15,9 +15,21 @@ class Hazard {
             logicalRadius = config.size !== undefined ? config.size : (15 + (this.tier * 5));
         }
 
+        // Find player tier background scale and item tier background scale
+        let playerTierIndex = (scene.player && scene.player.getCurrentTier) ? (scene.player.getCurrentTier() - 1) : 0;
+        let itemTierIndex = this.tier - 1;
+
+        let playerTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[playerTierIndex] : null;
+        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[itemTierIndex] : null;
+
+        let playerBgScale = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        let itemBgScale = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+        const scaleRatio = playerBgScale / itemBgScale;
+
         // Apply global scale factor if it exists
         const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
-        this.radius = logicalRadius * scale;
+        this.radius = logicalRadius * scaleRatio * scale;
 
         // Clone the config to hazardData to avoid mutating the global configuration.
         // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.

@@ -422,7 +422,8 @@ class GameScene extends Phaser.Scene {
                     radius: r,
                     tier: hazardTier,
                     hitbox: (hazard.hazardData && hazard.hazardData.hitbox) ? hazard.hazardData.hitbox : null,
-                    scale: hazard.scale
+                    scale: hazard.scale,
+                    noCollision: (hazard.hazardData && hazard.hazardData.noCollision) ? true : false
                 });
             });
         }
@@ -444,7 +445,8 @@ class GameScene extends Phaser.Scene {
                             radius: r,
                             tier: itemTier,
                             hitbox: (item.itemData && item.itemData.hitbox) ? item.itemData.hitbox : null,
-                            scale: item.scale
+                            scale: item.scale,
+                            noCollision: (item.itemData && item.itemData.noCollision) ? true : false
                         });
                     });
                 }
@@ -452,7 +454,13 @@ class GameScene extends Phaser.Scene {
         }
 
         // Helper function for geometric overlap checks during spawning
-        const checkEntityOverlap = (x1, y1, radius1, hitbox1, scale1, existingObj) => {
+        const checkEntityOverlap = (x1, y1, radius1, hitbox1, scaleRatio, existingObj) => {
+            // scaleRatio here defines the bgScaleRatio, which defines visual scale relative to world.
+            // But we actually pass in current base scale below, which gets passed as 'scale1'.
+            let scale1 = scaleRatio;
+
+            // If the existing object has noCollision, it's a background element and won't block placement
+            if (existingObj.noCollision) return false;
             if (hitbox1 && existingObj.hitbox) {
                 // Rect to Rect
                 const rect1 = new Phaser.Geom.Rectangle(
@@ -532,7 +540,7 @@ class GameScene extends Phaser.Scene {
                 }
 
                 const scale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
-                let radius = logicalRadius * scale;
+                let radius = logicalRadius * bgScaleRatio * scale;
 
                 let x, y, rotation;
                 let foundSpot = false;
@@ -569,7 +577,7 @@ class GameScene extends Phaser.Scene {
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, scale, existing)) {
+                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
                                 logOverlappedTiers.push(existing.tier);
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
@@ -600,7 +608,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, scale, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -672,7 +680,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, scale, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;

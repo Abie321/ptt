@@ -17,9 +17,27 @@ class EdibleItem {
             logicalRadius = config.size !== undefined ? config.size : (8 + (this.tier * 3));
         }
 
-        // Apply global scale factor if it exists
+        // Initial spawning doesn't need currentScale logic applied this way, items are scaled by tier config
+        // Actually, we use the background scale ratio for the item relative to the player's current tier
+
+        // Find player tier background scale and item tier background scale
+        let playerTierIndex = (scene.player && scene.player.getCurrentTier) ? (scene.player.getCurrentTier() - 1) : 0;
+        let itemTierIndex = this.tier - 1;
+
+        let playerTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[playerTierIndex] : null;
+        let itemTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[itemTierIndex] : null;
+
+        let playerBgScale = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        let itemBgScale = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+        const scaleRatio = playerBgScale / itemBgScale;
+
+        // The radius used visually and for placement overlap is scaled by the player's scale factor if mid-game,
+        // however, items should use scaleRatio for base scaling, then be affected by currentScale.
         const scale = (scene.player && scene.player.currentScale) ? scene.player.currentScale : 1.0;
-        this.radius = logicalRadius * scale;
+
+        // We only scale visual size, NOT the internal logical radius definition
+        this.radius = logicalRadius * scaleRatio * scale;
 
         // Clone the config to itemData to avoid mutating the global configuration.
         // We ensure `size` is set to the specific randomly generated scalar size (UNSCALED) for consumption logic.
