@@ -1152,7 +1152,7 @@ class GameScene extends Phaser.Scene {
                     itemX = item.entityWrapper.tierPositions[playerTier].x;
                     itemY = item.entityWrapper.tierPositions[playerTier].y;
                     itemRadius = item.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
-                    if (item.entityWrapper.tierHitboxes) {
+                    if (item.entityWrapper.tierHitboxes && item.entityWrapper.tierHitboxes[playerTier]) {
                         itemHitbox = {
                             width: item.entityWrapper.tierHitboxes[playerTier].width * this.player.currentScale,
                             height: item.entityWrapper.tierHitboxes[playerTier].height * this.player.currentScale
