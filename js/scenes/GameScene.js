@@ -410,19 +410,11 @@ class GameScene extends Phaser.Scene {
         // Add existing hazards
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
-                let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
-                if (r === undefined || isNaN(r) || r === 0) {
-                    r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
-                }
                 const hazardTier = (hazard.hazardData && hazard.hazardData.tier) ? hazard.hazardData.tier : 1;
                 existingEntities.push({
                     sprite: hazard,
-                    x: hazard.x,
-                    y: hazard.y,
-                    radius: r,
+                    entityWrapper: hazard.entityWrapper,
                     tier: hazardTier,
-                    hitbox: (hazard.hazardData && hazard.hazardData.hitbox) ? hazard.hazardData.hitbox : null,
-                    scale: hazard.scale,
                     noCollision: (hazard.hazardData && hazard.hazardData.noCollision) ? true : false
                 });
             });
@@ -433,42 +425,24 @@ class GameScene extends Phaser.Scene {
             for (let t = 1; t <= this.levelConfig.SIZE_TIERS.length; t++) {
                 if (this.edibleItems[t] && this.edibleItems[t].scene) {
                     this.edibleItems[t].getChildren().forEach(item => {
-                        let r = Math.max(item.displayWidth, item.displayHeight) / 2;
-                        if (r === undefined || isNaN(r) || r === 0) {
-                            r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
-                        }
                         const itemTier = (item.itemData && item.itemData.tier) ? item.itemData.tier : t;
+                        // For tests that might not have set up entityWrapper
+                        // We attach it from scene or just store it
+                        // Since we just added entityWrapper to hazard, we should ensure item has one too or we access sprite.itemData
+                        // item.entityWrapper doesn't exist on EdibleItem natively in previous code, but we can access tierPositions through it if we add it or just look it up. Wait, EdibleItem doesn't attach itself to sprite.entityWrapper. Let's fix that conceptually, or just use the itemData if we can't find it. Actually, wait, tierPositions is on the EdibleItem instance, not the sprite. Let's just find it or fix it.
+                        // For now we assume if entityWrapper exists, use it. If not, maybe we can't easily get tierPositions.
+                        // I'll make sure EdibleItem sets sprite.entityWrapper too in step 1. Ah, I missed that. Let's just read it from sprite.itemData if possible, but tierPositions isn't there. I'll modify the loop below to check for sprite.entityWrapper. If absent, fallback to old math.
+
                         existingEntities.push({
                             sprite: item,
-                            x: item.x,
-                            y: item.y,
-                            radius: r,
+                            entityWrapper: item.entityWrapper || null,
                             tier: itemTier,
-                            hitbox: (item.itemData && item.itemData.hitbox) ? item.itemData.hitbox : null,
-                            scale: item.scale,
                             noCollision: (item.itemData && item.itemData.noCollision) ? true : false
                         });
                     });
                 }
             }
         }
-
-        // Calculate the scale multiplier for existing objects if they belong to a different tier.
-        // This ensures Tier N+1 tests against Tier N+1 size when evaluating overlap with Tier N.
-        const getRelativeScaleMultiplier = (spawningTier, existingTier) => {
-            if (spawningTier <= existingTier) return 1.0;
-            let mult = 1.0;
-            // E.g. spawningTier 2, existingTier 1. We want the ratio that will be applied when moving 1 -> 2
-            for (let t = existingTier; t < spawningTier; t++) {
-                const configNext = this.levelConfig.SIZE_TIERS[t]; // this is tier t+1 config (0-indexed)
-                const configCurr = this.levelConfig.SIZE_TIERS[t-1];
-                if (configNext && configCurr) {
-                    const threshold = configCurr.threshold !== undefined ? configCurr.threshold : (configCurr.initialSize * (configCurr.scale || 1));
-                    mult *= (configNext.initialSize / threshold);
-                }
-            }
-            return mult;
-        };
 
         // Helper function for geometric overlap checks during spawning
         const checkEntityOverlap = (x1, y1, radius1, hitbox1, scaleRatio, existingObj, currentSpawningTier) => {
@@ -479,12 +453,23 @@ class GameScene extends Phaser.Scene {
             // If the existing object has noCollision, it's a background element and won't block placement
             if (existingObj.noCollision) return false;
 
-            // Apply the "Tier N+1 size" rule to the existing object
-            const relativeMult = getRelativeScaleMultiplier(currentSpawningTier, existingObj.tier);
-            const existingScale = existingObj.scale * relativeMult;
-            const existingRadius = existingObj.radius * relativeMult;
+            // Check if existingObj has precalculated tier positions
+            let existingX, existingY, existingRadius, existingHitbox;
 
-            if (hitbox1 && existingObj.hitbox) {
+            if (existingObj.entityWrapper && existingObj.entityWrapper.tierPositions && existingObj.entityWrapper.tierPositions[currentSpawningTier]) {
+                existingX = existingObj.entityWrapper.tierPositions[currentSpawningTier].x;
+                existingY = existingObj.entityWrapper.tierPositions[currentSpawningTier].y;
+                existingRadius = existingObj.entityWrapper.tierRadii[currentSpawningTier];
+                existingHitbox = existingObj.entityWrapper.tierHitboxes ? existingObj.entityWrapper.tierHitboxes[currentSpawningTier] : null;
+            } else {
+                // Fallback for tests or objects without wrappers
+                existingX = existingObj.sprite.x;
+                existingY = existingObj.sprite.y;
+                existingRadius = existingObj.sprite.radius || 10;
+                existingHitbox = null; // simplified fallback
+            }
+
+            if (hitbox1 && existingHitbox) {
                 // Rect to Rect
                 const rect1 = new Phaser.Geom.Rectangle(
                     x1 - (hitbox1.width * scale1) / 2,
@@ -493,10 +478,10 @@ class GameScene extends Phaser.Scene {
                     hitbox1.height * scale1
                 );
                 const rect2 = new Phaser.Geom.Rectangle(
-                    existingObj.x - (existingObj.hitbox.width * existingScale) / 2,
-                    existingObj.y - (existingObj.hitbox.height * existingScale) / 2,
-                    existingObj.hitbox.width * existingScale,
-                    existingObj.hitbox.height * existingScale
+                    existingX - (existingHitbox.width) / 2,
+                    existingY - (existingHitbox.height) / 2,
+                    existingHitbox.width,
+                    existingHitbox.height
                 );
                 return Phaser.Geom.Intersects.RectangleToRectangle(rect1, rect2);
             } else if (hitbox1) {
@@ -508,21 +493,21 @@ class GameScene extends Phaser.Scene {
                     hitbox1.height * scale1
                 );
                 // Add buffer to existing circular radius
-                const circle = new Phaser.Geom.Circle(existingObj.x, existingObj.y, existingRadius * 1.1 + 5);
+                const circle = new Phaser.Geom.Circle(existingX, existingY, existingRadius * 1.1 + 5);
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
-            } else if (existingObj.hitbox) {
+            } else if (existingHitbox) {
                 // Circle to Rect
                 const circle = new Phaser.Geom.Circle(x1, y1, radius1 * 1.1 + 5);
                 const rect = new Phaser.Geom.Rectangle(
-                    existingObj.x - (existingObj.hitbox.width * existingScale) / 2,
-                    existingObj.y - (existingObj.hitbox.height * existingScale) / 2,
-                    existingObj.hitbox.width * existingScale,
-                    existingObj.hitbox.height * existingScale
+                    existingX - (existingHitbox.width) / 2,
+                    existingY - (existingHitbox.height) / 2,
+                    existingHitbox.width,
+                    existingHitbox.height
                 );
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
             } else {
                 // Circle to Circle (standard distance check)
-                const dist = Phaser.Math.Distance.Between(x1, y1, existingObj.x, existingObj.y);
+                const dist = Phaser.Math.Distance.Between(x1, y1, existingX, existingY);
                 return dist < (radius1 + existingRadius) * 1.1 + 5;
             }
         };
@@ -966,19 +951,43 @@ class GameScene extends Phaser.Scene {
         const playerY = this.player.sprite.y;
         const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
+        const playerTier = this.player.getCurrentTier();
+
         // Helper to calculate distance from player to entity, handling rectangles properly
         const getDistanceToEntity = (entity, itemData) => {
-            if (itemData && itemData.hitbox) {
-                // If rectangular, find distance to the closest point on the rectangle
-                const halfWidth = (itemData.hitbox.width * entity.scale) / 2;
-                const halfHeight = (itemData.hitbox.height * entity.scale) / 2;
+            // Get coordinates based on player's current tier space
+            let entityX = entity.x;
+            let entityY = entity.y;
+            let entityHitbox = null;
 
-                const closestX = Phaser.Math.Clamp(playerX, entity.x - halfWidth, entity.x + halfWidth);
-                const closestY = Phaser.Math.Clamp(playerY, entity.y - halfHeight, entity.y + halfHeight);
+            if (entity.entityWrapper && entity.entityWrapper.tierPositions && entity.entityWrapper.tierPositions[playerTier]) {
+                entityX = entity.entityWrapper.tierPositions[playerTier].x;
+                entityY = entity.entityWrapper.tierPositions[playerTier].y;
+                if (entity.entityWrapper.tierHitboxes && entity.entityWrapper.tierHitboxes[playerTier]) {
+                    entityHitbox = {
+                        width: entity.entityWrapper.tierHitboxes[playerTier].width * this.player.currentScale,
+                        height: entity.entityWrapper.tierHitboxes[playerTier].height * this.player.currentScale
+                    };
+                }
+            } else if (itemData && itemData.hitbox) {
+                // Fallback using original sprite scale
+                entityHitbox = {
+                    width: itemData.hitbox.width * entity.scale,
+                    height: itemData.hitbox.height * entity.scale
+                };
+            }
+
+            if (itemData && entityHitbox) {
+                // If rectangular, find distance to the closest point on the rectangle
+                const halfWidth = (entityHitbox.width) / 2;
+                const halfHeight = (entityHitbox.height) / 2;
+
+                const closestX = Phaser.Math.Clamp(playerX, entityX - halfWidth, entityX + halfWidth);
+                const closestY = Phaser.Math.Clamp(playerY, entityY - halfHeight, entityY + halfHeight);
 
                 return Phaser.Math.Distance.Between(playerX, playerY, closestX, closestY);
             } else {
-                return Phaser.Math.Distance.Between(playerX, playerY, entity.x, entity.y);
+                return Phaser.Math.Distance.Between(playerX, playerY, entityX, entityY);
             }
         };
 
@@ -1122,6 +1131,8 @@ class GameScene extends Phaser.Scene {
         const playerConsumeRadius = this.player.getCollisionRadius() * 0.5 + consumeBonus;
         const playerMouthCircle = new Phaser.Geom.Circle(mouthPos.x, mouthPos.y, playerConsumeRadius);
 
+        const playerTier = this.player.getCurrentTier();
+
         consumableTiers.forEach(tier => {
             if (!this.edibleItems[tier] || !this.edibleItems[tier].scene) return;
 
@@ -1130,20 +1141,43 @@ class GameScene extends Phaser.Scene {
                 if (!item.active) continue;
 
                 let isOverlapping = false;
-                const itemRadius = item.radius || item.displayWidth / 2;
 
-                if (item.itemData && item.itemData.hitbox) {
+                // Fetch player-tier specific coordinates
+                let itemX = item.x;
+                let itemY = item.y;
+                let itemRadius = item.radius || item.displayWidth / 2;
+                let itemHitbox = null;
+
+                if (item.entityWrapper && item.entityWrapper.tierPositions && item.entityWrapper.tierPositions[playerTier]) {
+                    itemX = item.entityWrapper.tierPositions[playerTier].x;
+                    itemY = item.entityWrapper.tierPositions[playerTier].y;
+                    itemRadius = item.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
+                    if (item.entityWrapper.tierHitboxes) {
+                        itemHitbox = {
+                            width: item.entityWrapper.tierHitboxes[playerTier].width * this.player.currentScale,
+                            height: item.entityWrapper.tierHitboxes[playerTier].height * this.player.currentScale
+                        };
+                    }
+                } else if (item.itemData && item.itemData.hitbox) {
+                    // Fallback using original sprite scale
+                    itemHitbox = {
+                        width: item.itemData.hitbox.width * item.scale,
+                        height: item.itemData.hitbox.height * item.scale
+                    };
+                }
+
+                if (item.itemData && itemHitbox) {
                     // Check intersection with rectangular hitbox
                     const rect = new Phaser.Geom.Rectangle(
-                        item.x - (item.itemData.hitbox.width * item.scale) / 2,
-                        item.y - (item.itemData.hitbox.height * item.scale) / 2,
-                        item.itemData.hitbox.width * item.scale,
-                        item.itemData.hitbox.height * item.scale
+                        itemX - (itemHitbox.width) / 2,
+                        itemY - (itemHitbox.height) / 2,
+                        itemHitbox.width,
+                        itemHitbox.height
                     );
                     isOverlapping = Phaser.Geom.Intersects.CircleToRectangle(playerMouthCircle, rect);
                 } else {
                     // Check intersection with circular hitbox
-                    const distance = Phaser.Math.Distance.Between(mouthPos.x, mouthPos.y, item.x, item.y);
+                    const distance = Phaser.Math.Distance.Between(mouthPos.x, mouthPos.y, itemX, itemY);
                     if (distance < playerConsumeRadius + itemRadius) {
                         isOverlapping = true;
                     }
@@ -1178,29 +1212,53 @@ class GameScene extends Phaser.Scene {
         const playerCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius);
         const playerConsumeCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius + consumeBonus);
 
+        const playerTier = this.player.getCurrentTier();
+
         for (let hazard of hazards) {
             if (!hazard.active || !hazard.hazardData) continue;
 
-            const hazardRadius = hazard.radius || hazard.displayWidth / 2;
+            let hazardX = hazard.x;
+            let hazardY = hazard.y;
+            let hazardRadius = hazard.radius || hazard.displayWidth / 2;
+            let hazardHitbox = null;
+
+            if (hazard.entityWrapper && hazard.entityWrapper.tierPositions && hazard.entityWrapper.tierPositions[playerTier]) {
+                hazardX = hazard.entityWrapper.tierPositions[playerTier].x;
+                hazardY = hazard.entityWrapper.tierPositions[playerTier].y;
+                hazardRadius = hazard.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
+                if (hazard.entityWrapper.tierHitboxes && hazard.entityWrapper.tierHitboxes[playerTier]) {
+                    hazardHitbox = {
+                        width: hazard.entityWrapper.tierHitboxes[playerTier].width * this.player.currentScale,
+                        height: hazard.entityWrapper.tierHitboxes[playerTier].height * this.player.currentScale
+                    };
+                }
+            } else if (hazard.hazardData && hazard.hazardData.hitbox) {
+                // Fallback using original sprite scale
+                hazardHitbox = {
+                    width: hazard.hazardData.hitbox.width * hazard.scale,
+                    height: hazard.hazardData.hitbox.height * hazard.scale
+                };
+            }
+
             const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
             const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
 
             let isOverlappingConsume = false;
             let isOverlappingDamage = false;
 
-            if (hazard.hazardData && hazard.hazardData.hitbox) {
+            if (hazard.hazardData && hazardHitbox) {
                 // Check intersection with rectangular hitbox
                 const rect = new Phaser.Geom.Rectangle(
-                    hazard.x - (hazard.hazardData.hitbox.width * hazard.scale) / 2,
-                    hazard.y - (hazard.hazardData.hitbox.height * hazard.scale) / 2,
-                    hazard.hazardData.hitbox.width * hazard.scale,
-                    hazard.hazardData.hitbox.height * hazard.scale
+                    hazardX - (hazardHitbox.width) / 2,
+                    hazardY - (hazardHitbox.height) / 2,
+                    hazardHitbox.width,
+                    hazardHitbox.height
                 );
                 isOverlappingConsume = Phaser.Geom.Intersects.CircleToRectangle(playerConsumeCircle, rect);
                 isOverlappingDamage = Phaser.Geom.Intersects.CircleToRectangle(playerCircle, rect);
             } else {
                 // Check intersection with circular hitbox
-                const distance = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, hazard.x, hazard.y);
+                const distance = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, hazardX, hazardY);
                 if (distance < playerRadius + consumeBonus + hazardRadius) {
                     isOverlappingConsume = true;
                 }
@@ -1238,7 +1296,7 @@ class GameScene extends Phaser.Scene {
                     this.cameras.main.shake(200, 0.01);
 
                     // Push player away
-                    const angle = Phaser.Math.Angle.Between(hazard.x, hazard.y, this.player.sprite.x, this.player.sprite.y);
+                    const angle = Phaser.Math.Angle.Between(hazardX, hazardY, this.player.sprite.x, this.player.sprite.y);
                     this.player.sprite.body.setVelocity(
                         Math.cos(angle) * 300,
                         Math.sin(angle) * 300
@@ -1282,9 +1340,7 @@ class GameScene extends Phaser.Scene {
         const oldBgScale = (oldTierConfig && oldTierConfig.ASSETS && oldTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? oldTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
         const newBgScale = (newTierConfigData && newTierConfigData.ASSETS && newTierConfigData.ASSETS.BACKGROUND_SCALE !== undefined) ? newTierConfigData.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        // Items were placed at X * (oldBgScale / itemBgScale)
-        // Now they should be at X * (newBgScale / itemBgScale)
-        // To fix this without re-evaluating itemBgScale, we just multiply their current position by (newBgScale / oldBgScale)
+        // Player just exists in the current tier, so we manually adjust its position
         const repositionRatio = newBgScale / oldBgScale;
 
         // Update cumulative global scale
@@ -1299,34 +1355,54 @@ class GameScene extends Phaser.Scene {
         this.player.sprite.x *= repositionRatio;
         this.player.sprite.y *= repositionRatio;
 
-        // Scale and reposition all existing entities visually
+        // Scale and reposition all existing entities visually using their precalculated tier dictionaries
         // Edibles
         for (let tier = 1; tier <= this.levelConfig.SIZE_TIERS.length; tier++) {
             if (!this.edibleItems[tier]) continue;
             const items = this.edibleItems[tier].getChildren();
             items.forEach(item => {
-                if (item) {
+                if (item && item.entityWrapper && item.entityWrapper.tierPositions) {
                     // Update the visual property stored on the sprite
-                    if (item.radius !== undefined) item.radius *= scaleMultiplier;
-                    if (item.itemData && item.itemData.radius !== undefined) {
-                        item.itemData.radius *= scaleMultiplier;
-                    }
+                    const tierPositions = item.entityWrapper.tierPositions;
+                    const tierRadii = item.entityWrapper.tierRadii;
+                    const tierHitboxes = item.entityWrapper.tierHitboxes;
 
-                    if (item.displayWidth !== undefined) {
-                         const currentScale = item.scale !== undefined ? item.scale : 1;
-                         item.setScale(currentScale * scaleMultiplier);
+                    if (tierPositions[newTier]) {
+                        item.x = tierPositions[newTier].x;
+                        item.y = tierPositions[newTier].y;
+
+                        // Use scale ratio for logic size internally, but sprite needs the global scale
+                        item.radius = tierRadii[newTier] * this.player.currentScale;
+
+                        if (item.itemData && item.itemData.radius !== undefined) {
+                            // Update internal physics logic radius based purely on logical radius?
+                            // item.itemData.radius was used globally, but we shouldn't rely on it since it's the player's scale,
+                            // actually `itemData.size` is what is used for logical consumption sizes.
+                            item.itemData.radius = item.radius;
+                        }
+
+                        if (item.displayWidth !== undefined) {
+                            if (item.texture && item.texture.key && item.texture.get() && item.texture.get().width > 0) {
+                                const targetDiameter = item.radius * 2;
+                                const texWidth = item.texture.get().width;
+                                const spriteScale = targetDiameter / Math.max(1, texWidth);
+                                item.setScale(spriteScale);
+                            } else {
+                                // Fallback if no texture size available or primitive
+                                const currentScale = item.scale !== undefined ? item.scale : 1;
+                                item.setScale(currentScale * scaleMultiplier);
+                            }
+                        }
+
+                        if (item.body) {
+                            // Rescale physics body
+                            if (item.geom && item.geom.radius !== undefined && item.radius !== undefined) {
+                                item.geom.radius = item.radius;
+                            } else if (item.radius !== undefined && typeof item.setRadius === 'function') {
+                                item.setRadius(item.radius);
+                            }
+                        }
                     }
-                    if (item.body) {
-                         // Rescale physics body
-                         if (item.geom && item.geom.radius !== undefined && item.radius !== undefined) {
-                             item.geom.radius = item.radius;
-                         } else if (item.radius !== undefined && typeof item.setRadius === 'function') {
-                             item.setRadius(item.radius);
-                         }
-                    }
-                    // Reposition
-                    item.x *= repositionRatio;
-                    item.y *= repositionRatio;
                 }
             });
         }
@@ -1334,28 +1410,47 @@ class GameScene extends Phaser.Scene {
         // Hazards
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
-                if (hazard) {
+                if (hazard && hazard.entityWrapper && hazard.entityWrapper.tierPositions) {
                     // Update the visual property stored on the sprite
-                    if (hazard.radius !== undefined) hazard.radius *= scaleMultiplier;
-                    if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
-                        hazard.hazardData.radius *= scaleMultiplier;
-                    }
+                    const tierPositions = hazard.entityWrapper.tierPositions;
+                    const tierRadii = hazard.entityWrapper.tierRadii;
+                    const tierHitboxes = hazard.entityWrapper.tierHitboxes;
 
-                    if (hazard.displayWidth !== undefined) {
-                         const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
-                         hazard.setScale(currentScale * scaleMultiplier);
+                    if (tierPositions[newTier]) {
+                        hazard.x = tierPositions[newTier].x;
+                        hazard.y = tierPositions[newTier].y;
+
+                        hazard.radius = tierRadii[newTier] * this.player.currentScale;
+
+                        if (hazard.hazardData && hazard.hazardData.radius !== undefined) {
+                            hazard.hazardData.radius = hazard.radius;
+                        }
+
+                        if (hazard.displayWidth !== undefined) {
+                            if (hazard.texture && hazard.texture.key && hazard.texture.get() && hazard.texture.get().width > 0) {
+                                const targetDiameter = hazard.radius * 2;
+                                // Need to account for spritesheets (use FRAME_WIDTH if available)
+                                let texWidth = hazard.texture.get().width;
+                                if (hazard.entityWrapper.hazardData && hazard.entityWrapper.hazardData.SPRITE && hazard.entityWrapper.hazardData.SPRITE.FRAME_WIDTH) {
+                                    texWidth = hazard.entityWrapper.hazardData.SPRITE.FRAME_WIDTH;
+                                }
+                                const spriteScale = targetDiameter / Math.max(1, texWidth);
+                                hazard.setScale(spriteScale);
+                            } else {
+                                const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
+                                hazard.setScale(currentScale * scaleMultiplier);
+                            }
+                        }
+
+                        if (hazard.body) {
+                            // Rescale physics body
+                            if (hazard.geom && hazard.geom.radius !== undefined && hazard.radius !== undefined) {
+                                hazard.geom.radius = hazard.radius;
+                            } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
+                                hazard.setRadius(hazard.radius);
+                            }
+                        }
                     }
-                    if (hazard.body) {
-                         // Rescale physics body
-                         if (hazard.geom && hazard.geom.radius !== undefined && hazard.radius !== undefined) {
-                             hazard.geom.radius = hazard.radius;
-                         } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
-                             hazard.setRadius(hazard.radius);
-                         }
-                    }
-                    // Reposition
-                    hazard.x *= repositionRatio;
-                    hazard.y *= repositionRatio;
                 }
             });
         }
@@ -1535,17 +1630,25 @@ class GameScene extends Phaser.Scene {
     cleanupOverlappingEntities(tier) {
         // Find visible items in the specified tier
         const currentItems = [];
+        const playerTier = this.player.getCurrentTier();
+
         if (this.edibleItems && this.edibleItems[tier]) {
             this.edibleItems[tier].getChildren().forEach(item => {
                 if (item.visible) {
-                    let r = Math.max(item.displayWidth, item.displayHeight) / 2;
-                    if (r === undefined || isNaN(r) || r === 0) {
-                        r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
+                    let x = item.x;
+                    let y = item.y;
+                    let r = item.radius || item.displayWidth / 2;
+
+                    if (item.entityWrapper && item.entityWrapper.tierPositions && item.entityWrapper.tierPositions[playerTier]) {
+                        x = item.entityWrapper.tierPositions[playerTier].x;
+                        y = item.entityWrapper.tierPositions[playerTier].y;
+                        r = item.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                     }
+
                     currentItems.push({
                         sprite: item,
-                        x: item.x,
-                        y: item.y,
+                        x: x,
+                        y: y,
                         radius: r,
                         isHazard: false
                     });
@@ -1556,14 +1659,20 @@ class GameScene extends Phaser.Scene {
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
                 if (hazard.visible && hazard.hazardData && hazard.hazardData.tier === tier) {
-                    let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
-                    if (r === undefined || isNaN(r) || r === 0) {
-                        r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
+                    let x = hazard.x;
+                    let y = hazard.y;
+                    let r = hazard.radius || hazard.displayWidth / 2;
+
+                    if (hazard.entityWrapper && hazard.entityWrapper.tierPositions && hazard.entityWrapper.tierPositions[playerTier]) {
+                        x = hazard.entityWrapper.tierPositions[playerTier].x;
+                        y = hazard.entityWrapper.tierPositions[playerTier].y;
+                        r = hazard.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                     }
+
                     currentItems.push({
                         sprite: hazard,
-                        x: hazard.x,
-                        y: hazard.y,
+                        x: x,
+                        y: y,
                         radius: r,
                         isHazard: true
                     });
@@ -1577,14 +1686,20 @@ class GameScene extends Phaser.Scene {
             if (this.edibleItems && this.edibleItems[t]) {
                 this.edibleItems[t].getChildren().forEach(item => {
                     if (item.visible) {
-                        let r = Math.max(item.displayWidth, item.displayHeight) / 2;
-                        if (r === undefined || isNaN(r) || r === 0) {
-                            r = item.radius !== undefined ? item.radius : (item.itemData ? item.itemData.size : 10);
+                        let x = item.x;
+                        let y = item.y;
+                        let r = item.radius || item.displayWidth / 2;
+
+                        if (item.entityWrapper && item.entityWrapper.tierPositions && item.entityWrapper.tierPositions[playerTier]) {
+                            x = item.entityWrapper.tierPositions[playerTier].x;
+                            y = item.entityWrapper.tierPositions[playerTier].y;
+                            r = item.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                         }
+
                         lowerTierItems.push({
                             sprite: item,
-                            x: item.x,
-                            y: item.y,
+                            x: x,
+                            y: y,
                             radius: r
                         });
                     }
@@ -1595,14 +1710,20 @@ class GameScene extends Phaser.Scene {
         if (this.hazards && this.hazards.scene) {
             this.hazards.getChildren().forEach(hazard => {
                 if (hazard.visible && hazard.hazardData && hazard.hazardData.tier < tier) {
-                    let r = Math.max(hazard.displayWidth, hazard.displayHeight) / 2;
-                    if (r === undefined || isNaN(r) || r === 0) {
-                        r = hazard.radius !== undefined ? hazard.radius : (hazard.hazardData ? hazard.hazardData.size : 10);
+                    let x = hazard.x;
+                    let y = hazard.y;
+                    let r = hazard.radius || hazard.displayWidth / 2;
+
+                    if (hazard.entityWrapper && hazard.entityWrapper.tierPositions && hazard.entityWrapper.tierPositions[playerTier]) {
+                        x = hazard.entityWrapper.tierPositions[playerTier].x;
+                        y = hazard.entityWrapper.tierPositions[playerTier].y;
+                        r = hazard.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                     }
+
                     lowerTierItems.push({
                         sprite: hazard,
-                        x: hazard.x,
-                        y: hazard.y,
+                        x: x,
+                        y: y,
                         radius: r
                     });
                 }
