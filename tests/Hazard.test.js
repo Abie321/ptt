@@ -40,7 +40,9 @@ describe('Hazard', () => {
 
     test('should store hazard data reference on sprite', () => {
       const hazard = new Hazard(scene, 100, 100, mockConfig);
-      const expectedData = { ...mockConfig, size: hazard.radius, radius: hazard.radius };
+      // Using initial logicalSize before bg scaling is applied
+      const logicalSize = mockConfig.size || (15 + (mockConfig.tier * 5));
+      const expectedData = { ...mockConfig, size: logicalSize, radius: logicalSize };
       expect(hazard.sprite.hazardData).toEqual(expectedData);
     });
 
@@ -88,6 +90,13 @@ describe('Hazard', () => {
 
     test('should use explicit size from config if provided', () => {
       const config = { ...mockConfig, size: 45 };
+      scene.levelConfig = {
+        SIZE_TIERS: [
+            { tier: 1, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 2, ASSETS: { BACKGROUND_SCALE: 1.0 } },
+            { tier: 3, ASSETS: { BACKGROUND_SCALE: 1.0 } }
+        ]
+      };
       const hazard = new Hazard(scene, 100, 100, config);
       expect(hazard.radius).toBe(45);
     });
