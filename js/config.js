@@ -200,19 +200,19 @@ LEVEL_2_CONFIG['winSize'] = 1000
 LEVEL_2_CONFIG['TIER_ENTITIES'] = {
         1: [
             // Edibles
-            { type: "Sandwich", count: 4, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
+            { type: "Sandwich", count: 3, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
             { type: "Tea bag", count: 4, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
             { type: "Cake", count: 4, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
             { type: "Spoon", count: 4, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 4, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
+            { type: "Cup", count: 3, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 3, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
+            { type: "Teapot", count: 2, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
             // Hazards
             { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
         2: [
             // Edibles
-            // { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
+            { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
             { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
             // { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
         ],
