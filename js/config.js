@@ -221,6 +221,7 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
 
 const GameConfig = {
     DEBUG: true,
+    PLACEMENT_ATTEMPTS: 200,
     WORLDS: [
         { name: "Ghost" },
         { name: "Stingray" },

@@ -618,7 +618,8 @@ class GameScene extends Phaser.Scene {
                 } else if (!entityConfig.isHazard) {
                     let bestFallback = null;
 
-                    for (let attempt = 0; attempt < 200; attempt++) {
+                    const maxAttempts = (typeof GameConfig !== 'undefined' && GameConfig.PLACEMENT_ATTEMPTS) ? GameConfig.PLACEMENT_ATTEMPTS : 200;
+                    for (let attempt = 0; attempt < maxAttempts; attempt++) {
                         logAttempts = attempt + 1;
                         logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
@@ -691,7 +692,8 @@ class GameScene extends Phaser.Scene {
                 } else {
                     let bestFallback = null;
 
-                    for (let attempt = 0; attempt < 100; attempt++) {
+                    const maxAttempts = (typeof GameConfig !== 'undefined' && GameConfig.PLACEMENT_ATTEMPTS) ? GameConfig.PLACEMENT_ATTEMPTS : 200;
+                    for (let attempt = 0; attempt < maxAttempts; attempt++) {
                         logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
