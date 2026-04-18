@@ -949,14 +949,12 @@ class GameScene extends Phaser.Scene {
 
         // Helper to calculate distance from player to entity, handling rectangles properly
         const getDistanceToEntity = (entity, itemData) => {
-            // Get coordinates based on player's current tier space
+            // Get current dynamic coordinates (already in player's tier space)
             let entityX = entity.x;
             let entityY = entity.y;
             let entityHitbox = null;
 
             if (entity.entityWrapper && entity.entityWrapper.tierPositions && entity.entityWrapper.tierPositions[playerTier]) {
-                entityX = entity.entityWrapper.tierPositions[playerTier].x;
-                entityY = entity.entityWrapper.tierPositions[playerTier].y;
                 if (entity.entityWrapper.tierHitboxes && entity.entityWrapper.tierHitboxes[playerTier]) {
                     entityHitbox = {
                         width: entity.entityWrapper.tierHitboxes[playerTier].width * this.player.currentScale,
@@ -1136,15 +1134,13 @@ class GameScene extends Phaser.Scene {
 
                 let isOverlapping = false;
 
-                // Fetch player-tier specific coordinates
+                // Get current dynamic coordinates (already in player's tier space)
                 let itemX = item.x;
                 let itemY = item.y;
                 let itemRadius = item.radius || item.displayWidth / 2;
                 let itemHitbox = null;
 
                 if (item.entityWrapper && item.entityWrapper.tierPositions && item.entityWrapper.tierPositions[playerTier]) {
-                    itemX = item.entityWrapper.tierPositions[playerTier].x;
-                    itemY = item.entityWrapper.tierPositions[playerTier].y;
                     itemRadius = item.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                     if (item.entityWrapper.tierHitboxes && item.entityWrapper.tierHitboxes[playerTier]) {
                         itemHitbox = {
@@ -1201,24 +1197,29 @@ class GameScene extends Phaser.Scene {
         // Create a copy to safely modify the group during iteration
         const hazards = [...this.hazards.getChildren()];
 
+        const mouthPos = this.player.getMouthPosition();
         const consumeBonus = (this.levelConfig.PLAYER && this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS !== undefined) ? this.levelConfig.PLAYER.CONSUMPTION_RANGE_BONUS : 0;
         const playerRadius = this.player.getCollisionRadius();
+
+        // Damage uses player's main body
         const playerCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius);
-        const playerConsumeCircle = new Phaser.Geom.Circle(this.player.sprite.x, this.player.sprite.y, playerRadius + consumeBonus);
+
+        // Consumption uses player's mouth, just like EdibleItems
+        const playerConsumeRadius = playerRadius * 0.5 + consumeBonus;
+        const playerMouthCircle = new Phaser.Geom.Circle(mouthPos.x, mouthPos.y, playerConsumeRadius);
 
         const playerTier = this.player.getCurrentTier();
 
         for (let hazard of hazards) {
             if (!hazard.active || !hazard.hazardData) continue;
 
+            // Use current sprite coordinates because hazards move!
             let hazardX = hazard.x;
             let hazardY = hazard.y;
             let hazardRadius = hazard.radius || hazard.displayWidth / 2;
             let hazardHitbox = null;
 
             if (hazard.entityWrapper && hazard.entityWrapper.tierPositions && hazard.entityWrapper.tierPositions[playerTier]) {
-                hazardX = hazard.entityWrapper.tierPositions[playerTier].x;
-                hazardY = hazard.entityWrapper.tierPositions[playerTier].y;
                 hazardRadius = hazard.entityWrapper.tierRadii[playerTier] * this.player.currentScale;
                 if (hazard.entityWrapper.tierHitboxes && hazard.entityWrapper.tierHitboxes[playerTier]) {
                     hazardHitbox = {
@@ -1248,15 +1249,17 @@ class GameScene extends Phaser.Scene {
                     hazardHitbox.width,
                     hazardHitbox.height
                 );
-                isOverlappingConsume = Phaser.Geom.Intersects.CircleToRectangle(playerConsumeCircle, rect);
+                isOverlappingConsume = Phaser.Geom.Intersects.CircleToRectangle(playerMouthCircle, rect);
                 isOverlappingDamage = Phaser.Geom.Intersects.CircleToRectangle(playerCircle, rect);
             } else {
                 // Check intersection with circular hitbox
-                const distance = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, hazardX, hazardY);
-                if (distance < playerRadius + consumeBonus + hazardRadius) {
+                const distToMouth = Phaser.Math.Distance.Between(mouthPos.x, mouthPos.y, hazardX, hazardY);
+                if (distToMouth < playerConsumeRadius + hazardRadius) {
                     isOverlappingConsume = true;
                 }
-                if (distance < playerRadius + hazardRadius) {
+
+                const distToBody = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, hazardX, hazardY);
+                if (distToBody < playerRadius + hazardRadius) {
                     isOverlappingDamage = true;
                 }
             }
