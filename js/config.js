@@ -213,8 +213,8 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
         2: [
             // Edibles
             { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
-            { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            // { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
+            // { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
         ],
         3 : [],
 };
