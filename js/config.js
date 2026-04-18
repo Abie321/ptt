@@ -215,63 +215,6 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
             { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
             { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
             { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
-            { 
-                type: "Chair", 
-                count: 2, 
-                value: 300, 
-                shape: 'circle',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                hideInPreviousTier: true, 
-                size: 300, 
-                image: 'chair',
-                positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
-            },
-            // Hazards
-            { 
-                    type: "Waiter", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'waiter', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
-            { 
-                    type: "Customer", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'customer', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
         ],
         3 : [],
 };
