@@ -453,14 +453,37 @@ class GameScene extends Phaser.Scene {
             }
         }
 
+        // Calculate the scale multiplier for existing objects if they belong to a different tier.
+        // This ensures Tier N+1 tests against Tier N+1 size when evaluating overlap with Tier N.
+        const getRelativeScaleMultiplier = (spawningTier, existingTier) => {
+            if (spawningTier <= existingTier) return 1.0;
+            let mult = 1.0;
+            // E.g. spawningTier 2, existingTier 1. We want the ratio that will be applied when moving 1 -> 2
+            for (let t = existingTier; t < spawningTier; t++) {
+                const configNext = this.levelConfig.SIZE_TIERS[t]; // this is tier t+1 config (0-indexed)
+                const configCurr = this.levelConfig.SIZE_TIERS[t-1];
+                if (configNext && configCurr) {
+                    const threshold = configCurr.threshold !== undefined ? configCurr.threshold : (configCurr.initialSize * (configCurr.scale || 1));
+                    mult *= (configNext.initialSize / threshold);
+                }
+            }
+            return mult;
+        };
+
         // Helper function for geometric overlap checks during spawning
-        const checkEntityOverlap = (x1, y1, radius1, hitbox1, scaleRatio, existingObj) => {
+        const checkEntityOverlap = (x1, y1, radius1, hitbox1, scaleRatio, existingObj, currentSpawningTier) => {
             // scaleRatio here defines the bgScaleRatio, which defines visual scale relative to world.
             // But we actually pass in current base scale below, which gets passed as 'scale1'.
             let scale1 = scaleRatio;
 
             // If the existing object has noCollision, it's a background element and won't block placement
             if (existingObj.noCollision) return false;
+
+            // Apply the "Tier N+1 size" rule to the existing object
+            const relativeMult = getRelativeScaleMultiplier(currentSpawningTier, existingObj.tier);
+            const existingScale = existingObj.scale * relativeMult;
+            const existingRadius = existingObj.radius * relativeMult;
+
             if (hitbox1 && existingObj.hitbox) {
                 // Rect to Rect
                 const rect1 = new Phaser.Geom.Rectangle(
@@ -470,10 +493,10 @@ class GameScene extends Phaser.Scene {
                     hitbox1.height * scale1
                 );
                 const rect2 = new Phaser.Geom.Rectangle(
-                    existingObj.x - (existingObj.hitbox.width * existingObj.scale) / 2,
-                    existingObj.y - (existingObj.hitbox.height * existingObj.scale) / 2,
-                    existingObj.hitbox.width * existingObj.scale,
-                    existingObj.hitbox.height * existingObj.scale
+                    existingObj.x - (existingObj.hitbox.width * existingScale) / 2,
+                    existingObj.y - (existingObj.hitbox.height * existingScale) / 2,
+                    existingObj.hitbox.width * existingScale,
+                    existingObj.hitbox.height * existingScale
                 );
                 return Phaser.Geom.Intersects.RectangleToRectangle(rect1, rect2);
             } else if (hitbox1) {
@@ -485,22 +508,22 @@ class GameScene extends Phaser.Scene {
                     hitbox1.height * scale1
                 );
                 // Add buffer to existing circular radius
-                const circle = new Phaser.Geom.Circle(existingObj.x, existingObj.y, existingObj.radius * 1.1 + 5);
+                const circle = new Phaser.Geom.Circle(existingObj.x, existingObj.y, existingRadius * 1.1 + 5);
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
             } else if (existingObj.hitbox) {
                 // Circle to Rect
                 const circle = new Phaser.Geom.Circle(x1, y1, radius1 * 1.1 + 5);
                 const rect = new Phaser.Geom.Rectangle(
-                    existingObj.x - (existingObj.hitbox.width * existingObj.scale) / 2,
-                    existingObj.y - (existingObj.hitbox.height * existingObj.scale) / 2,
-                    existingObj.hitbox.width * existingObj.scale,
-                    existingObj.hitbox.height * existingObj.scale
+                    existingObj.x - (existingObj.hitbox.width * existingScale) / 2,
+                    existingObj.y - (existingObj.hitbox.height * existingScale) / 2,
+                    existingObj.hitbox.width * existingScale,
+                    existingObj.hitbox.height * existingScale
                 );
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
             } else {
                 // Circle to Circle (standard distance check)
                 const dist = Phaser.Math.Distance.Between(x1, y1, existingObj.x, existingObj.y);
-                return dist < (radius1 + existingObj.radius) * 1.1 + 5;
+                return dist < (radius1 + existingRadius) * 1.1 + 5;
             }
         };
 
@@ -577,7 +600,7 @@ class GameScene extends Phaser.Scene {
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
+                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, bgScaleRatio, existing, tier)) {
                                 logOverlappedTiers.push(existing.tier);
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
@@ -608,7 +631,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing, tier)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -680,7 +703,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing, tier)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
