@@ -540,7 +540,7 @@ class GameScene extends Phaser.Scene {
                 }
 
                 const scale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
-                let radius = logicalRadius * bgScaleRatio * scale;
+                let radius = logicalRadius * bgScaleRatio;
 
                 let x, y, rotation;
                 let foundSpot = false;
@@ -577,7 +577,7 @@ class GameScene extends Phaser.Scene {
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
+                            if (checkEntityOverlap(x, y, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
                                 logOverlappedTiers.push(existing.tier);
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
@@ -608,7 +608,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -680,7 +680,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio * scale, existing)) {
+                            if (checkEntityOverlap(testX, testY, radius, entityConfig.hitbox, bgScaleRatio, existing)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
