@@ -767,10 +767,9 @@ class GameScene extends Phaser.Scene {
                     this.hazards.add(hazard.sprite);
                     existingEntities.push({
                         sprite: hazard.sprite,
-                        x: hazard.sprite.x,
-                        y: hazard.sprite.y,
-                        radius: hazard.radius,
-                        tier: tier
+                        entityWrapper: hazard,
+                        tier: tier,
+                        noCollision: (hazard.hazardData && hazard.hazardData.noCollision) ? true : false
                     });
                 } else {
                     const item = new EdibleItem(this, x, y, instanceConfig);
@@ -779,10 +778,9 @@ class GameScene extends Phaser.Scene {
                     }
                     existingEntities.push({
                         sprite: item.sprite,
-                        x: item.sprite.x,
-                        y: item.sprite.y,
-                        radius: item.radius,
-                        tier: tier
+                        entityWrapper: item,
+                        tier: tier,
+                        noCollision: (item.itemData && item.itemData.noCollision) ? true : false
                     });
                 }
             }
