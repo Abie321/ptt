@@ -541,6 +541,7 @@ class GameScene extends Phaser.Scene {
                 let logAttempts = 0;
                 let logStatus = 'Skipped';
                 let logOverlappedTiers = [];
+                let failedCoordinates = [];
 
                 // Pre-calculate an actual visual radius estimation to correctly prevent overlap with large rectangular sprites
                 if (entityConfig.image && this.textures) {
@@ -561,6 +562,9 @@ class GameScene extends Phaser.Scene {
                     y = entityConfig.positions[i].y * bgScaleRatio;
                     rotation = entityConfig.positions[i].rotation;
                     logAttempts = 1;
+
+                    // (Positioned entities always conceptually "place", but could fail logic if we change it in the future, so track the coordinate just in case it is skipped)
+                    failedCoordinates.push(`(${x.toFixed(1)}, ${y.toFixed(1)})`);
 
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
@@ -617,6 +621,8 @@ class GameScene extends Phaser.Scene {
                         if (allowReplacement && !hasSameOrHigherTierOverlap) {
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
+
+                        failedCoordinates.push(`(${testX.toFixed(1)}, ${testY.toFixed(1)})`);
                     }
 
                     if (!foundSpot && bestFallback) {
@@ -647,7 +653,7 @@ class GameScene extends Phaser.Scene {
 
                     if (!foundSpot) {
                         if (GameConfig && GameConfig.DEBUG) {
-                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}`);
+                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}. Failed Coords: [${failedCoordinates.join(', ')}]`);
                         }
                         continue; // Skip placing this edible
                     }
@@ -689,6 +695,8 @@ class GameScene extends Phaser.Scene {
                             // to ensure they spawn even if the level is crowded (like level 2 tier 3)
                             bestFallback = { x: testX, y: testY, overlaps: overlaps };
                         }
+
+                        failedCoordinates.push(`(${testX.toFixed(1)}, ${testY.toFixed(1)})`);
                     }
 
                     if (!foundSpot && bestFallback) {
@@ -719,7 +727,7 @@ class GameScene extends Phaser.Scene {
 
                     if (!foundSpot) {
                         if (GameConfig && GameConfig.DEBUG) {
-                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}`);
+                            console.log(`[DEBUG PLACEMENT] Skipped ${entityConfig.type || 'Unknown'} (Tier ${tier}). Attempts: ${logAttempts}. Status: ${logStatus}. allowReplacement: ${allowReplacement}. Failed Coords: [${failedCoordinates.join(', ')}]`);
                         }
                         continue; // Skip placing this hazard if no valid spot
                     }
