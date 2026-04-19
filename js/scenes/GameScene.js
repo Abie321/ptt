@@ -465,46 +465,64 @@ class GameScene extends Phaser.Scene {
                 existingHitbox = null; // simplified fallback
             }
 
-            if (nativeHitbox && existingHitbox) {
+            // Apply zoom factor if zoom < 1 to allow items to spawn closer together
+            const spawningTierConfig = this.levelConfig.SIZE_TIERS[currentSpawningTier - 1];
+            const tierZoom = (spawningTierConfig && spawningTierConfig.zoom !== undefined) ? spawningTierConfig.zoom : 1.0;
+            const overlapMultiplier = tierZoom < 1.0 ? tierZoom : 1.0;
+
+            const scaledNativeRadius = nativeRadius * overlapMultiplier;
+            const scaledExistingRadius = existingRadius * overlapMultiplier;
+
+            const scaledNativeHitbox = nativeHitbox ? {
+                width: nativeHitbox.width * overlapMultiplier,
+                height: nativeHitbox.height * overlapMultiplier
+            } : null;
+
+            const scaledExistingHitbox = existingHitbox ? {
+                width: existingHitbox.width * overlapMultiplier,
+                height: existingHitbox.height * overlapMultiplier
+            } : null;
+
+            if (scaledNativeHitbox && scaledExistingHitbox) {
                 // Rect to Rect
                 const rect1 = new Phaser.Geom.Rectangle(
-                    nativeX - (nativeHitbox.width) / 2,
-                    nativeY - (nativeHitbox.height) / 2,
-                    nativeHitbox.width,
-                    nativeHitbox.height
+                    nativeX - (scaledNativeHitbox.width) / 2,
+                    nativeY - (scaledNativeHitbox.height) / 2,
+                    scaledNativeHitbox.width,
+                    scaledNativeHitbox.height
                 );
                 const rect2 = new Phaser.Geom.Rectangle(
-                    existingX - (existingHitbox.width) / 2,
-                    existingY - (existingHitbox.height) / 2,
-                    existingHitbox.width,
-                    existingHitbox.height
+                    existingX - (scaledExistingHitbox.width) / 2,
+                    existingY - (scaledExistingHitbox.height) / 2,
+                    scaledExistingHitbox.width,
+                    scaledExistingHitbox.height
                 );
                 return Phaser.Geom.Intersects.RectangleToRectangle(rect1, rect2);
-            } else if (nativeHitbox) {
+            } else if (scaledNativeHitbox) {
                 // Rect to Circle
                 const rect = new Phaser.Geom.Rectangle(
-                    nativeX - (nativeHitbox.width) / 2,
-                    nativeY - (nativeHitbox.height) / 2,
-                    nativeHitbox.width,
-                    nativeHitbox.height
+                    nativeX - (scaledNativeHitbox.width) / 2,
+                    nativeY - (scaledNativeHitbox.height) / 2,
+                    scaledNativeHitbox.width,
+                    scaledNativeHitbox.height
                 );
                 // Add buffer to existing circular radius
-                const circle = new Phaser.Geom.Circle(existingX, existingY, existingRadius * 1.1 + 5);
+                const circle = new Phaser.Geom.Circle(existingX, existingY, scaledExistingRadius * 1.1 + 5);
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
-            } else if (existingHitbox) {
+            } else if (scaledExistingHitbox) {
                 // Circle to Rect
-                const circle = new Phaser.Geom.Circle(nativeX, nativeY, nativeRadius * 1.1 + 5);
+                const circle = new Phaser.Geom.Circle(nativeX, nativeY, scaledNativeRadius * 1.1 + 5);
                 const rect = new Phaser.Geom.Rectangle(
-                    existingX - (existingHitbox.width) / 2,
-                    existingY - (existingHitbox.height) / 2,
-                    existingHitbox.width,
-                    existingHitbox.height
+                    existingX - (scaledExistingHitbox.width) / 2,
+                    existingY - (scaledExistingHitbox.height) / 2,
+                    scaledExistingHitbox.width,
+                    scaledExistingHitbox.height
                 );
                 return Phaser.Geom.Intersects.CircleToRectangle(circle, rect);
             } else {
                 // Circle to Circle (standard distance check)
                 const dist = Phaser.Math.Distance.Between(nativeX, nativeY, existingX, existingY);
-                return dist < (nativeRadius + existingRadius) * 1.1 + 5;
+                return dist < (scaledNativeRadius + scaledExistingRadius) * 1.1 + 5;
             }
         };
 
