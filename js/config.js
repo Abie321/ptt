@@ -112,6 +112,7 @@ const LEVEL_1_CONFIG = {
                 hideInPreviousTier: true, 
                 size: 300, 
                 image: 'chair',
+                hitbox: { width: 150, height: 150 },
                 positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
             },
             { 
@@ -192,21 +193,21 @@ const LEVEL_1_CONFIG = {
 const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
 LEVEL_2_CONFIG['coverImage'] = undefined;
 LEVEL_2_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 3, initialSize: 300, threshold: 600, name: 'Medium', color: 0xFF9800, zoom: 0.25, zoomInStart: 0.5, LEVEL_AREA: { WIDTH: 1400, HEIGHT: 725 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5 } },
+        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 37, threshold: 115, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
+        { tier: 3, initialSize: 125, threshold: 400, name: 'Medium', color: 0xFF9800, zoom: 0.25, zoomInStart: 0.5, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5 } },
     ];
-LEVEL_2_CONFIG['winSize'] = 1000
+LEVEL_2_CONFIG['winSize'] = 900
 LEVEL_2_CONFIG['TIER_ENTITIES'] = {
         1: [
             // Edibles
-            { type: "Sandwich", count: 3, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
-            { type: "Tea bag", count: 4, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 4, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
-            { type: "Spoon", count: 4, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 3, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
+            { type: "Sandwich", count: 2, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
+            { type: "Tea bag", count: 3, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
+            { type: "Cake", count: 3, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
+            { type: "Spoon", count: 3, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
+            { type: "Cup", count: 2, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 2, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
+            { type: "Teapot", count: 1, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
             // Hazards
             { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
@@ -226,7 +227,7 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
             },
             { 
                 type: "One pound note", 
-                count: 12, 
+                count: 10, 
                 value: 200, 
                 shape: 'circle', 
                 color: 0xFFEB3B, 
@@ -234,18 +235,87 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
                 size: 200, 
                 image: 'onepoundnote', 
                 noCollision: true,
-                positions: [{x: 600, y: 200}, {x: 600, y: 600}, {x: 600, y: 1200}, {x: 1300, y: 200}, {x: 1300, y: 600}, {x: 1300, y: 1200}, {x: 1900, y: 200}, {x: 1900, y: 600}]
              },
-            { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            { type: "Beans can", count: 6, value: 150, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan', hideInPreviousTier: true},
+            { type: "Teapot", count: 6, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            // Hazards
+            { 
+                    type: "Waiter", 
+                    count: 5, 
+                    value: 350, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'waiter', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
+            { 
+                    type: "Customer", 
+                    count: 5, 
+                    value: 350, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 350,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'customer', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 10 },
+                            DOWN: { start: 2, end: 3, rate: 10 },
+                            LEFT: { start: 4, end: 5, rate: 10 },
+                            RIGHT: { start: 6, end: 7, rate: 10 }
+                        }
+                    }
+            },
 
         ],
-        3 : [],
+        3 : [
+                        { 
+                type: "Table", 
+                count: 4, 
+                value: 300, 
+                shape: 'square',
+                color: 0xFFEB3B, 
+                isHazard: false,
+                size: 450, 
+                image: 'table',
+                hitbox: { width: 400, height: 200 },
+                positions: [{x: 350, y: 200}, {x: 350, y: 500}, {x: 1000, y: 200}, {x: 1000, y: 500}]
+            },
+            { 
+                type: "Counter", 
+                count: 1, 
+                value: 300, 
+                shape: 'square',
+                color: 0xFFEB3B, 
+                isHazard: false,
+                size: 700, 
+                image: 'emptycounter',
+                hitbox: { width: 600, height: 200 },
+                positions: [{x: 600, y: 50}]
+            },
+        ],
 };
 
 const GameConfig = {
-    DEBUG: true,
-    PLACEMENT_ATTEMPTS: 200,
+    DEBUG: false,
+    PLACEMENT_ATTEMPTS: 500,
     WORLDS: [
         { name: "Ghost" },
         { name: "Stingray" },
