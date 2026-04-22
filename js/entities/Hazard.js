@@ -82,7 +82,6 @@ class Hazard {
             // Scale sprite to match the desired radius (diameter = visualSize * 2)
             const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
             this.sprite.setScale(spriteScale);
-            this.sprite.setAlpha(0.7);
 
             scene.physics.add.existing(this.sprite);
         } else {
