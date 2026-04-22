@@ -193,11 +193,31 @@ const LEVEL_1_CONFIG = {
 const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
 LEVEL_2_CONFIG['coverImage'] = undefined;
 LEVEL_2_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
         { tier: 2, initialSize: 37, threshold: 115, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 3, initialSize: 125, threshold: 400, name: 'Medium', color: 0xFF9800, zoom: 0.25, zoomInStart: 0.5, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 0.5 } },
+        { tier: 3, initialSize: 125, threshold: 450, name: 'Medium', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
     ];
-LEVEL_2_CONFIG['winSize'] = 900
+LEVEL_2_CONFIG['winSize'] = 700;
+LEVEL_2_CONFIG['PLAYER'] = {
+        GROWTH_FACTOR: 0.15,
+        TIER_GROWTH_FACTOR: 0.15,
+        SPEED: 200,
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
+            ANIMATIONS: {
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
+            }
+        }
+};
 LEVEL_2_CONFIG['TIER_ENTITIES'] = {
         1: [
             // Edibles
@@ -207,7 +227,7 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
             { type: "Spoon", count: 3, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
             { type: "Cup", count: 2, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 1, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot'},
+            { type: "Teapot", count: 1, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 110, image: 'teapot'},
             // Hazards
             { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
         ],
@@ -236,8 +256,8 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
                 image: 'onepoundnote', 
                 noCollision: true,
              },
-            { type: "Beans can", count: 6, value: 150, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan', hideInPreviousTier: true},
-            { type: "Teapot", count: 6, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
+            { type: "Beans can", count: 6, value: 150, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 150, image: 'beanscan', hideInPreviousTier: true},
+            { type: "Teapot", count: 6, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 110, image: 'teapot', hideInPreviousTier: true },
             // Hazards
             { 
                     type: "Waiter", 
@@ -286,30 +306,154 @@ LEVEL_2_CONFIG['TIER_ENTITIES'] = {
 
         ],
         3 : [
-                        { 
+            { 
                 type: "Table", 
                 count: 4, 
-                value: 300, 
+                value: 500, 
                 shape: 'square',
                 color: 0xFFEB3B, 
                 isHazard: false,
-                size: 450, 
+                size: 500, 
                 image: 'table',
-                hitbox: { width: 400, height: 200 },
-                positions: [{x: 350, y: 200}, {x: 350, y: 500}, {x: 1000, y: 200}, {x: 1000, y: 500}]
+                hitbox: { width: 250, height: 100 },
+                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
             },
             { 
                 type: "Counter", 
-                count: 1, 
+                count: 4, 
                 value: 300, 
                 shape: 'square',
                 color: 0xFFEB3B, 
                 isHazard: false,
                 size: 700, 
                 image: 'emptycounter',
-                hitbox: { width: 600, height: 200 },
-                positions: [{x: 600, y: 50}]
+                hitbox: { width: 350, height: 100 },
+                positions: [{x: 1450, y: 100}]
             },
+        ],
+};
+
+const LEVEL_3_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
+LEVEL_3_CONFIG['ENTITY_IMAGES'] = {
+        'player_sheet': 'assets/images/ghost.png',
+        'coin': 'assets/images/coin.png',
+        'onepoundnote': 'assets/images/onepoundnote.png',
+        'phonebooth': 'assets/images/phonebooth.png',
+    },
+LEVEL_3_CONFIG['SIZE_TIERS'] = [
+        { tier: 1, initialSize: 26, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.5, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 550, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level2.png', BACKGROUND_SCALE: 1.5, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 40, threshold: 95, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1100, HEIGHT: 2200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level2.png', BACKGROUND_SCALE: 1.0 } },
+    ];
+LEVEL_3_CONFIG['winSize'] = 210;
+LEVEL_3_CONFIG['PLAYER'] = {
+        GROWTH_FACTOR: 0.15,
+        TIER_GROWTH_FACTOR: 0.15,
+        SPEED: 200,
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
+            ANIMATIONS: {
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
+            }
+        }
+};
+LEVEL_3_CONFIG['TIER_ENTITIES'] = {
+        1: [
+            // Edibles
+            { type: "Coin", count: 80, value: 25, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
+            { 
+                type: "One pound note", 
+                count: 1, 
+                value: 90, 
+                shape: 'circle', 
+                color: 0xFFEB3B, 
+                isHazard: false, 
+                size: 90, 
+                image: 'onepoundnote', 
+                noCollision: true,
+                positions: [{x: 200, y: 1500}],
+             },
+        ],
+        2: [
+            // Edibles
+            { 
+                type: "One pound note", 
+                count: 21, 
+                value: 90, 
+                shape: 'circle', 
+                color: 0xFFEB3B, 
+                isHazard: false, 
+                size: 90, 
+                image: 'onepoundnote', 
+                noCollision: true,
+                hideInPreviousTier: true,
+            },
+            { 
+                type: "Coin", 
+                count: 60, 
+                value: 25, 
+                shape: 'square', 
+                color: 0x8BC34A, 
+                isHazard: false, 
+                image: 'coin', 
+                size: 25,
+                hideInPreviousTier: true, 
+            },
+            { 
+                type: "Phone booth", 
+                count: 1, 
+                value: 200, 
+                shape: 'square', 
+                color: 0x8BC34A, 
+                isHazard: false, 
+                image: 'phonebooth', 
+                size: 200,
+                hideInPreviousTier: true,
+                positions: [{x: 1000, y: 1000}], 
+            },
+        ],
+};
+
+const LEVEL_4_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
+LEVEL_4_CONFIG['ENTITY_IMAGES'] = {
+        'player_sheet': 'assets/images/ghost.png',
+        'goose': 'assets/images/goose.png',
+    },
+LEVEL_4_CONFIG['SIZE_TIERS'] = [
+        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+    ];
+LEVEL_4_CONFIG['winSize'] = 210;
+LEVEL_4_CONFIG['PLAYER'] = {
+        GROWTH_FACTOR: 0.15,
+        TIER_GROWTH_FACTOR: 0.15,
+        SPEED: 200,
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
+            ANIMATIONS: {
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
+            }
+        }
+};
+LEVEL_4_CONFIG['TIER_ENTITIES'] = {
+        1: [
+            { type: "Goose", count: 20, value: 39, shape: 'circle', color: 0xFF0000, isHazard: true, size: 39, image: 'goose' }
         ],
 };
 
@@ -336,6 +480,16 @@ const GameConfig = {
             id: 'level2',
             name: 'Spot of Tea',
             ...LEVEL_2_CONFIG
+        },
+        {
+            id: 'level3',
+            name: 'Spare some change\nfor the phones',
+            ...LEVEL_3_CONFIG
+        },
+        {
+            id: 'level4',
+            name: 'All hail the King',
+            ...LEVEL_4_CONFIG
         },
     ]
 };
