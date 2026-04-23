@@ -112,12 +112,20 @@ class Hazard {
             }
         }
 
-        // Simple movement pattern (optional for prototype)
-        this.sprite.body.setVelocity(
-            Phaser.Math.Between(-50, 50),
-            Phaser.Math.Between(-50, 50)
-        );
-        this.sprite.body.setBounce(1, 1);
+        this.movementType = config.movementType || 'random';
+        this.speed = config.speed !== undefined ? config.speed : 50;
+
+        if (this.movementType === 'tracking') {
+            this.sprite.body.setBounce(0, 0);
+        } else {
+            // Simple movement pattern (optional for prototype)
+            this.sprite.body.setVelocity(
+                Phaser.Math.Between(-this.speed, this.speed),
+                Phaser.Math.Between(-this.speed, this.speed)
+            );
+            this.sprite.body.setBounce(1, 1);
+        }
+
         this.sprite.body.setCollideWorldBounds(true);
 
         // Store reference
@@ -132,6 +140,25 @@ class Hazard {
 
     update() {
         if (!this.sprite || !this.sprite.active || !this.sprite.body) return;
+
+        if (this.movementType === 'tracking' && this.scene && this.scene.player && this.scene.player.sprite && this.scene.player.sprite.active) {
+            const playerSprite = this.scene.player.sprite;
+            const dx = playerSprite.x - this.sprite.x;
+            const dy = playerSprite.y - this.sprite.y;
+
+            // Calculate distance
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 0) {
+                // Normalize and apply speed
+                this.sprite.body.setVelocity(
+                    (dx / distance) * this.speed,
+                    (dy / distance) * this.speed
+                );
+            } else {
+                this.sprite.body.setVelocity(0, 0);
+            }
+        }
 
         const velocity = this.sprite.body.velocity;
 
