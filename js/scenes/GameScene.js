@@ -837,7 +837,41 @@ class GameScene extends Phaser.Scene {
                     },
                     this
                 );
+
+                // Add collider between hazards and edible items
+                if (this.hazards) {
+                    this.physics.add.collider(
+                        this.hazards,
+                        this.edibleItems[tier],
+                        null,
+                        (hazardSprite, itemSprite) => {
+                            if (!hazardSprite.active || !itemSprite.active) return false;
+
+                            // If the item has noCollision flag, allow overlap without physics bouncing
+                            if (itemSprite.itemData && itemSprite.itemData.noCollision) {
+                                return false;
+                            }
+
+                            return true;
+                        },
+                        this
+                    );
+                }
             }
+        }
+
+        // Add collider between hazards and themselves
+        if (this.hazards) {
+            this.physics.add.collider(
+                this.hazards,
+                this.hazards,
+                null,
+                (hazardSprite1, hazardSprite2) => {
+                    if (!hazardSprite1.active || !hazardSprite2.active) return false;
+                    return true;
+                },
+                this
+            );
         }
     }
 
