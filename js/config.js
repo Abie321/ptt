@@ -95,7 +95,7 @@ const LEVEL_1_CONFIG = {
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
             { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse', hideInPreviousTier: true, movementType: 'tracking', speed: 60 }
+            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse', hideInPreviousTier: true }
         ],
         3: [
             // Edibles
@@ -426,6 +426,7 @@ const LEVEL_4_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
 LEVEL_4_CONFIG['ENTITY_IMAGES'] = {
         'player_sheet': 'assets/images/ghost.png',
         'goose': 'assets/images/goose.png',
+        'guard': 'assets/images/guard.png',
     },
 LEVEL_4_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
@@ -453,7 +454,31 @@ LEVEL_4_CONFIG['PLAYER'] = {
 };
 LEVEL_4_CONFIG['TIER_ENTITIES'] = {
         1: [
-            { type: "Goose", count: 20, value: 39, shape: 'circle', color: 0xFF0000, isHazard: true, size: 39, image: 'goose' }
+            { type: "Goose", count: 20, value: 39, shape: 'circle', color: 0xFF0000, isHazard: true, size: 39, image: 'goose' },
+            { 
+                    type: "Guard", 
+                    count: 12, 
+                    value: 50, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 50,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'guard', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 5 },
+                            DOWN: { start: 2, end: 3, rate: 5 },
+                            LEFT: { start: 4, end: 5, rate: 5 },
+                            RIGHT: { start: 6, end: 7, rate: 5 }
+                        }
+                    },
+                    movementType: 'tracking', 
+                    speed: 80 
+            },
         ],
 };
 
