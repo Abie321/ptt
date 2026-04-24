@@ -58,7 +58,7 @@ class Hazard {
         this.radius = this.tierRadii[playerTier] * scale;
         this.hazardData.radius = logicalRadius;
 
-        const visualSize = this.radius;
+        const visualSize = config.visual_size !== undefined ? config.visual_size : this.radius;
 
         // Use color from config (defaults to red if not provided, though config should have it)
         const color = config.color !== undefined ? config.color : 0xFF0000;
@@ -104,11 +104,27 @@ class Hazard {
             );
         } else {
             if (config.SPRITE && config.SPRITE.USE_SPRITESHEET) {
-                this.sprite.body.setCircle(config.SPRITE.FRAME_WIDTH / 2);
+                if (config.visual_size !== undefined) {
+                    const spriteScale = (visualSize * 2) / config.SPRITE.FRAME_WIDTH;
+                    const unscaledLogicRadius = this.radius / spriteScale;
+                    this.sprite.body.setCircle(unscaledLogicRadius);
+                    const offset = (config.SPRITE.FRAME_WIDTH - (unscaledLogicRadius * 2)) / 2;
+                    this.sprite.body.setOffset(offset, offset);
+                } else {
+                    this.sprite.body.setCircle(config.SPRITE.FRAME_WIDTH / 2);
+                }
             } else if (config.image) {
-                this.sprite.body.setCircle(this.sprite.width / 2);
+                if (config.visual_size !== undefined) {
+                    const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+                    const unscaledLogicRadius = this.radius / spriteScale;
+                    this.sprite.body.setCircle(unscaledLogicRadius);
+                    const offset = (this.sprite.width - (unscaledLogicRadius * 2)) / 2;
+                    this.sprite.body.setOffset(offset, offset);
+                } else {
+                    this.sprite.body.setCircle(this.sprite.width / 2);
+                }
             } else {
-                this.sprite.body.setCircle(visualSize);
+                this.sprite.body.setCircle(this.radius);
             }
         }
 

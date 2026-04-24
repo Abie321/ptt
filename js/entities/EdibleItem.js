@@ -59,7 +59,7 @@ class EdibleItem {
         this.radius = this.tierRadii[playerTier] * scale;
         this.itemData.radius = logicalRadius;
 
-        const visualSize = this.radius;
+        const visualSize = config.visual_size !== undefined ? config.visual_size : this.radius;
 
         // Visual position based on current tier (ignoring global scale since x,y shouldn't multiply by currentScale,
         // they are repositioned during tier transitions)
@@ -123,12 +123,20 @@ class EdibleItem {
         } else {
             // Ensure circular body for circles, otherwise default rectangular body is fine
             if (config.image) {
-                // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.
-                // The unscaled radius is half the original width of the texture.
-                this.sprite.body.setCircle(this.sprite.width / 2);
+                if (config.visual_size !== undefined) {
+                    const spriteScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+                    const unscaledLogicRadius = this.radius / spriteScale;
+                    this.sprite.body.setCircle(unscaledLogicRadius);
+                    const offset = (this.sprite.width - (unscaledLogicRadius * 2)) / 2;
+                    this.sprite.body.setOffset(offset, offset);
+                } else {
+                    // For images, the sprite is already scaled. setCircle expects the *unscaled* radius.
+                    // The unscaled radius is half the original width of the texture.
+                    this.sprite.body.setCircle(this.sprite.width / 2);
+                }
             } else if (shape === 'circle') {
-                // For primitive circles, visualSize is the unscaled radius.
-                this.sprite.body.setCircle(visualSize);
+                // For primitive circles, visualSize is the unscaled radius. Use logic radius to decouple hitboxes if visualSize differs.
+                this.sprite.body.setCircle(this.radius);
             }
         }
 

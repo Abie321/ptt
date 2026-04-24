@@ -1432,14 +1432,18 @@ class GameScene extends Phaser.Scene {
 
                         if (item.displayWidth !== undefined) {
                             if (item.texture && item.texture.key && item.texture.get() && item.texture.get().width > 0) {
-                                const targetDiameter = item.radius * 2;
+                                const targetDiameter = (item.itemData && item.itemData.visual_size !== undefined) ? item.itemData.visual_size * 2 : item.radius * 2;
                                 const texWidth = item.texture.get().width;
                                 const spriteScale = targetDiameter / Math.max(1, texWidth);
                                 item.setScale(spriteScale);
                             } else {
                                 // Fallback if no texture size available or primitive
-                                const currentScale = item.scale !== undefined ? item.scale : 1;
-                                item.setScale(currentScale * scaleMultiplier);
+                                if (item.itemData && item.itemData.visual_size !== undefined) {
+                                    // Do not scale primitives if visual_size is defined
+                                } else {
+                                    const currentScale = item.scale !== undefined ? item.scale : 1;
+                                    item.setScale(currentScale * scaleMultiplier);
+                                }
                             }
                         }
 
@@ -1449,6 +1453,14 @@ class GameScene extends Phaser.Scene {
                                 item.geom.radius = item.radius;
                             } else if (item.radius !== undefined && typeof item.setRadius === 'function') {
                                 item.setRadius(item.radius);
+                            }
+
+                            // If visual_size is used on a scaled image, decouple the physics body by resetting circle scaled to logic radius
+                            if (item.itemData && item.itemData.visual_size !== undefined && item.scale !== 1 && item.texture) {
+                                const unscaledLogicRadius = item.radius / item.scaleX;
+                                item.body.setCircle(unscaledLogicRadius);
+                                const offset = (item.width - (unscaledLogicRadius * 2)) / 2;
+                                item.body.setOffset(offset, offset);
                             }
                         }
                     }
@@ -1477,7 +1489,7 @@ class GameScene extends Phaser.Scene {
 
                         if (hazard.displayWidth !== undefined) {
                             if (hazard.texture && hazard.texture.key && hazard.texture.get() && hazard.texture.get().width > 0) {
-                                const targetDiameter = hazard.radius * 2;
+                                const targetDiameter = (hazard.hazardData && hazard.hazardData.visual_size !== undefined) ? hazard.hazardData.visual_size * 2 : hazard.radius * 2;
                                 // Need to account for spritesheets (use FRAME_WIDTH if available)
                                 let texWidth = hazard.texture.get().width;
                                 if (hazard.hazardData && hazard.hazardData.SPRITE && hazard.hazardData.SPRITE.FRAME_WIDTH) {
@@ -1486,8 +1498,12 @@ class GameScene extends Phaser.Scene {
                                 const spriteScale = targetDiameter / Math.max(1, texWidth);
                                 hazard.setScale(spriteScale);
                             } else {
-                                const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
-                                hazard.setScale(currentScale * scaleMultiplier);
+                                if (hazard.hazardData && hazard.hazardData.visual_size !== undefined) {
+                                    // Do not scale primitives if visual_size is defined
+                                } else {
+                                    const currentScale = hazard.scale !== undefined ? hazard.scale : 1;
+                                    hazard.setScale(currentScale * scaleMultiplier);
+                                }
                             }
                         }
 
@@ -1497,6 +1513,19 @@ class GameScene extends Phaser.Scene {
                                 hazard.geom.radius = hazard.radius;
                             } else if (hazard.radius !== undefined && typeof hazard.setRadius === 'function') {
                                 hazard.setRadius(hazard.radius);
+                            }
+
+                            // If visual_size is used on a scaled image, decouple the physics body by resetting circle scaled to logic radius
+                            if (hazard.hazardData && hazard.hazardData.visual_size !== undefined && hazard.scale !== 1 && hazard.texture) {
+                                const unscaledLogicRadius = hazard.radius / hazard.scaleX;
+                                hazard.body.setCircle(unscaledLogicRadius);
+
+                                let frameWidth = hazard.width;
+                                if (hazard.hazardData.SPRITE && hazard.hazardData.SPRITE.FRAME_WIDTH) {
+                                    frameWidth = hazard.hazardData.SPRITE.FRAME_WIDTH;
+                                }
+                                const offset = (frameWidth - (unscaledLogicRadius * 2)) / 2;
+                                hazard.body.setOffset(offset, offset);
                             }
                         }
                     }
