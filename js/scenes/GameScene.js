@@ -1480,8 +1480,8 @@ class GameScene extends Phaser.Scene {
                                 const targetDiameter = hazard.radius * 2;
                                 // Need to account for spritesheets (use FRAME_WIDTH if available)
                                 let texWidth = hazard.texture.get().width;
-                                if (hazard.entityWrapper.hazardData && hazard.entityWrapper.hazardData.SPRITE && hazard.entityWrapper.hazardData.SPRITE.FRAME_WIDTH) {
-                                    texWidth = hazard.entityWrapper.hazardData.SPRITE.FRAME_WIDTH;
+                                if (hazard.hazardData && hazard.hazardData.SPRITE && hazard.hazardData.SPRITE.FRAME_WIDTH) {
+                                    texWidth = hazard.hazardData.SPRITE.FRAME_WIDTH;
                                 }
                                 const spriteScale = targetDiameter / Math.max(1, texWidth);
                                 hazard.setScale(spriteScale);
