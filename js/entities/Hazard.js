@@ -159,8 +159,21 @@ class Hazard {
 
         if (this.movementType === 'tracking' && this.scene && this.scene.player && this.scene.player.sprite && this.scene.player.sprite.active) {
             const playerSprite = this.scene.player.sprite;
-            const dx = playerSprite.x - this.sprite.x;
-            const dy = playerSprite.y - this.sprite.y;
+
+            // Determine if the hazard should track towards or away from the player
+            const playerLogicalSize = this.scene.player.getLogicalSize ? this.scene.player.getLogicalSize() : this.scene.player.getSize();
+            const hazardLogicalSize = (this.hazardData && this.hazardData.size) ? this.hazardData.size : this.radius;
+
+            let dx, dy;
+            if (hazardLogicalSize >= playerLogicalSize) {
+                // Run towards the player
+                dx = playerSprite.x - this.sprite.x;
+                dy = playerSprite.y - this.sprite.y;
+            } else {
+                // Run away from the player
+                dx = this.sprite.x - playerSprite.x;
+                dy = this.sprite.y - playerSprite.y;
+            }
 
             // Calculate distance
             const distance = Math.sqrt(dx * dx + dy * dy);
