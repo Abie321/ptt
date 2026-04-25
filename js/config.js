@@ -427,11 +427,13 @@ LEVEL_4_CONFIG['ENTITY_IMAGES'] = {
         'player_sheet': 'assets/images/ghost.png',
         'goose': 'assets/images/goose.png',
         'guard': 'assets/images/guard.png',
+        'king': 'assets/images/king.png',
     },
 LEVEL_4_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 130, threshold: 130, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
-LEVEL_4_CONFIG['winSize'] = 210;
+LEVEL_4_CONFIG['winSize'] = 137;
 LEVEL_4_CONFIG['PLAYER'] = {
         GROWTH_FACTOR: 0.15,
         TIER_GROWTH_FACTOR: 0.15,
@@ -458,15 +460,43 @@ LEVEL_4_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Guard", 
                     count: 12, 
-                    value: 50, 
+                    value: 78, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 50,
+                    size: 78,
+                    visual_size: 100,
                     SPRITE: {
                         USE_SPRITESHEET: true,
                         KEY: 'guard', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 5 },
+                            DOWN: { start: 2, end: 3, rate: 5 },
+                            LEFT: { start: 4, end: 5, rate: 5 },
+                            RIGHT: { start: 6, end: 7, rate: 5 }
+                        }
+                    },
+                    movementType: 'tracking', 
+                    speed: 80 
+            },
+        ],
+        2: [
+            { 
+                    type: "King", 
+                    count: 1, 
+                    value: 119, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 119,
+                    visual_size: 140,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'king', // The key used for preloading the image
                         FRAME_WIDTH: 750,         // Width of a single frame
                         FRAME_HEIGHT: 750,        // Height of a single frame
                         ANIMATIONS: {
