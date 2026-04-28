@@ -128,11 +128,23 @@ class Hazard {
             }
         }
 
-        this.movementType = config.movementType || 'random';
-        this.speed = config.speed !== undefined ? config.speed : 50;
+        this.movementType = config.spawner ? 'straight' : (config.movementType || 'random');
+        this.speed = config.spawner ? (config.spawner.speed || 100) : (config.speed !== undefined ? config.speed : 50);
 
         if (this.movementType === 'tracking') {
             this.sprite.body.setBounce(0, 0);
+            this.sprite.body.setCollideWorldBounds(true);
+        } else if (this.movementType === 'straight' && config.spawner) {
+            this.sprite.body.setBounce(0, 0);
+            this.sprite.body.setCollideWorldBounds(false);
+
+            let vx = 0, vy = 0;
+            if (config.spawner.edge === 'top') vy = this.speed;
+            else if (config.spawner.edge === 'bottom') vy = -this.speed;
+            else if (config.spawner.edge === 'left') vx = this.speed;
+            else if (config.spawner.edge === 'right') vx = -this.speed;
+
+            this.sprite.body.setVelocity(vx, vy);
         } else {
             // Simple movement pattern (optional for prototype)
             this.sprite.body.setVelocity(
@@ -140,9 +152,8 @@ class Hazard {
                 Phaser.Math.Between(-this.speed, this.speed)
             );
             this.sprite.body.setBounce(1, 1);
+            this.sprite.body.setCollideWorldBounds(true);
         }
-
-        this.sprite.body.setCollideWorldBounds(true);
 
         // Store reference
         this.sprite.hazardData = this.hazardData;
@@ -186,6 +197,20 @@ class Hazard {
                 );
             } else {
                 this.sprite.body.setVelocity(0, 0);
+            }
+        }
+
+        if (this.movementType === 'straight') {
+            const bounds = this.scene.physics.world.bounds;
+            const radius = this.radius;
+            if (
+                this.sprite.x < bounds.x - radius ||
+                this.sprite.x > bounds.width + radius ||
+                this.sprite.y < bounds.y - radius ||
+                this.sprite.y > bounds.height + radius
+            ) {
+                this.destroy();
+                return;
             }
         }
 

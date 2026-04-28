@@ -314,6 +314,15 @@ class GameScene extends Phaser.Scene {
             // event listener Set during iteration, causing the "Cannot read properties of undefined (reading 'entries')" error.
         }
 
+        if (this.spawnerEvents) {
+            this.spawnerEvents.forEach(evt => {
+                if (evt.timer) {
+                    evt.timer.remove();
+                }
+            });
+            this.spawnerEvents = [];
+        }
+
         if (this.edibleItems) {
             for (let tier in this.edibleItems) {
                 const group = this.edibleItems[tier];
@@ -384,6 +393,9 @@ class GameScene extends Phaser.Scene {
             this.consumedTween.stop();
             this.consumedTween = null;
         }
+
+        // Track spawners
+        this.spawnerEvents = [];
     }
 
     spawnEntities() {
@@ -537,6 +549,24 @@ class GameScene extends Phaser.Scene {
         const randomEntities = entities.filter(e => !(Array.isArray(e.positions) && e.positions.length > 0));
 
         [...positionedEntities, ...randomEntities].forEach(entityConfig => {
+            if (entityConfig.isHazard && entityConfig.spawner) {
+                // Setup timer for spawner
+                const spawnerConfig = entityConfig.spawner;
+                const interval = spawnerConfig.interval || 2000;
+
+                const timerEvent = this.time.addEvent({
+                    delay: interval,
+                    loop: true,
+                    callback: () => {
+                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                    }
+                });
+
+                if (!this.spawnerEvents) this.spawnerEvents = [];
+                this.spawnerEvents.push({ timer: timerEvent, tier: tier });
+                return; // Skip the regular spawn loop
+            }
+
             const hasPositions = Array.isArray(entityConfig.positions) && entityConfig.positions.length > 0;
             const count = hasPositions ? entityConfig.positions.length : (entityConfig.count || 1);
 
@@ -805,6 +835,51 @@ class GameScene extends Phaser.Scene {
         });
     }
 
+    spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale) {
+        if (!this.hazards || !this.hazards.scene) return;
+
+        const entityTierIndex = tier - 1;
+        const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
+        const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
+        const itemBgScale = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? tierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+
+        const bgScaleRatio = playerBgScale / itemBgScale;
+
+        // Calculate native bounds based on the tier's defined LEVEL_AREA
+        let nativeX = 0;
+        let nativeY = 0;
+
+        // Pre-calculate radius
+        let logicalRadius;
+        if (Array.isArray(entityConfig.size) && entityConfig.size.length === 2) {
+            logicalRadius = Phaser.Math.Between(entityConfig.size[0], entityConfig.size[1]);
+        } else {
+            logicalRadius = entityConfig.size !== undefined ? entityConfig.size : (15 + (tier * 5));
+        }
+
+        if (spawnerConfig.edge === 'top') {
+            nativeY = -logicalRadius;
+            nativeX = spawnerConfig.position;
+        } else if (spawnerConfig.edge === 'bottom') {
+            nativeY = world.HEIGHT + logicalRadius;
+            nativeX = spawnerConfig.position;
+        } else if (spawnerConfig.edge === 'left') {
+            nativeX = -logicalRadius;
+            nativeY = spawnerConfig.position;
+        } else if (spawnerConfig.edge === 'right') {
+            nativeX = world.WIDTH + logicalRadius;
+            nativeY = spawnerConfig.position;
+        }
+
+        const x = nativeX * bgScaleRatio;
+        const y = nativeY * bgScaleRatio;
+
+        const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: true, size: logicalRadius };
+
+        const hazard = new Hazard(this, x, y, instanceConfig);
+        this.hazards.add(hazard.sprite);
+    }
+
     setupColliders() {
         if (!this.levelConfig.SIZE_TIERS) return;
 
@@ -847,6 +922,9 @@ class GameScene extends Phaser.Scene {
                         (hazardSprite, itemSprite) => {
                             if (!hazardSprite.active || !itemSprite.active) return false;
 
+                            // If it's a spawner hazard, it shouldn't bounce off things
+                            if (hazardSprite.hazardData && hazardSprite.hazardData.spawner) return false;
+
                             // If the item has noCollision flag, allow overlap without physics bouncing
                             if (itemSprite.itemData && itemSprite.itemData.noCollision) {
                                 return false;
@@ -868,6 +946,13 @@ class GameScene extends Phaser.Scene {
                 null,
                 (hazardSprite1, hazardSprite2) => {
                     if (!hazardSprite1.active || !hazardSprite2.active) return false;
+
+                    // Spawner hazards don't bounce
+                    if ((hazardSprite1.hazardData && hazardSprite1.hazardData.spawner) ||
+                        (hazardSprite2.hazardData && hazardSprite2.hazardData.spawner)) {
+                        return false;
+                    }
+
                     return true;
                 },
                 this
@@ -1358,6 +1443,18 @@ class GameScene extends Phaser.Scene {
     onTierAdvanced(newTier) {
         // Despawn items from tier N-2
         const despawnTier = newTier - 2;
+
+        // Stop spawner timers from tier N-2
+        if (this.spawnerEvents && despawnTier > 0) {
+            for (let i = this.spawnerEvents.length - 1; i >= 0; i--) {
+                const evt = this.spawnerEvents[i];
+                if (evt.tier <= despawnTier) {
+                    if (evt.timer) evt.timer.remove();
+                    this.spawnerEvents.splice(i, 1);
+                }
+            }
+        }
+
         const despawnGroup = (this.edibleItems && despawnTier > 0) ? this.edibleItems[despawnTier] : null;
         if (despawnGroup && despawnGroup.scene) {
             // Manually destroy children to avoid Phaser clear() size bug

@@ -95,7 +95,18 @@ const LEVEL_1_CONFIG = {
             { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
             { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
             // Hazards
-            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse', hideInPreviousTier: true }
+            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse', hideInPreviousTier: true },
+            {
+                type: "Mouse Spawner",
+                value: 60,
+                shape: 'circle',
+                color: 0xFF0000,
+                isHazard: true,
+                size: 60,
+                image: 'mouse',
+                hideInPreviousTier: true,
+                spawner: { edge: 'top', position: 500, interval: 3000, speed: 150 }
+            }
         ],
         3: [
             // Edibles
