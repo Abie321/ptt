@@ -295,6 +295,9 @@ global.Phaser = {
           // We immediately execute it so that deferred actions (like scene transitions) happen in tests
           if (callback) callback.apply(scope || this, args || []);
           return { remove: jest.fn() };
+        }),
+        addEvent: jest.fn((config) => {
+          return { remove: jest.fn() };
         })
       };
       this.tweens = {
