@@ -105,7 +105,6 @@ const LEVEL_1_CONFIG = {
                 size: 60,
                 image: 'mouse',
                 hideInPreviousTier: true,
-                spawner: { edge: 'top', position: 500, interval: 3000, speed: 150 }
             }
         ],
         3: [
@@ -576,8 +575,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                             RIGHT: { start: 6, end: 7, rate: 5 }
                         }
                     },
-                    movementType: 'tracking', 
-                    speed: 80 
+                    spawner: { edge: 'right', position: 300, interval: 1000, speed: 150 }
             },
         ],
 };
