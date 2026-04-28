@@ -512,6 +512,65 @@ LEVEL_4_CONFIG['TIER_ENTITIES'] = {
         ],
 };
 
+const LEVEL_5_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
+LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
+        'player_sheet': 'assets/images/ghost.png',
+        'tourist': 'assets/images/tourist.png',
+    },
+LEVEL_5_CONFIG['SIZE_TIERS'] = [
+        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
+    ];
+LEVEL_5_CONFIG['winSize'] = 137;
+LEVEL_5_CONFIG['PLAYER'] = {
+        GROWTH_FACTOR: 0.15,
+        TIER_GROWTH_FACTOR: 0.15,
+        SPEED: 200,
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
+            ANIMATIONS: {
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
+            }
+        }
+};
+LEVEL_5_CONFIG['TIER_ENTITIES'] = {
+        1: [
+            { 
+                    type: "Tourist", 
+                    count: 12, 
+                    value: 41, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 41,
+                    visual_size: 50,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'tourist', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 5 },
+                            DOWN: { start: 2, end: 3, rate: 5 },
+                            LEFT: { start: 4, end: 5, rate: 5 },
+                            RIGHT: { start: 6, end: 7, rate: 5 }
+                        }
+                    },
+                    movementType: 'tracking', 
+                    speed: 80 
+            },
+        ],
+};
+
 const GameConfig = {
     DEBUG: false,
     PLACEMENT_ATTEMPTS: 500,
@@ -545,6 +604,11 @@ const GameConfig = {
             id: 'level4',
             name: 'All hail the King',
             ...LEVEL_4_CONFIG
+        },
+                {
+            id: 'level5',
+            name: 'Jack the Ghost',
+            ...LEVEL_5_CONFIG
         },
     ]
 };
