@@ -553,17 +553,40 @@ class GameScene extends Phaser.Scene {
                 // Setup timer for spawner
                 const spawnerConfig = entityConfig.spawner;
                 const interval = spawnerConfig.interval || 2000;
+                const prewarmDuration = spawnerConfig.prewarmDuration || 0;
 
-                const timerEvent = this.time.addEvent({
-                    delay: interval,
-                    loop: true,
-                    callback: () => {
-                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                if (prewarmDuration > 0) {
+                    const elapsedLoops = Math.floor(prewarmDuration / interval);
+                    const remainder = prewarmDuration % interval;
+
+                    for (let j = 0; j < elapsedLoops; j++) {
+                        const timeElapsed = prewarmDuration - ((j + 1) * interval);
+                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale, timeElapsed);
                     }
-                });
 
-                if (!this.spawnerEvents) this.spawnerEvents = [];
-                this.spawnerEvents.push({ timer: timerEvent, tier: tier });
+                    const timerEvent = this.time.addEvent({
+                        delay: interval,
+                        loop: true,
+                        startAt: remainder,
+                        callback: () => {
+                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                        }
+                    });
+
+                    if (!this.spawnerEvents) this.spawnerEvents = [];
+                    this.spawnerEvents.push({ timer: timerEvent, tier: tier });
+                } else {
+                    const timerEvent = this.time.addEvent({
+                        delay: interval,
+                        loop: true,
+                        callback: () => {
+                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                        }
+                    });
+
+                    if (!this.spawnerEvents) this.spawnerEvents = [];
+                    this.spawnerEvents.push({ timer: timerEvent, tier: tier });
+                }
                 return; // Skip the regular spawn loop
             }
 
@@ -838,7 +861,7 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale) {
+    spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale, timeElapsed = 0) {
         if (!this.hazards || !this.hazards.scene) return;
 
         const entityTierIndex = tier - 1;
@@ -860,18 +883,31 @@ class GameScene extends Phaser.Scene {
             logicalRadius = entityConfig.size !== undefined ? entityConfig.size : (15 + (tier * 5));
         }
 
+        let vx = 0;
+        let vy = 0;
+        const speed = spawnerConfig.speed || 100;
+
         if (spawnerConfig.edge === 'top') {
             nativeY = -logicalRadius;
             nativeX = spawnerConfig.position;
+            vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
             nativeY = world.HEIGHT + logicalRadius;
             nativeX = spawnerConfig.position;
+            vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
             nativeX = -logicalRadius;
             nativeY = spawnerConfig.position;
+            vx = speed;
         } else if (spawnerConfig.edge === 'right') {
             nativeX = world.WIDTH + logicalRadius;
             nativeY = spawnerConfig.position;
+            vx = -speed;
+        }
+
+        if (timeElapsed > 0) {
+            nativeX += vx * (timeElapsed / 1000);
+            nativeY += vy * (timeElapsed / 1000);
         }
 
         const x = nativeX * bgScaleRatio;
