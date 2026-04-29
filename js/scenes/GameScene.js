@@ -813,6 +813,9 @@ class GameScene extends Phaser.Scene {
                 if (entityConfig.isHazard) {
                     const hazard = new Hazard(this, x, y, instanceConfig);
                     this.hazards.add(hazard.sprite);
+                    if (this.uiCamera) {
+                        this.uiCamera.ignore(hazard.sprite);
+                    }
                     existingEntities.push({
                         sprite: hazard.sprite,
                         entityWrapper: hazard,
@@ -878,6 +881,10 @@ class GameScene extends Phaser.Scene {
 
         const hazard = new Hazard(this, x, y, instanceConfig);
         this.hazards.add(hazard.sprite);
+
+        if (this.uiCamera) {
+            this.uiCamera.ignore(hazard.sprite);
+        }
     }
 
     setupColliders() {
