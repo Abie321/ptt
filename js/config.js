@@ -554,30 +554,7 @@ LEVEL_5_CONFIG['PLAYER'] = {
 };
 LEVEL_5_CONFIG['TIER_ENTITIES'] = {
         1: [
-            { 
-                    type: "Tourist", 
-                    count: 12, 
-                    value: 41, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 41,
-                    visual_size: 50,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'tourist', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 5 },
-                            DOWN: { start: 2, end: 3, rate: 5 },
-                            LEFT: { start: 4, end: 5, rate: 5 },
-                            RIGHT: { start: 6, end: 7, rate: 5 }
-                        }
-                    },
-                    spawner: { edge: 'right', position: 400, interval: 3000, speed: 80 }
-            },
+
             { 
                     type: "Brit", 
                     count: 12, 
@@ -600,7 +577,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                             RIGHT: { start: 6, end: 7, rate: 5 }
                         }
                     },
-                    spawner: { edge: 'right', position: 400, interval: 3000, speed: 80 }
+                    spawner: { edge: 'right', position: 450, interval: 3000, speed: 80, prewarmDurarion: 10500 }
             },
         ],
 };
