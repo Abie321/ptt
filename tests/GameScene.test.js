@@ -379,14 +379,14 @@ describe('GameScene', () => {
     test('should consume and award points for smaller hazards', () => {
       gameScene.score = 1000;
 
-      // Player radius ~20.
-      // Mock hazard smaller than player
+      // Player radius ~20, tier is 1.
+      // Mock hazard smaller than player, and tier is 1.
       const mockHazard = {
         x: gameScene.player.sprite.x,
         y: gameScene.player.sprite.y,
         active: true,
         radius: 10, // Smaller
-        hazardData: { tier: 2 },
+        hazardData: { tier: 1 },
         destroy: jest.fn()
       };
 

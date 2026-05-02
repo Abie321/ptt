@@ -263,11 +263,13 @@ class Player {
 
     getConsumableTiers() {
         // Return active visible tiers for collision checking
-        return [
-            Math.max(1, this.currentTier - 1),
-            this.currentTier,
-            this.currentTier + 1
-        ];
+        // The player can only eat items from their tier or lower
+        const tiers = [this.currentTier];
+        const prevTier = Math.max(1, this.currentTier - 1);
+        if (prevTier !== this.currentTier) {
+            tiers.unshift(prevTier);
+        }
+        return tiers;
     }
 
     takeDamage() {
