@@ -948,10 +948,11 @@ class GameScene extends Phaser.Scene {
                         // Use unscaled sizes for mechanics
                         const itemLogicalSize = (itemSprite.itemData && itemSprite.itemData.size) ? itemSprite.itemData.size : itemRadius;
                         const playerLogicalSize = this.player.getLogicalSize ? this.player.getLogicalSize() : this.player.getSize();
+                        const playerTier = this.player.getCurrentTier();
 
                         // If player cannot eat it, it's solid (return true)
                         // If player can eat it, it's NOT solid (return false), allowing overlap for consumption
-                        return playerLogicalSize <= itemLogicalSize;
+                        return playerLogicalSize <= itemLogicalSize || playerTier < tier;
                     },
                     this
                 );
