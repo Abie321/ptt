@@ -527,14 +527,21 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'player_sheet': 'assets/images/ghost.png',
         'tourist': 'assets/images/tourist.png',
         'brit': 'assets/images/brit.png',
+        'cyclist': 'assets/images/cyclist.png',
+        'bush': 'assets/images/bush.png',
+        'streetlight': 'assets/images/streetlight.png',
+        'circletable': 'assets/images/circletable.png',
+        'chair': 'assets/images/chair.png',
+        'phonebooth': 'assets/images/phonebooth.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
+        { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
+        { tier: 2, initialSize: 31, threshold: 500, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1790, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
-LEVEL_5_CONFIG['winSize'] = 137;
+LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
-        GROWTH_FACTOR: 0.15,
-        TIER_GROWTH_FACTOR: 0.15,
+        GROWTH_FACTOR: 0.10,
+        TIER_GROWTH_FACTOR: 0.10,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
@@ -558,13 +565,13 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Brit", 
                     count: 12, 
-                    value: 41, 
+                    value: 30, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 41,
-                    visual_size: 50,
+                    size: 30,
+                    visual_size: 35,
                     SPRITE: {
                         USE_SPRITESHEET: true,
                         KEY: 'brit', // The key used for preloading the image
@@ -577,8 +584,102 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                             RIGHT: { start: 6, end: 7, rate: 5 }
                         }
                     },
-                    spawner: { edge: 'right', position: 450, interval: 3000, speed: 80, prewarmDurarion: 10500 }
+                    spawner: { edge: 'right', position: 399, interval: 8000, speed: 80, prewarmDuration: 28000 }
             },
+            { 
+                    type: "Tourist", 
+                    count: 12, 
+                    value: 30, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 30,
+                    visual_size: 35,
+                    SPRITE: {
+                        USE_SPRITESHEET: true,
+                        KEY: 'tourist', // The key used for preloading the image
+                        FRAME_WIDTH: 750,         // Width of a single frame
+                        FRAME_HEIGHT: 750,        // Height of a single frame
+                        ANIMATIONS: {
+                            UP: { start: 0, end: 1, rate: 5 },
+                            DOWN: { start: 2, end: 3, rate: 5 },
+                            LEFT: { start: 4, end: 5, rate: 5 },
+                            RIGHT: { start: 6, end: 7, rate: 5 }
+                        }
+                    },
+                    spawner: { edge: 'right', position: 400, interval: 8000, speed: 80, prewarmDuration: 24000 }
+            },
+            { 
+                    type: "Cyclist", 
+                    count: 12, 
+                    value: 30, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    hideInPreviousTier: true,
+                    size: 30,
+                    image: 'cyclist', 
+                    spawner: { edge: 'right', position: 250, interval: 8000, speed: 80, prewarmDuration: 24000 }
+            },
+            { 
+                    type: "Bush", 
+                    count: 12, 
+                    value: 40, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: false,
+                    size: 40,
+                    image: 'bush', 
+                    positions: [{x: 200, y: 50}, {x: 600, y: 50}, {x: 1200, y: 50}, {x: 1500, y: 50}, {x: 2000, y: 50}, {x: 250, y: 450}, {x: 700, y: 450}, {x: 1200, y: 450}, {x: 1500, y: 450}, {x: 1950, y: 450}]
+            },
+            { 
+                    type: "Streetlight", 
+                    count: 12, 
+                    value: 32, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: false,
+                    size: 32,
+                    image: 'streetlight', 
+                    positions: [{x: 550, y: 450, rotation: 270}, {x: 1350, y: 450, rotation: 270}, {x: 1350, y: 50, rotation: 90}, {x: 2100, y: 50, rotation: 90}]
+            },
+            { 
+                    type: "Table", 
+                    count: 12, 
+                    value: 40, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: false,
+                    size: 40,
+                    image: 'circletable', 
+                    positions: [{x: 400, y: 50}, {x: 800, y: 50}, {x: 2100, y: 450}]
+            },
+            { 
+                    type: "Chair", 
+                    count: 12, 
+                    value: 25, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: false,
+                    size: 25,
+                    image: 'chair', 
+                    positions: [{x: 325, y: 50, rotation: 270}, {x: 475, y: 50, rotation: 90}, {x: 725, y: 50, rotation: 270}, {x: 875, y: 50, rotation: 90}, {x: 475, y: 50, rotation: 90}, {x: 2025, y: 450, rotation: 270}, {x: 2175, y: 450, rotation: 90}]
+            },
+        ],
+        2 : [
+            { 
+                type: "Phone booth", 
+                count: 1, 
+                value: 20, 
+                shape: 'square', 
+                color: 0x8BC34A, 
+                isHazard: false, 
+                image: 'phonebooth', 
+                size: 20,
+                positions: [{x: 325, y: 50}], 
+            },
+
         ],
 };
 
