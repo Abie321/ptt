@@ -1445,7 +1445,8 @@ class GameScene extends Phaser.Scene {
             }
 
             // Check collision for consumption (includes bonus range)
-            if (playerLogicalSize > hazardLogicalSize) {
+            const hazardTier = hazard.hazardData.tier || 1;
+            if (playerLogicalSize > hazardLogicalSize && playerTier >= hazardTier) {
                 if (isOverlappingConsume) {
                     // Consume hazard
                     if (!hazard.isBeingConsumed) {

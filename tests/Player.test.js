@@ -231,13 +231,10 @@ describe('Player', () => {
     });
 
     test('should be able to consume previous tier items', () => {
-      // Advance to tier 2
-      // Need to grow internal size enough to pass threshold of 30 (assuming default start 20)
-      // Base growth is 0.1 per area.
-      // Force advance by setting internal size
-      player.internalSize = 35;
-      player.size = 35;
-      player.radius = 35;
+      // Base threshold for tier 2 is 40. We need to exceed it to reach tier 2.
+      player.internalSize = 45;
+      player.size = 45;
+      player.radius = 45;
 
       // Trigger tier update
       const newTier = player.calculateTier();
@@ -246,6 +243,7 @@ describe('Player', () => {
       const consumableTiers = player.getConsumableTiers();
       expect(consumableTiers).toContain(1);
       expect(consumableTiers).toContain(2);
+      expect(consumableTiers).not.toContain(3);
     });
   });
 
