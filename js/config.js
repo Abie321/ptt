@@ -533,6 +533,7 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'circletable': 'assets/images/circletable.png',
         'chair': 'assets/images/chair.png',
         'phonebooth': 'assets/images/phonebooth.png',
+        'car': 'assets/images/car.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
@@ -620,7 +621,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     hideInPreviousTier: true,
                     size: 30,
                     image: 'cyclist', 
-                    spawner: { edge: 'right', position: 250, interval: 8000, speed: 80, prewarmDuration: 24000 }
+                    spawner: { edge: 'right', position: 300, interval: 9000, speed: 80, prewarmDuration: 27000 }
             },
             { 
                     type: "Bush", 
@@ -679,7 +680,17 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                 size: 20,
                 positions: [{x: 325, y: 50}], 
             },
-
+            { 
+                    type: "Car", 
+                    count: 12, 
+                    value: 75, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    size: 75,
+                    image: 'car', 
+                    spawner: { edge: 'right', position: 315, interval: 9000, speed: 80, prewarmDuration: 24000 }
+            },
         ],
 };
 
