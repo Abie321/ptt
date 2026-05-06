@@ -537,7 +537,7 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 31, threshold: 500, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1790, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 31, threshold: 35, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1790, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
 LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
