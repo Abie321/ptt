@@ -904,21 +904,27 @@ class GameScene extends Phaser.Scene {
         const spawnOffset = logicalRadius * playerScale;
         const physBounds = this.physics.world.bounds;
 
+        // spawnerConfig.position is the coordinate along the spawn edge expressed in the
+        // player's current world space. Dividing by bgScaleRatio converts it to native space
+        // so that after the final * bgScaleRatio the result equals spawnerConfig.position,
+        // keeping cars (or any cross-tier entity) within the visible world regardless of tier.
+        const nativePosition = spawnerConfig.position / bgScaleRatio;
+
         if (spawnerConfig.edge === 'top') {
             nativeY = -spawnOffset;
-            nativeX = spawnerConfig.position;
+            nativeX = nativePosition;
             vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
             nativeY = physBounds.height / bgScaleRatio + spawnOffset;
-            nativeX = spawnerConfig.position;
+            nativeX = nativePosition;
             vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
             nativeX = -spawnOffset;
-            nativeY = spawnerConfig.position;
+            nativeY = nativePosition;
             vx = speed;
         } else if (spawnerConfig.edge === 'right') {
             nativeX = physBounds.width / bgScaleRatio + spawnOffset;
-            nativeY = spawnerConfig.position;
+            nativeY = nativePosition;
             vx = -speed;
         }
 
