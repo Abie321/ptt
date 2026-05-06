@@ -891,20 +891,27 @@ class GameScene extends Phaser.Scene {
         let vy = 0;
         const speed = spawnerConfig.speed || 100;
 
+        // The Hazard class sets this.radius = logicalRadius * bgScaleRatio * player.currentScale,
+        // and destroys itself when sprite.x > bounds.width + this.radius. After a tier transition
+        // player.currentScale < 1, so using logicalRadius as the spawn offset puts the entity
+        // beyond bounds.width + this.radius and it gets destroyed on the first update frame.
+        const playerScale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
+        const spawnOffset = logicalRadius * playerScale;
+
         if (spawnerConfig.edge === 'top') {
-            nativeY = -logicalRadius;
+            nativeY = -spawnOffset;
             nativeX = spawnerConfig.position;
             vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
-            nativeY = world.HEIGHT + logicalRadius;
+            nativeY = world.HEIGHT + spawnOffset;
             nativeX = spawnerConfig.position;
             vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
-            nativeX = -logicalRadius;
+            nativeX = -spawnOffset;
             nativeY = spawnerConfig.position;
             vx = speed;
         } else if (spawnerConfig.edge === 'right') {
-            nativeX = world.WIDTH + logicalRadius;
+            nativeX = world.WIDTH + spawnOffset;
             nativeY = spawnerConfig.position;
             vx = -speed;
         }
