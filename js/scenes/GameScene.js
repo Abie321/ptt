@@ -561,7 +561,7 @@ class GameScene extends Phaser.Scene {
 
                     for (let j = 0; j < elapsedLoops; j++) {
                         const timeElapsed = prewarmDuration - ((j + 1) * interval);
-                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale, timeElapsed);
+                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, timeElapsed);
                     }
 
                     const timerEvent = this.time.addEvent({
@@ -569,7 +569,7 @@ class GameScene extends Phaser.Scene {
                         loop: true,
                         startAt: remainder,
                         callback: () => {
-                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
                         }
                     });
 
@@ -580,7 +580,7 @@ class GameScene extends Phaser.Scene {
                         delay: interval,
                         loop: true,
                         callback: () => {
-                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale);
+                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
                         }
                     });
 
@@ -861,8 +861,12 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    spawnFromSpawner(entityConfig, tier, spawnerConfig, playerBgScale, timeElapsed = 0) {
+    spawnFromSpawner(entityConfig, tier, spawnerConfig, timeElapsed = 0) {
         if (!this.hazards || !this.hazards.scene) return;
+
+        const currentTierIndex = (this.player && this.player.getCurrentTier) ? this.player.getCurrentTier() - 1 : 0;
+        const currentPlayerTierConfig = this.levelConfig.SIZE_TIERS[currentTierIndex] || this.levelConfig.SIZE_TIERS[0];
+        const playerBgScale = (currentPlayerTierConfig.ASSETS && currentPlayerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? currentPlayerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
 
         const entityTierIndex = tier - 1;
         const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
