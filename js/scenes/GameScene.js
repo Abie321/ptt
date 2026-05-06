@@ -891,19 +891,25 @@ class GameScene extends Phaser.Scene {
         let vy = 0;
         const speed = spawnerConfig.speed || 100;
 
-        // The Hazard class sets this.radius = logicalRadius * bgScaleRatio * player.currentScale,
-        // and destroys itself when sprite.x > bounds.width + this.radius. After a tier transition
-        // player.currentScale < 1, so using logicalRadius as the spawn offset puts the entity
-        // beyond bounds.width + this.radius and it gets destroyed on the first update frame.
+        // The Hazard destroys itself when its position exceeds bounds ± this.radius, where
+        // this.radius = logicalRadius * bgScaleRatio * player.currentScale. Using the entity's
+        // native world edge as the spawn reference breaks in two cases:
+        //   1. Cross-tier: entity's native world (e.g. 1790) * bgScaleRatio (2x) = 3580, which
+        //      exceeds the player's physics bounds (2200), so the hazard is destroyed immediately.
+        //   2. Post-transition: player.currentScale < 1, shrinking this.radius below logicalRadius,
+        //      pushing the spawn point beyond bounds + this.radius.
+        // Fix: anchor right/bottom edges to the player's physics bounds divided by bgScaleRatio
+        // so the world-space spawn position is always bounds.width/height + spawnOffset*bgScaleRatio.
         const playerScale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
         const spawnOffset = logicalRadius * playerScale;
+        const physBounds = this.physics.world.bounds;
 
         if (spawnerConfig.edge === 'top') {
             nativeY = -spawnOffset;
             nativeX = spawnerConfig.position;
             vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
-            nativeY = world.HEIGHT + spawnOffset;
+            nativeY = physBounds.height / bgScaleRatio + spawnOffset;
             nativeX = spawnerConfig.position;
             vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
@@ -911,7 +917,7 @@ class GameScene extends Phaser.Scene {
             nativeY = spawnerConfig.position;
             vx = speed;
         } else if (spawnerConfig.edge === 'right') {
-            nativeX = world.WIDTH + spawnOffset;
+            nativeX = physBounds.width / bgScaleRatio + spawnOffset;
             nativeY = spawnerConfig.position;
             vx = -speed;
         }
