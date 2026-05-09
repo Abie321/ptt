@@ -1246,8 +1246,9 @@ class GameScene extends Phaser.Scene {
 
                 const hazardRadius = hazard.radius || hazard.displayWidth / 2;
                 const hazardLogicalSize = (hazard.hazardData && hazard.hazardData.size) ? hazard.hazardData.size : hazardRadius;
+                const hazardTier = (hazard.hazardData && hazard.hazardData.tier) ? hazard.hazardData.tier : 1;
 
-                if (playerLogicalSize > hazardLogicalSize) {
+                if (playerLogicalSize > hazardLogicalSize && playerTier >= hazardTier) {
                     const distance = getDistanceToEntity(hazard, hazard.hazardData);
                     if (distance < minDistance) {
                         minDistance = distance;
