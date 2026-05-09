@@ -599,6 +599,11 @@ class GameScene extends Phaser.Scene {
                 const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
                 const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
                 const itemBgScale = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? tierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+                const itemBgX = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_X !== undefined) ? tierConfig.ASSETS.BACKGROUND_X : 0;
+                const itemBgY = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_Y !== undefined) ? tierConfig.ASSETS.BACKGROUND_Y : 0;
+
+                const playerBgX = (playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_X !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_X : 0;
+                const playerBgY = (playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_Y : 0;
 
                 const bgScaleRatio = playerBgScale / itemBgScale;
 
@@ -641,8 +646,10 @@ class GameScene extends Phaser.Scene {
                 }
 
                 if (hasPositions) {
-                    x = entityConfig.positions[i].x * bgScaleRatio;
-                    y = entityConfig.positions[i].y * bgScaleRatio;
+                    const px = (entityConfig.positions[i].x - itemBgX) / itemBgScale;
+                    const py = (entityConfig.positions[i].y - itemBgY) / itemBgScale;
+                    x = px * playerBgScale + playerBgX;
+                    y = py * playerBgScale + playerBgY;
                     rotation = entityConfig.positions[i].rotation;
                     logAttempts = 1;
 
@@ -676,8 +683,11 @@ class GameScene extends Phaser.Scene {
                         logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
-                        const testX = candidateX * bgScaleRatio;
-                        const testY = candidateY * bgScaleRatio;
+
+                        const px = (candidateX - itemBgX) / itemBgScale;
+                        const py = (candidateY - itemBgY) / itemBgScale;
+                        const testX = px * playerBgScale + playerBgX;
+                        const testY = py * playerBgScale + playerBgY;
 
                         const overlaps = [];
                         let hasSameOrHigherTierOverlap = false;
@@ -749,8 +759,11 @@ class GameScene extends Phaser.Scene {
                         logAttempts = attempt + 1;
                         const candidateX = Phaser.Math.Between(50, world.WIDTH - 50);
                         const candidateY = Phaser.Math.Between(50, world.HEIGHT - 50);
-                        const testX = candidateX * bgScaleRatio;
-                        const testY = candidateY * bgScaleRatio;
+
+                        const px = (candidateX - itemBgX) / itemBgScale;
+                        const py = (candidateY - itemBgY) / itemBgScale;
+                        const testX = px * playerBgScale + playerBgX;
+                        const testY = py * playerBgScale + playerBgY;
 
                         const overlaps = [];
                         let hasSameOrHigherTierOverlap = false;
@@ -867,11 +880,15 @@ class GameScene extends Phaser.Scene {
         const currentTierIndex = (this.player && this.player.getCurrentTier) ? this.player.getCurrentTier() - 1 : 0;
         const currentPlayerTierConfig = this.levelConfig.SIZE_TIERS[currentTierIndex] || this.levelConfig.SIZE_TIERS[0];
         const playerBgScale = (currentPlayerTierConfig.ASSETS && currentPlayerTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? currentPlayerTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        const playerBgX = (currentPlayerTierConfig.ASSETS && currentPlayerTierConfig.ASSETS.BACKGROUND_X !== undefined) ? currentPlayerTierConfig.ASSETS.BACKGROUND_X : 0;
+        const playerBgY = (currentPlayerTierConfig.ASSETS && currentPlayerTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? currentPlayerTierConfig.ASSETS.BACKGROUND_Y : 0;
 
         const entityTierIndex = tier - 1;
         const tierConfig = this.levelConfig.SIZE_TIERS[entityTierIndex] || this.levelConfig.SIZE_TIERS[0];
         const world = tierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
         const itemBgScale = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? tierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+        const itemBgX = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_X !== undefined) ? tierConfig.ASSETS.BACKGROUND_X : 0;
+        const itemBgY = (tierConfig.ASSETS && tierConfig.ASSETS.BACKGROUND_Y !== undefined) ? tierConfig.ASSETS.BACKGROUND_Y : 0;
 
         const bgScaleRatio = playerBgScale / itemBgScale;
 
@@ -891,50 +908,57 @@ class GameScene extends Phaser.Scene {
         let vy = 0;
         const speed = spawnerConfig.speed || 100;
 
-        // The Hazard destroys itself when its position exceeds bounds ± this.radius, where
-        // this.radius = logicalRadius * bgScaleRatio * player.currentScale. Using the entity's
-        // native world edge as the spawn reference breaks in two cases:
-        //   1. Cross-tier: entity's native world (e.g. 1790) * bgScaleRatio (2x) = 3580, which
-        //      exceeds the player's physics bounds (2200), so the hazard is destroyed immediately.
-        //   2. Post-transition: player.currentScale < 1, shrinking this.radius below logicalRadius,
-        //      pushing the spawn point beyond bounds + this.radius.
-        // Fix: anchor right/bottom edges to the player's physics bounds divided by bgScaleRatio
-        // so the world-space spawn position is always bounds.width/height + spawnOffset*bgScaleRatio.
         const playerScale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
         const spawnOffset = logicalRadius * playerScale;
         const physBounds = this.physics.world.bounds;
 
-        // spawnerConfig.position is the coordinate along the spawn edge expressed in the
-        // player's current world space. Dividing by bgScaleRatio converts it to native space
-        // so that after the final * bgScaleRatio the result equals spawnerConfig.position,
-        // keeping cars (or any cross-tier entity) within the visible world regardless of tier.
-        const nativePosition = spawnerConfig.position / bgScaleRatio;
+        // spawnerConfig.position is the pixel coordinate relative to the unscaled map (itemBgX/Y)
+        // Convert to player's coordinate space for logic bounds check
+        const isHorizontalEdge = (spawnerConfig.edge === 'left' || spawnerConfig.edge === 'right');
+
+        const offsetBg = isHorizontalEdge ? itemBgY : itemBgX;
+        const offsetPlayer = isHorizontalEdge ? playerBgY : playerBgX;
+
+        const pxPos = (spawnerConfig.position - offsetBg) / itemBgScale;
+        const playerPos = pxPos * playerBgScale + offsetPlayer;
+
+        // Work in player's current coordinate bounds for spawning dynamically, then map back to unscaled
+        let spawnPlayerX = 0;
+        let spawnPlayerY = 0;
 
         if (spawnerConfig.edge === 'top') {
-            nativeY = -spawnOffset;
-            nativeX = nativePosition;
+            spawnPlayerY = -spawnOffset;
+            spawnPlayerX = playerPos;
             vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
-            nativeY = physBounds.height / bgScaleRatio + spawnOffset;
-            nativeX = nativePosition;
+            spawnPlayerY = physBounds.height + spawnOffset;
+            spawnPlayerX = playerPos;
             vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
-            nativeX = -spawnOffset;
-            nativeY = nativePosition;
+            spawnPlayerX = -spawnOffset;
+            spawnPlayerY = playerPos;
             vx = speed;
         } else if (spawnerConfig.edge === 'right') {
-            nativeX = physBounds.width / bgScaleRatio + spawnOffset;
-            nativeY = nativePosition;
+            spawnPlayerX = physBounds.width + spawnOffset;
+            spawnPlayerY = playerPos;
             vx = -speed;
         }
 
+        // Apply velocity (adjusted for item scale natively, mapped to player space)
         if (timeElapsed > 0) {
-            nativeX += vx * (timeElapsed / 1000);
-            nativeY += vy * (timeElapsed / 1000);
+            const nativeVx = vx;
+            const nativeVy = vy;
+            // Native velocity moves the item in native space
+            const moveNativeX = nativeVx * (timeElapsed / 1000);
+            const moveNativeY = nativeVy * (timeElapsed / 1000);
+
+            // Apply scale mapping
+            spawnPlayerX += moveNativeX * bgScaleRatio;
+            spawnPlayerY += moveNativeY * bgScaleRatio;
         }
 
-        const x = nativeX * bgScaleRatio;
-        const y = nativeY * bgScaleRatio;
+        const x = spawnPlayerX;
+        const y = spawnPlayerY;
 
         const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: true, size: logicalRadius };
 
@@ -1554,8 +1578,11 @@ class GameScene extends Phaser.Scene {
         const oldBgScale = (oldTierConfig && oldTierConfig.ASSETS && oldTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? oldTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
         const newBgScale = (newTierConfigData && newTierConfigData.ASSETS && newTierConfigData.ASSETS.BACKGROUND_SCALE !== undefined) ? newTierConfigData.ASSETS.BACKGROUND_SCALE : 1.0;
 
-        // Player just exists in the current tier, so we manually adjust its position
-        const repositionRatio = newBgScale / oldBgScale;
+        const oldBgX = (oldTierConfig && oldTierConfig.ASSETS && oldTierConfig.ASSETS.BACKGROUND_X !== undefined) ? oldTierConfig.ASSETS.BACKGROUND_X : 0;
+        const oldBgY = (oldTierConfig && oldTierConfig.ASSETS && oldTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? oldTierConfig.ASSETS.BACKGROUND_Y : 0;
+
+        const newBgX = (newTierConfigData && newTierConfigData.ASSETS && newTierConfigData.ASSETS.BACKGROUND_X !== undefined) ? newTierConfigData.ASSETS.BACKGROUND_X : 0;
+        const newBgY = (newTierConfigData && newTierConfigData.ASSETS && newTierConfigData.ASSETS.BACKGROUND_Y !== undefined) ? newTierConfigData.ASSETS.BACKGROUND_Y : 0;
 
         // Update cumulative global scale
         this.player.currentScale *= scaleMultiplier;
@@ -1566,8 +1593,11 @@ class GameScene extends Phaser.Scene {
         this.player.updateSpriteScale();
 
         // Update player coordinates to keep relative position in the newly scaled world
-        this.player.sprite.x *= repositionRatio;
-        this.player.sprite.y *= repositionRatio;
+        const px = (this.player.sprite.x - oldBgX) / oldBgScale;
+        const py = (this.player.sprite.y - oldBgY) / oldBgScale;
+
+        this.player.sprite.x = px * newBgScale + newBgX;
+        this.player.sprite.y = py * newBgScale + newBgY;
 
         // Scale and reposition all existing entities visually using their precalculated tier dictionaries
         // Edibles
