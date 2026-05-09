@@ -909,7 +909,7 @@ class GameScene extends Phaser.Scene {
         const speed = spawnerConfig.speed || 100;
 
         const playerScale = (this.player && this.player.currentScale) ? this.player.currentScale : 1.0;
-        const spawnOffset = logicalRadius * playerScale;
+        const spawnOffset = logicalRadius * playerScale * bgScaleRatio;
         const physBounds = this.physics.world.bounds;
 
         // spawnerConfig.position is the pixel coordinate relative to the unscaled map (itemBgX/Y)
