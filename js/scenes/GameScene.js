@@ -926,20 +926,25 @@ class GameScene extends Phaser.Scene {
         let spawnPlayerX = 0;
         let spawnPlayerY = 0;
 
+        const mapLeft = ((0 - itemBgX) / itemBgScale) * playerBgScale + playerBgX;
+        const mapRight = ((world.WIDTH - itemBgX) / itemBgScale) * playerBgScale + playerBgX;
+        const mapTop = ((0 - itemBgY) / itemBgScale) * playerBgScale + playerBgY;
+        const mapBottom = ((world.HEIGHT - itemBgY) / itemBgScale) * playerBgScale + playerBgY;
+
         if (spawnerConfig.edge === 'top') {
-            spawnPlayerY = -spawnOffset;
+            spawnPlayerY = mapTop - spawnOffset;
             spawnPlayerX = playerPos;
             vy = speed;
         } else if (spawnerConfig.edge === 'bottom') {
-            spawnPlayerY = physBounds.height + spawnOffset;
+            spawnPlayerY = mapBottom + spawnOffset;
             spawnPlayerX = playerPos;
             vy = -speed;
         } else if (spawnerConfig.edge === 'left') {
-            spawnPlayerX = -spawnOffset;
+            spawnPlayerX = mapLeft - spawnOffset;
             spawnPlayerY = playerPos;
             vx = speed;
         } else if (spawnerConfig.edge === 'right') {
-            spawnPlayerX = physBounds.width + spawnOffset;
+            spawnPlayerX = mapRight + spawnOffset;
             spawnPlayerY = playerPos;
             vx = -speed;
         }
