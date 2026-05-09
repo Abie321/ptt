@@ -549,44 +549,47 @@ class GameScene extends Phaser.Scene {
         const randomEntities = entities.filter(e => !(Array.isArray(e.positions) && e.positions.length > 0));
 
         [...positionedEntities, ...randomEntities].forEach(entityConfig => {
-            if (entityConfig.isHazard && entityConfig.spawner) {
-                // Setup timer for spawner
-                const spawnerConfig = entityConfig.spawner;
-                const interval = spawnerConfig.interval || 2000;
-                const prewarmDuration = spawnerConfig.prewarmDuration || 0;
+            if (entityConfig.isHazard && (entityConfig.spawner || entityConfig.spawners)) {
+                // Setup timers for spawner(s)
+                const spawners = entityConfig.spawners || [entityConfig.spawner];
 
-                if (prewarmDuration > 0) {
-                    const elapsedLoops = Math.floor(prewarmDuration / interval);
-                    const remainder = prewarmDuration % interval;
+                spawners.forEach(spawnerConfig => {
+                    const interval = spawnerConfig.interval || 2000;
+                    const prewarmDuration = spawnerConfig.prewarmDuration || 0;
 
-                    for (let j = 0; j < elapsedLoops; j++) {
-                        const timeElapsed = prewarmDuration - ((j + 1) * interval);
-                        this.spawnFromSpawner(entityConfig, tier, spawnerConfig, timeElapsed);
+                    if (prewarmDuration > 0) {
+                        const elapsedLoops = Math.floor(prewarmDuration / interval);
+                        const remainder = prewarmDuration % interval;
+
+                        for (let j = 0; j < elapsedLoops; j++) {
+                            const timeElapsed = prewarmDuration - ((j + 1) * interval);
+                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig, timeElapsed);
+                        }
+
+                        const timerEvent = this.time.addEvent({
+                            delay: interval,
+                            loop: true,
+                            startAt: remainder,
+                            callback: () => {
+                                this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
+                            }
+                        });
+
+                        if (!this.spawnerEvents) this.spawnerEvents = [];
+                        this.spawnerEvents.push({ timer: timerEvent, tier: tier });
+                    } else {
+                        const timerEvent = this.time.addEvent({
+                            delay: interval,
+                            loop: true,
+                            callback: () => {
+                                this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
+                            }
+                        });
+
+                        if (!this.spawnerEvents) this.spawnerEvents = [];
+                        this.spawnerEvents.push({ timer: timerEvent, tier: tier });
                     }
-
-                    const timerEvent = this.time.addEvent({
-                        delay: interval,
-                        loop: true,
-                        startAt: remainder,
-                        callback: () => {
-                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
-                        }
-                    });
-
-                    if (!this.spawnerEvents) this.spawnerEvents = [];
-                    this.spawnerEvents.push({ timer: timerEvent, tier: tier });
-                } else {
-                    const timerEvent = this.time.addEvent({
-                        delay: interval,
-                        loop: true,
-                        callback: () => {
-                            this.spawnFromSpawner(entityConfig, tier, spawnerConfig);
-                        }
-                    });
-
-                    if (!this.spawnerEvents) this.spawnerEvents = [];
-                    this.spawnerEvents.push({ timer: timerEvent, tier: tier });
-                }
+                });
                 return; // Skip the regular spawn loop
             }
 
@@ -967,7 +970,7 @@ class GameScene extends Phaser.Scene {
         const x = spawnPlayerX;
         const y = spawnPlayerY;
 
-        const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: true, size: logicalRadius };
+        const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: true, size: logicalRadius, spawner: spawnerConfig };
 
         if (spawnerConfig.rotation !== undefined) {
             instanceConfig.rotation = spawnerConfig.rotation;
