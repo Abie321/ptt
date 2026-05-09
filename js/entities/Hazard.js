@@ -28,20 +28,29 @@ class Hazard {
         let playerTier = (scene.player && scene.player.getCurrentTier) ? scene.player.getCurrentTier() : 1;
         let playerBgScale = (scene.levelConfig && scene.levelConfig.SIZE_TIERS[playerTier - 1] && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS && scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE !== undefined) ? scene.levelConfig.SIZE_TIERS[playerTier - 1].ASSETS.BACKGROUND_SCALE : 1.0;
 
-        // Convert input x,y back to the item's native tier space
-        const nativeX = x / (playerBgScale / itemBgScale);
-        const nativeY = y / (playerBgScale / itemBgScale);
+        let playerTierConfig = scene.levelConfig ? scene.levelConfig.SIZE_TIERS[playerTier - 1] : null;
+        let playerBgX = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_X !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_X : 0;
+        let playerBgY = (playerTierConfig && playerTierConfig.ASSETS && playerTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? playerTierConfig.ASSETS.BACKGROUND_Y : 0;
+
+        let itemBgX = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_X !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_X : 0;
+        let itemBgY = (itemTierConfig && itemTierConfig.ASSETS && itemTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? itemTierConfig.ASSETS.BACKGROUND_Y : 0;
+
+        // Convert the input x,y (which are in playerTier space) to unscaled pixel space
+        const px = (x - playerBgX) / playerBgScale;
+        const py = (y - playerBgY) / playerBgScale;
 
         const numTiers = scene.levelConfig && scene.levelConfig.SIZE_TIERS ? scene.levelConfig.SIZE_TIERS.length : 1;
         for (let t = 1; t <= numTiers; t++) {
             let targetTierConfig = scene.levelConfig.SIZE_TIERS[t - 1];
             let targetBgScale = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_SCALE !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_SCALE : 1.0;
+            let targetBgX = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_X !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_X : 0;
+            let targetBgY = (targetTierConfig && targetTierConfig.ASSETS && targetTierConfig.ASSETS.BACKGROUND_Y !== undefined) ? targetTierConfig.ASSETS.BACKGROUND_Y : 0;
 
             const scaleRatio = targetBgScale / itemBgScale;
 
             this.tierPositions[t] = {
-                x: nativeX * scaleRatio,
-                y: nativeY * scaleRatio
+                x: px * targetBgScale + targetBgX,
+                y: py * targetBgScale + targetBgY
             };
             this.tierRadii[t] = logicalRadius * scaleRatio;
 
