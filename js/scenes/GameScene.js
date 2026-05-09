@@ -927,6 +927,7 @@ class GameScene extends Phaser.Scene {
         let spawnPlayerY = 0;
 
         const currentWorld = currentPlayerTierConfig.LEVEL_AREA || { WIDTH: 1600, HEIGHT: 1200 };
+
         const mapLeft = 0;
         const mapRight = currentWorld.WIDTH;
         const mapTop = 0;
