@@ -534,6 +534,7 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'chair': 'assets/images/chair.png',
         'phonebooth': 'assets/images/phonebooth.png',
         'car': 'assets/images/car.png',
+        'taxi': 'assets/images/taxi.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
@@ -683,13 +684,24 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Car", 
                     count: 12, 
-                    value: 75, 
+                    value: 30, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 75,
+                    size: 30,
                     image: 'car', 
-                    spawner: { edge: 'right', position: 315, interval: 9000, speed: 80, prewarmDuration: 24000 }
+                    spawner: [{ edge: 'right', position: 265, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1300, interval: 12000, speed: 80}]
+            },
+            { 
+                    type: "Taxi", 
+                    count: 12, 
+                    value: 30, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: true,
+                    size: 30,
+                    image: 'taxi', 
+                    spawner: [{ edge: 'right', position: 266, interval: 18000, speed: 80, prewarmDuration: 24000 }]
             },
         ],
 };
