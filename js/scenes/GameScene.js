@@ -969,6 +969,10 @@ class GameScene extends Phaser.Scene {
 
         const instanceConfig = { ...entityConfig, tier: tier, earlyVisible: true, size: logicalRadius };
 
+        if (spawnerConfig.rotation !== undefined) {
+            instanceConfig.rotation = spawnerConfig.rotation;
+        }
+
         const hazard = new Hazard(this, x, y, instanceConfig);
         this.hazards.add(hazard.sprite);
 
