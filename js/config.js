@@ -537,6 +537,10 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'taxi': 'assets/images/taxi.png',
         'doubledecker': 'assets/images/doubledecker.png',
         'tree': 'assets/images/tree.png',
+        'doubledecker': 'assets/images/doubledecker.png',
+        'tree': 'assets/images/tree.png',
+        'building1': 'assets/images/building1.png',
+        'building2': 'assets/images/building2.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
