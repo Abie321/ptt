@@ -677,6 +677,52 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
         ],
         2 : [
             {
+                type: "Building 1",
+                count: 10,
+                value: 60,
+                shape: 'square',
+                color: 0x8BC34A,
+                isHazard: false,
+                hideInPreviousTier: true,
+                size: 60,
+                image: 'building1',
+                positions: [
+                    { x: 68, y: 1391 },
+                    { x: 81, y: 795 },
+                    { x: 132, y: 63 },
+                    { x: 140, y: 884 },
+                    { x: 148, y: 671 },
+                    { x: 158, y: 1392 },
+                    { x: 212, y: 953 },
+                    { x: 247, y: 1370 },
+                    { x: 291, y: 660 },
+                    { x: 297, y: 975 }
+                ]
+            },
+            {
+                type: "Building 2",
+                count: 10,
+                value: 60,
+                shape: 'square',
+                color: 0x8BC34A,
+                isHazard: false,
+                hideInPreviousTier: true,
+                size: 60,
+                image: 'building2',
+                positions: [
+                    { x: 301, y: 548 },
+                    { x: 407, y: 658 },
+                    { x: 428, y: 340 },
+                    { x: 444, y: 1128 },
+                    { x: 444, y: 48 },
+                    { x: 445, y: 555 },
+                    { x: 451, y: 1387 },
+                    { x: 472, y: 428 },
+                    { x: 489, y: 680 },
+                    { x: 516, y: 134 }
+                ]
+            },
+            {
                 type: "Tree",
                 count: 30,
                 value: 20,
