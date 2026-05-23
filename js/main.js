@@ -10,7 +10,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: typeof GameConfig !== 'undefined' ? GameConfig.DEBUG : false
         }
     },
     scene: [MainMenuScene, WorldSelectScene, LevelSelectScene, LevelDetailScene, GameScene, EndLevelScene]
