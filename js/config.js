@@ -964,14 +964,15 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     isHazard: true,
                     size: 60,
                     hideInPreviousTier: true,
-                    image: 'doubledecker', 
+                    image: 'doubledecker',
+                    hitbox: { width: 120, height: 260 },  
                     spawners: [{ edge: 'top', position: 360, interval: 12000, speed: 80, prewarmDuration: 8000}, { edge: 'bottom', rotation: 180, position: 750, interval: 12000, speed: 80, prewarmDuration: 8000}]
             },
         ],
 };
 
 const GameConfig = {
-    DEBUG: false,
+    DEBUG: true,
     PLACEMENT_ATTEMPTS: 500,
     WORLDS: [
         { name: "Ghost" },
