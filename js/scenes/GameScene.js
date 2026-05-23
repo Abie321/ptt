@@ -238,7 +238,19 @@ class GameScene extends Phaser.Scene {
         this.bg.setDepth(-1); // Ensure it's behind everything
 
         // Create player
-        this.player = new Player(this, initialWorld.WIDTH / 2, initialWorld.HEIGHT / 2);
+        let startX = initialWorld.WIDTH / 2;
+        let startY = initialWorld.HEIGHT / 2;
+
+        if (this.levelConfig && this.levelConfig.PLAYER) {
+            if (this.levelConfig.PLAYER.START_X !== undefined) {
+                startX = this.levelConfig.PLAYER.START_X;
+            }
+            if (this.levelConfig.PLAYER.START_Y !== undefined) {
+                startY = this.levelConfig.PLAYER.START_Y;
+            }
+        }
+
+        this.player = new Player(this, startX, startY);
 
         // Camera follows player
         this.cameras.main.setBounds(0, 0, initialWorld.WIDTH, initialWorld.HEIGHT);
