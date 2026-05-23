@@ -545,7 +545,7 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 31, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 21, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 19, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
 LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
@@ -682,12 +682,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Building, Large",
                 count: 10,
-                value: 50,
+                value: 100,
                 shape: 'square',
                 color: 0x8BC34A,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 50,
+                size: 100,
                 image: 'building2',
                 positions: [
                     { x: 565, y: 570, rotation: 90 },
@@ -701,12 +701,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Building, Small",
                 count: 10,
-                value: 40,
+                value: 80,
                 shape: 'square',
                 color: 0x8BC34A,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 40,
+                size: 80,
                 image: 'building2',
                 positions: [
                     { x: 80, y: 1415 },
@@ -728,12 +728,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Tree",
                 count: 30,
-                value: 20,
+                value: 40,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 20,
+                size: 40,
                 image: 'tree',
                 positions: [
                     { x: 1347, y: 59 },
@@ -771,12 +771,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Bush",
                 count: 30,
-                value: 20,
+                value: 40,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 20,
+                size: 40,
                 image: 'bush',
                 positions: [
                     { x: 60, y: 680 },
@@ -824,11 +824,11 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Streetlight",
                 count: 36,
-                value: 16,
+                value: 32,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
-                size: 16,
+                size: 32,
                 image: 'streetlight',
                 hideInPreviousTier: true,
                 positions: [
@@ -878,11 +878,11 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Awning", 
                     count: 12, 
-                    value: 20, 
+                    value: 40, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: false,
-                    size: 20,
+                    size: 40,
                     hideInPreviousTier: true,
                     image: 'awning', 
                     positions: [                    
@@ -900,22 +900,22 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Car", 
                     count: 12, 
-                    value: 30, 
+                    value: 60, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 30,
+                    size: 60,
                     image: 'car', 
                     spawners: [{ edge: 'right', position: 265, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1335, interval: 12000, speed: 80}, { edge: 'left', rotation: 180, position: 205, interval: 18000, speed: 80, prewarmDuration: 33000 },]
             },
             { 
                     type: "Taxi", 
                     count: 12, 
-                    value: 30, 
+                    value: 60, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 30,
+                    size: 60,
                     image: 'taxi', 
                     spawners: [{ edge: 'right', position: 266, interval: 18000, speed: 80, prewarmDuration: 24000 }, { edge: 'right', position: 1335, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'left', rotation: 180, position: 206, interval: 18000, speed: 80, prewarmDuration: 24000 }]
             },
@@ -928,17 +928,17 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     isHazard: true,
                     size: 60,
                     image: 'doubledecker',
-                    hitbox: { width: 60, height: 30 }, 
+                    hitbox: { width: 260, height: 120 },
                     spawners: [{ edge: 'right', rotation: 90, position: 1335, interval: 12000, speed: 80, prewarmDuration: 8000}]
             },
             { 
                     type: "Car", 
                     count: 12, 
-                    value: 30, 
+                    value: 60, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 30,
+                    size: 60,
                     hideInPreviousTier: true,
                     image: 'car', 
                     spawners: [{ edge: 'top', rotation: 270, position: 360, interval: 12000, speed: 80}, { edge: 'bottom', rotation: 90, position: 750, interval: 12000, speed: 80}]
@@ -946,12 +946,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Taxi", 
                     count: 12, 
-                    value: 30, 
+                    value: 60, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 30,
+                    size: 60,
                     image: 'taxi', 
                     spawners: [{ edge: 'top', rotation: 270, position: 360, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'bottom', rotation: 90, position: 750, interval: 12000, speed: 80, prewarmDuration: 4000}]
             },
