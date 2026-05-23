@@ -549,6 +549,8 @@ LEVEL_5_CONFIG['SIZE_TIERS'] = [
     ];
 LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
+        START_X: 500,
+        START_Y: 400,
         GROWTH_FACTOR: 0.04,
         TIER_GROWTH_FACTOR: 0.04,
         SPEED: 200,
@@ -925,7 +927,8 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     color: 0xFF0000, 
                     isHazard: true,
                     size: 60,
-                    image: 'doubledecker', 
+                    image: 'doubledecker',
+                    hitbox: { width: 60, height: 30 }, 
                     spawners: [{ edge: 'right', rotation: 90, position: 1335, interval: 12000, speed: 80, prewarmDuration: 8000}]
             },
             { 
