@@ -541,15 +541,16 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'tree': 'assets/images/tree.png',
         'building1': 'assets/images/building1.png',
         'building2': 'assets/images/building2.png',
+        'awning': 'assets/images/awning.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 31, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 31, threshold: 35, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 1, initialSize: 31, threshold: 10, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
+        { tier: 2, initialSize: 21, threshold: 41, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
 LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
-        GROWTH_FACTOR: 0.10,
-        TIER_GROWTH_FACTOR: 0.10,
+        GROWTH_FACTOR: 0.08,
+        TIER_GROWTH_FACTOR: 0.08,
         SPEED: 200,
         MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
         CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
@@ -677,49 +678,49 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
         ],
         2 : [
             {
-                type: "Building 1",
+                type: "Building, Large",
                 count: 10,
-                value: 60,
+                value: 50,
                 shape: 'square',
                 color: 0x8BC34A,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 60,
-                image: 'building1',
+                size: 50,
+                image: 'building2',
                 positions: [
-                    { x: 68, y: 1391 },
-                    { x: 81, y: 795 },
-                    { x: 132, y: 63 },
-                    { x: 140, y: 884 },
-                    { x: 148, y: 671 },
-                    { x: 158, y: 1392 },
-                    { x: 212, y: 953 },
-                    { x: 247, y: 1370 },
-                    { x: 291, y: 660 },
-                    { x: 297, y: 975 }
+                    { x: 565, y: 570, rotation: 90 },
+                    { x: 260, y: 570},
+                    { x: 660, y: 435, rotation: 90 },
+                    { x: 660, y: 570, rotation: 90 },
+                    { x: 565, y: 435, rotation: 90  },
+                    { x: 1200, y: 134 }
                 ]
             },
             {
-                type: "Building 2",
+                type: "Building, Small",
                 count: 10,
-                value: 60,
+                value: 40,
                 shape: 'square',
                 color: 0x8BC34A,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 60,
+                size: 40,
                 image: 'building2',
                 positions: [
-                    { x: 301, y: 548 },
-                    { x: 407, y: 658 },
-                    { x: 428, y: 340 },
-                    { x: 444, y: 1128 },
-                    { x: 444, y: 48 },
-                    { x: 445, y: 555 },
-                    { x: 451, y: 1387 },
-                    { x: 472, y: 428 },
-                    { x: 489, y: 680 },
-                    { x: 516, y: 134 }
+                    { x: 80, y: 1415 },
+                    { x: 150, y: 1415 },
+                    { x: 220, y: 1415 },
+                    { x: 290, y: 1415 },
+
+                    { x: 430, y: 1415 },
+                    { x: 500, y: 1415 },
+                    { x: 570, y: 1415 },
+                    { x: 640, y: 1415 },
+
+                    { x: 900, y: 1415 },
+                    { x: 970, y: 1415 },
+                    { x: 1040, y: 1415 },
+                    { x: 1110, y: 1415 },
                 ]
             },
             {
@@ -871,6 +872,28 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                 image: 'phonebooth', 
                 size: 20,
                 positions: [{x: 425, y: 50}], 
+            },
+            { 
+                    type: "Awning", 
+                    count: 12, 
+                    value: 20, 
+                    shape: 'circle', 
+                    color: 0xFF0000, 
+                    isHazard: false,
+                    size: 20,
+                    hideInPreviousTier: true,
+                    image: 'awning', 
+                    positions: [                    
+                        { x: 311, y: 570, rotation: 90 },
+                        { x: 695, y: 435, rotation: 90 },
+                        { x: 695, y: 570, rotation: 90 },
+                        { x: 37, y: 1415, rotation: 270 },
+                        { x: 333, y: 1415, rotation: 90 },
+                        { x: 387, y: 1415, rotation: 270 },
+                        { x: 683, y: 1415, rotation: 90 },
+                        { x: 857, y: 1415, rotation: 270 },
+                        { x: 1153, y: 1415, rotation: 90 },
+                    ]
             },
             { 
                     type: "Car", 
