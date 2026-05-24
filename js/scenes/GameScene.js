@@ -469,7 +469,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Helper function for geometric overlap checks during spawning
-        const checkEntityOverlap = (nativeX, nativeY, nativeRadius, nativeHitbox, existingObj, currentSpawningTier) => {
+        const checkEntityOverlap = (nativeX, nativeY, nativeRadius, nativeHitbox, existingObj, currentSpawningTier, entityConfig) => {
             // If the existing object has noCollision, it's a background element and won't block placement
             if (existingObj.noCollision) return false;
 
@@ -497,9 +497,30 @@ class GameScene extends Phaser.Scene {
             const scaledNativeRadius = nativeRadius * overlapMultiplier;
             const scaledExistingRadius = existingRadius * overlapMultiplier;
 
+            // Calculate logic scale if it's an image
+            let logicHitboxWidth = nativeHitbox ? nativeHitbox.width : 0;
+            let logicHitboxHeight = nativeHitbox ? nativeHitbox.height : 0;
+
+            if (nativeHitbox && entityConfig && entityConfig.image) {
+                // If the item uses an image, we can try to find its texture width to scale the hitbox correctly.
+                const texture = this.textures.get(entityConfig.image);
+                if (texture && texture.key !== '__MISSING' && typeof texture.get === 'function') {
+                    const imgWidth = texture.get().width;
+                    const visualSize = entityConfig.visual_size !== undefined ? entityConfig.visual_size : nativeRadius;
+                    const spriteScale = (visualSize * 2) / Math.max(1, imgWidth);
+                    logicHitboxWidth *= spriteScale;
+                    logicHitboxHeight *= spriteScale;
+                }
+            } else if (nativeHitbox && entityConfig && entityConfig.SPRITE && entityConfig.SPRITE.USE_SPRITESHEET) {
+                const visualSize = entityConfig.visual_size !== undefined ? entityConfig.visual_size : nativeRadius;
+                const spriteScale = (visualSize * 2) / entityConfig.SPRITE.FRAME_WIDTH;
+                logicHitboxWidth *= spriteScale;
+                logicHitboxHeight *= spriteScale;
+            }
+
             const scaledNativeHitbox = nativeHitbox ? {
-                width: nativeHitbox.width * overlapMultiplier,
-                height: nativeHitbox.height * overlapMultiplier
+                width: logicHitboxWidth * overlapMultiplier,
+                height: logicHitboxHeight * overlapMultiplier
             } : null;
 
             const scaledExistingHitbox = existingHitbox ? {
@@ -674,7 +695,7 @@ class GameScene extends Phaser.Scene {
                     if (allowReplacement) {
                         for (let j = existingEntities.length - 1; j >= 0; j--) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(entityConfig.positions[i].x, entityConfig.positions[i].y, logicalRadius, entityConfig.hitbox, existing, tier)) {
+                            if (checkEntityOverlap(entityConfig.positions[i].x, entityConfig.positions[i].y, logicalRadius, entityConfig.hitbox, existing, tier, entityConfig)) {
                                 logOverlappedTiers.push(existing.tier);
                                 if (entityConfig.hideInPreviousTier) {
                                     // Do not destroy the existing entity, wait for the new entity to become visible
@@ -709,7 +730,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(candidateX, candidateY, logicalRadius, entityConfig.hitbox, existing, tier)) {
+                            if (checkEntityOverlap(candidateX, candidateY, logicalRadius, entityConfig.hitbox, existing, tier, entityConfig)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
@@ -785,7 +806,7 @@ class GameScene extends Phaser.Scene {
 
                         for (let j = 0; j < existingEntities.length; j++) {
                             const existing = existingEntities[j];
-                            if (checkEntityOverlap(candidateX, candidateY, logicalRadius, entityConfig.hitbox, existing, tier)) {
+                            if (checkEntityOverlap(candidateX, candidateY, logicalRadius, entityConfig.hitbox, existing, tier, entityConfig)) {
                                 overlaps.push(j);
                                 if (existing.tier >= tier) {
                                     hasSameOrHigherTierOverlap = true;
