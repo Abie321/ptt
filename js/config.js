@@ -907,6 +907,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     hideInPreviousTier: false,
                     size: 40,
                     image: 'car',
+                    hitbox: { width: 260, height: 120 },
                     spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 33000 },]
             },
             {
@@ -919,6 +920,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     hideInPreviousTier: false,
                     size: 40,
                     image: 'taxi',
+                    hitbox: { width: 260, height: 120 },
                     spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 24000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 24000 }]
             },
             {
