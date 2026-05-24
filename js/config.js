@@ -545,7 +545,7 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
         { tier: 1, initialSize: 31, threshold: 31, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 19, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 1408, HEIGHT: 1430 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 50, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1760, HEIGHT: 1787 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.25, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
 LEVEL_5_CONFIG['winSize'] = 600;
 LEVEL_5_CONFIG['PLAYER'] = {
@@ -900,24 +900,24 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Car", 
                     count: 12, 
-                    value: 60, 
+                    value: 40, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 60,
+                    size: 40,
                     image: 'car', 
-                    spawners: [{ edge: 'right', position: 265, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1335, interval: 12000, speed: 80}, { edge: 'left', rotation: 180, position: 205, interval: 18000, speed: 80, prewarmDuration: 33000 },]
+                    spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 33000 },]
             },
             { 
                     type: "Taxi", 
                     count: 12, 
-                    value: 60, 
+                    value: 40, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 60,
+                    size: 40,
                     image: 'taxi', 
-                    spawners: [{ edge: 'right', position: 266, interval: 18000, speed: 80, prewarmDuration: 24000 }, { edge: 'right', position: 1335, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'left', rotation: 180, position: 206, interval: 18000, speed: 80, prewarmDuration: 24000 }]
+                    spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 24000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 24000 }]
             },
             { 
                     type: "Doubledecker bus", 
@@ -929,31 +929,31 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     size: 60,
                     image: 'doubledecker',
                     hitbox: { width: 260, height: 120 },
-                    spawners: [{ edge: 'right', rotation: 90, position: 1335, interval: 12000, speed: 80, prewarmDuration: 8000}]
+                    spawners: [{ edge: 'right', rotation: 90, position: 1669, interval: 12000, speed: 80, prewarmDuration: 8000}]
             },
             { 
                     type: "Car", 
                     count: 12, 
-                    value: 60, 
+                    value: 40, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
-                    size: 60,
+                    size: 40,
                     hideInPreviousTier: true,
                     image: 'car', 
-                    spawners: [{ edge: 'top', rotation: 270, position: 360, interval: 12000, speed: 80}, { edge: 'bottom', rotation: 90, position: 750, interval: 12000, speed: 80}]
+                    spawners: [{ edge: 'top', rotation: 270, position: 450, interval: 12000, speed: 80}, { edge: 'bottom', rotation: 90, position: 938, interval: 12000, speed: 80}]
             },
             { 
                     type: "Taxi", 
                     count: 12, 
-                    value: 60, 
+                    value: 40, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 60,
+                    size: 40,
                     image: 'taxi', 
-                    spawners: [{ edge: 'top', rotation: 270, position: 360, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'bottom', rotation: 90, position: 750, interval: 12000, speed: 80, prewarmDuration: 4000}]
+                    spawners: [{ edge: 'top', rotation: 270, position: 450, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'bottom', rotation: 90, position: 938, interval: 12000, speed: 80, prewarmDuration: 4000}]
             },
             { 
                     type: "Doubledecker bus", 
@@ -966,7 +966,7 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     hideInPreviousTier: true,
                     image: 'doubledecker',
                     hitbox: { width: 120, height: 260 },  
-                    spawners: [{ edge: 'top', position: 360, interval: 12000, speed: 80, prewarmDuration: 8000}, { edge: 'bottom', rotation: 180, position: 750, interval: 12000, speed: 80, prewarmDuration: 8000}]
+                    spawners: [{ edge: 'top', position: 450, interval: 12000, speed: 80, prewarmDuration: 8000}, { edge: 'bottom', rotation: 180, position: 938, interval: 12000, speed: 80, prewarmDuration: 8000}]
             },
         ],
 };
