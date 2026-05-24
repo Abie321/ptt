@@ -1890,6 +1890,9 @@ class GameScene extends Phaser.Scene {
 
                     item.setActive(isVisible);
                     item.setVisible(isVisible);
+                    if (item.body) {
+                        item.body.enable = isVisible;
+                    }
                 }
             });
         }
@@ -1924,6 +1927,9 @@ class GameScene extends Phaser.Scene {
 
             hazard.setActive(isVisible);
             hazard.setVisible(isVisible);
+            if (hazard.body) {
+                hazard.body.enable = isVisible;
+            }
         });
     }
 
