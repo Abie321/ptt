@@ -974,9 +974,10 @@ class GameScene extends Phaser.Scene {
             const moveNativeX = nativeVx * (timeElapsed / 1000);
             const moveNativeY = nativeVy * (timeElapsed / 1000);
 
-            // Apply scale mapping
-            spawnPlayerX += moveNativeX * bgScaleRatio;
-            spawnPlayerY += moveNativeY * bgScaleRatio;
+            // Apply movement — velocity in the game is raw speed (not scaled by bgScaleRatio),
+            // so prewarm must also use unscaled displacement to match actual physics.
+            spawnPlayerX += moveNativeX;
+            spawnPlayerY += moveNativeY;
         }
 
         const x = spawnPlayerX;
@@ -990,6 +991,12 @@ class GameScene extends Phaser.Scene {
 
         const hazard = new Hazard(this, x, y, instanceConfig);
         this.hazards.add(hazard.sprite);
+
+        // Apply visibility rules immediately so newly spawned hazards aren't briefly
+        // active/visible in a tier where they should be hidden (e.g. hideInPreviousTier).
+        // updateEntityVisibility() is not in the update loop so without this, every
+        // timer-fired spawn would be collideable until the next tier advancement.
+        this.updateEntityVisibility();
 
         if (this.uiCamera) {
             this.uiCamera.ignore(hazard.sprite);
