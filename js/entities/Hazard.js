@@ -55,6 +55,7 @@ class Hazard {
             this.tierRadii[t] = logicalRadius * scaleRatio;
 
             if (config.hitbox) {
+                // We'll fix these up after calculating the visual scale
                 this.tierHitboxes[t] = {
                     width: config.hitbox.width * scaleRatio,
                     height: config.hitbox.height * scaleRatio
@@ -104,6 +105,24 @@ class Hazard {
 
         // Setup physics body based on config hitbox or fallback to circle
         if (config.hitbox) {
+            // Calculate actual logic scale ratio
+            let logicScale = 1;
+            if (config.SPRITE && config.SPRITE.USE_SPRITESHEET) {
+                logicScale = (visualSize * 2) / config.SPRITE.FRAME_WIDTH;
+            } else if (config.image) {
+                logicScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+            }
+
+            // Fix up the tierHitboxes now that we know the visual scale
+            for (let t = 1; t <= numTiers; t++) {
+                if (this.tierHitboxes[t]) {
+                    // The stored width/height currently just have scaleRatio.
+                    // We need to multiply by logicScale to convert from image pixels to logic base pixels.
+                    this.tierHitboxes[t].width *= logicScale;
+                    this.tierHitboxes[t].height *= logicScale;
+                }
+            }
+
             // If explicit rectangular hitbox is configured (expected in unscaled dimensions)
             this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
             // Center the body on the sprite

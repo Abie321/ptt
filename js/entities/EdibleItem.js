@@ -72,6 +72,7 @@ class EdibleItem {
             this.tierRadii[t] = logicalRadius * scaleRatio;
 
             if (config.hitbox) {
+                // We'll fix these up after calculating the visual scale
                 this.tierHitboxes[t] = {
                     width: config.hitbox.width * scaleRatio,
                     height: config.hitbox.height * scaleRatio
@@ -108,6 +109,20 @@ class EdibleItem {
 
         // Setup physics body based on config hitbox or fallback to circle
         if (config.hitbox) {
+            // Calculate actual logic scale ratio
+            let logicScale = 1;
+            if (config.image) {
+                logicScale = (visualSize * 2) / Math.max(1, this.sprite.width);
+            }
+
+            // Fix up the tierHitboxes now that we know the visual scale
+            for (let t = 1; t <= numTiers; t++) {
+                if (this.tierHitboxes[t]) {
+                    this.tierHitboxes[t].width *= logicScale;
+                    this.tierHitboxes[t].height *= logicScale;
+                }
+            }
+
             // If explicit rectangular hitbox is configured (expected in unscaled dimensions)
             this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
             // Center the body on the sprite
