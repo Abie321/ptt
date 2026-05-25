@@ -544,10 +544,10 @@ LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
         'awning': 'assets/images/awning.png',
     },
 LEVEL_5_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 31, threshold: 31, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 50, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1760, HEIGHT: 1787 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.25, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 1, initialSize: 21, threshold: 21, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
+        { tier: 2, initialSize: 31, threshold: 31, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1760, HEIGHT: 1787 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.25, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
     ];
-LEVEL_5_CONFIG['winSize'] = 600;
+LEVEL_5_CONFIG['winSize'] = 122;
 LEVEL_5_CONFIG['PLAYER'] = {
         START_X: 500,
         START_Y: 400,
@@ -576,13 +576,13 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Brit", 
                     count: 12, 
-                    value: 30, 
+                    value: 20, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 30,
-                    visual_size: 35,
+                    size: 20,
+                    visual_size: 25,
                     SPRITE: {
                         USE_SPRITESHEET: true,
                         KEY: 'brit', // The key used for preloading the image
@@ -600,13 +600,13 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Tourist", 
                     count: 12, 
-                    value: 30, 
+                    value: 20, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 30,
-                    visual_size: 35,
+                    size: 20,
+                    visual_size: 25,
                     SPRITE: {
                         USE_SPRITESHEET: true,
                         KEY: 'tourist', // The key used for preloading the image
@@ -624,56 +624,56 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                     type: "Cyclist", 
                     count: 12, 
-                    value: 30, 
+                    value: 20, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: true,
                     hideInPreviousTier: true,
-                    size: 30,
+                    size: 20,
                     image: 'cyclist', 
                     spawner: { edge: 'right', position: 300, interval: 9000, speed: 80, prewarmDuration: 27000 }
             },
             { 
                     type: "Bush", 
                     count: 12, 
-                    value: 40, 
+                    value: 27, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: false,
-                    size: 40,
+                    size: 27,
                     image: 'bush', 
                     positions: [{x: 300, y: 50}, {x: 850, y: 50}, {x: 1300, y: 50}, {x: 1650, y: 50}, {x: 2100, y: 50}, {x: 350, y: 450}, {x: 800, y: 450}, {x: 1300, y: 450}, {x: 1680, y: 450}, {x: 2050, y: 450}]
             },
             { 
                     type: "Streetlight", 
                     count: 12, 
-                    value: 32, 
+                    value: 25, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: false,
-                    size: 32,
+                    size: 25,
                     image: 'streetlight', 
                     positions: [{x: 650, y: 450, rotation: 270}, {x: 1425, y: 450, rotation: 270}, {x: 1425, y: 50, rotation: 90}]
             },
             { 
                     type: "Table", 
                     count: 12, 
-                    value: 40, 
+                    value: 28, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: false,
-                    size: 40,
+                    size: 28,
                     image: 'circletable', 
                     positions: [{x: 450, y: 50}, {x: 1000, y: 50}, {x: 2200, y: 450}]
             },
             { 
                     type: "Chair", 
                     count: 12, 
-                    value: 25, 
+                    value: 20, 
                     shape: 'circle', 
                     color: 0xFF0000, 
                     isHazard: false,
-                    size: 25,
+                    size: 20,
                     image: 'chair', 
                     positions: [{x: 375, y: 50, rotation: 270}, {x: 525, y: 50, rotation: 90}, {x: 925, y: 50, rotation: 270}, {x: 1075, y: 50, rotation: 90}, {x: 2125, y: 450, rotation: 270}, {x: 2275, y: 450, rotation: 90}]
             },
@@ -701,12 +701,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Building, Small",
                 count: 10,
-                value: 80,
+                value: 75,
                 shape: 'square',
                 color: 0x8BC34A,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 80,
+                size: 75,
                 image: 'building2',
                 positions: [
                     { x: 100, y: 1769 },
@@ -728,12 +728,12 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Tree",
                 count: 30,
-                value: 40,
+                value: 50,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 40,
+                size: 50,
                 image: 'tree',
                 positions: [
                     { x: 1684, y: 74 },
@@ -758,10 +758,8 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     { x: 81, y: 1394 },
                     { x: 1194, y: 1436 },
                     { x: 1471, y: 1478 },
-                    { x: 1101, y: 1479 },
                     { x: 1239, y: 1501 },
                     { x: 1659, y: 1505 },
-                    { x: 1169, y: 1511 },
                     { x: 598, y: 1536 },
                     { x: 1711, y: 1540 },
                     { x: 1660, y: 1575 },
@@ -771,15 +769,14 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Bush",
                 count: 30,
-                value: 40,
+                value: 30,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
                 hideInPreviousTier: true,
-                size: 40,
+                size: 30,
                 image: 'bush',
                 positions: [
-                    { x: 75, y: 850 },
                     { x: 304, y: 850 },
                     { x: 533, y: 850 },
                     { x: 646, y: 850 },
@@ -824,11 +821,11 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             {
                 type: "Streetlight",
                 count: 36,
-                value: 32,
+                value: 25,
                 shape: 'circle',
                 color: 0xFF0000,
                 isHazard: false,
-                size: 32,
+                size: 25,
                 image: 'streetlight',
                 hideInPreviousTier: true,
                 positions: [
@@ -867,13 +864,13 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
             { 
                 type: "Phone booth", 
                 count: 1, 
-                value: 20, 
+                value: 37, 
                 shape: 'square', 
                 color: 0x8BC34A, 
                 isHazard: false, 
                 image: 'phonebooth', 
-                size: 20,
-                positions: [{x: 425, y: 50}], 
+                size: 37,
+                positions: [{x: 531, y: 63}], 
             },
             { 
                     type: "Awning", 
@@ -886,15 +883,13 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
                     hideInPreviousTier: true,
                     image: 'awning', 
                     positions: [                    
-                        { x: 389, y: 713, rotation: 90 },
-                        { x: 869, y: 544, rotation: 90 },
-                        { x: 869, y: 713, rotation: 90 },
-                        { x: 46, y: 1769, rotation: 270 },
-                        { x: 416, y: 1769, rotation: 90 },
-                        { x: 484, y: 1769, rotation: 270 },
-                        { x: 854, y: 1769, rotation: 90 },
-                        { x: 1071, y: 1769, rotation: 270 },
-                        { x: 1441, y: 1769, rotation: 90 },
+                        { x: 444, y: 713, rotation: 90 },
+                        { x: 909, y: 544, rotation: 90 },
+                        { x: 909, y: 713, rotation: 90 },
+                        { x: 456, y: 1769, rotation: 90 },
+                        { x: 894, y: 1769, rotation: 90 },
+                        { x: 1031, y: 1769, rotation: 270 },
+                        { x: 1482, y: 1769, rotation: 90 },
                     ]
             },
             {
@@ -976,8 +971,47 @@ LEVEL_5_CONFIG['TIER_ENTITIES'] = {
         ],
 };
 
+const LEVEL_6_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
+LEVEL_6_CONFIG['ENTITY_IMAGES'] = {
+        'player_sheet': 'assets/images/ghost.png',
+        'duck': 'assets/images/duck.png',
+    },
+LEVEL_6_CONFIG['SIZE_TIERS'] = [
+        { tier: 1, initialSize: 21, threshold: 21, name: 'Tiny', color: 0x2196F3, zoom: 2.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2500, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level6.png', BACKGROUND_SCALE: 2.5, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+        { tier: 2, initialSize: 21, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1, zoomInStart: 2.5, LEVEL_AREA: { WIDTH: 3040, HEIGHT: 1197 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level6.png', BACKGROUND_SCALE: 1, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
+    ];
+LEVEL_6_CONFIG['winSize'] = 122;
+LEVEL_6_CONFIG['PLAYER'] = {
+        START_X: 500,
+        START_Y: 400,
+        GROWTH_FACTOR: 0.04,
+        TIER_GROWTH_FACTOR: 0.04,
+        SPEED: 200,
+        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
+        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
+        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        SPRITE: {
+            USE_SPRITESHEET: true,
+            KEY: 'player_sheet',
+            FRAME_WIDTH: 800,
+            FRAME_HEIGHT: 800,
+            ANIMATIONS: {
+                DOWN: { start: 0, end: 2, rate: 10 },
+                UP: { start: 3, end: 5, rate: 10 },
+                RIGHT: { start: 9, end: 11, rate: 10 },
+                LEFT: { start: 6, end: 8, rate: 10 }
+            }
+        }
+};
+LEVEL_6_CONFIG['TIER_ENTITIES'] = {
+        1: [
+            { type: "Duck", count: 25, value: 20, shape: 'circle', color: 0xFF0000, isHazard: true, size: 20, image: 'duck' },
+        ]
+
+};
+
 const GameConfig = {
-    DEBUG: true,
+    DEBUG: false,
     PLACEMENT_ATTEMPTS: 500,
     WORLDS: [
         { name: "Ghost" },
@@ -1010,10 +1044,15 @@ const GameConfig = {
             name: 'All hail the King',
             ...LEVEL_4_CONFIG
         },
-                {
+        {
             id: 'level5',
             name: 'Jack the Ghost',
             ...LEVEL_5_CONFIG
+        },
+        {
+            id: 'level6',
+            name: 'Five Little\nAnseriformes',
+            ...LEVEL_6_CONFIG
         },
     ]
 };
