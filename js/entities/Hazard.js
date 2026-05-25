@@ -173,6 +173,10 @@ class Hazard {
             else if (config.spawner.edge === 'right') vx = -this.speed;
 
             this.sprite.body.setVelocity(vx, vy);
+        } else if (this.movementType === 'random_facing') {
+            this.sprite.body.setBounce(1, 1);
+            this.sprite.body.setCollideWorldBounds(true);
+            this.pickRandomDirection();
         } else {
             // Simple movement pattern (optional for prototype)
             this.sprite.body.setVelocity(
@@ -191,6 +195,24 @@ class Hazard {
         this.sprite.entityWrapper = this;
 
         this.itemType = 'HAZARD';
+    }
+
+    pickRandomDirection() {
+        if (!this.sprite || !this.sprite.active || !this.sprite.body) return;
+
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+        this.sprite.body.setVelocity(
+            Math.cos(angle) * this.speed,
+            Math.sin(angle) * this.speed
+        );
+
+        const delay = Phaser.Math.Between(5000, 10000);
+        this.directionTimer = this.scene.time.addEvent({
+            delay: delay,
+            callback: this.pickRandomDirection,
+            callbackScope: this,
+            loop: false
+        });
     }
 
     update() {
@@ -244,6 +266,12 @@ class Hazard {
 
         const velocity = this.sprite.body.velocity;
 
+        if (this.movementType === 'random_facing' && (velocity.x !== 0 || velocity.y !== 0)) {
+            // Calculate angle based on velocity vector and rotate sprite
+            // Assuming base image faces right (0 degrees)
+            this.sprite.setRotation(Math.atan2(velocity.y, velocity.x));
+        }
+
         if (this.config.SPRITE && this.config.SPRITE.USE_SPRITESHEET && this.sprite.anims) {
             if (velocity.x !== 0 || velocity.y !== 0) {
                 // Determine facing direction based on primary movement axis
@@ -262,6 +290,9 @@ class Hazard {
     }
 
     destroy() {
+        if (this.directionTimer) {
+            this.directionTimer.remove();
+        }
         if (this.sprite) {
             this.sprite.destroy();
         }
