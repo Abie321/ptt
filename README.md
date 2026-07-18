@@ -160,27 +160,30 @@ Based on `requirements/requirements.txt`:
 
 ### Fully Implemented
 - REQ-TECH-001: Phaser JS game engine ✅
-- REQ-CAM-001-004: Top-down camera and character orientation ✅
+- REQ-CAM-001-004: Top-down camera, character orientation, and zooming ✅
 - REQ-INP-001-004: WASD and Arrow key controls ✅
-- REQ-MECH-001-010: Consumption, growth, and size tier mechanics ✅
-- REQ-SCR-001-006: Scoring with diminishing returns ✅
-- REQ-DMG-001-005: Hazard detection and penalties ✅
-- REQ-UI-HUD-001-004: HUD elements ✅
-- REQ-UI-MNU-001: Basic main menu ✅
-- REQ-UI-END-001: End-of-level summary ✅
+- REQ-MECH-001-010: Consumption, growth, size tier mechanics, and tier N-2 despawning ✅
+- REQ-SCR-001-006: Scoring with decaying returns based on density ✅
+- REQ-SCR-007-008: 3-star rating thresholds per level ✅
+- REQ-DMG-001, REQ-DMG-003-005: Hazard size categorization and score penalty ✅
+- REQ-UI-HUD-001-004: Size indicator, level progress bar, timer, and score HUD ✅
+- REQ-UI-LVL-001, REQ-UI-LVL-005: World Select, Level Select grid, and Level Detail views ✅
+- REQ-UI-END-001: End-of-level summary scene with stats and stars ✅
 
 ### Partially Implemented
-- REQ-INP-005: ESC key pauses (no pause menu UI yet)
-- REQ-SYS-001: Game loop at 60 FPS (Phaser default, not explicitly set)
+- REQ-INP-005: ESC key pauses physics and updates (no menu overlay UI yet)
+- REQ-SYS-001: Game loop at 60 FPS (Phaser default, not explicitly capped)
+- REQ-UI-MNU-001: Basic main menu (Play functions; Options and Gallery button layouts exist but are inactive)
+- REQ-UI-LVL-002: Level lock visuals (World 1 is unlocked, others are locked; individual level locking is not active)
 
 ### Not Yet Implemented (Future Versions)
-- Level selection screen
-- Options/settings menu
-- Gallery system
-- Data persistence
-- Multiple levels
-- Sound effects
-- Credits screen
+- REQ-DMG-002: Projectiles emitted by hazards
+- REQ-UI-LVL-003: Stars earned display under level circle buttons
+- REQ-UI-LVL-004: Hover level descriptions on selection screen
+- REQ-UI-OPT-001-002: Sound options toggles and credits panel
+- REQ-UI-GAL-001-002: Gallery screen showing cumulative eaten item counters
+- REQ-PRG-001-002: Sequential lock logic for level progression
+- REQ-DAT-001: Local browser storage data persistence
 
 ## Project Structure
 
@@ -188,46 +191,49 @@ Based on `requirements/requirements.txt`:
 ptt/
 ├── index.html              # Main HTML entry point
 ├── package.json            # NPM dependencies
+├── PLANNING.md             # Developer planning and roadmap
+├── PROJECT_MEMORY.md       # Technical project memory documentation
+├── README.md               # Game overview and setup instructions
+├── assets/
+│   └── images/            # Level background screens and sprite sheets
 ├── js/
-│   ├── main.js            # Phaser game configuration
-│   ├── config.js          # Game constants and configuration
+│   ├── main.js            # Phaser game initialization config
+│   ├── config.js          # World and level entity declarations
 │   ├── entities/
-│   │   ├── Player.js      # Player character class
+│   │   ├── Player.js      # Player character movement and scale
 │   │   ├── EdibleItem.js  # Consumable items
-│   │   └── Hazard.js      # Hazard entities
+│   │   └── Hazard.js      # Obstacles and dynamic enemies
 │   └── scenes/
-│       ├── MainMenuScene.js    # Main menu
-│       ├── GameScene.js        # Core gameplay
-│       └── EndLevelScene.js    # Level completion screen
+│       ├── MainMenuScene.js    # Game title screen
+│       ├── WorldSelectScene.js # World map selection
+│       ├── LevelSelectScene.js # Level grid selector
+│       ├── LevelDetailScene.js # Level info, stars and start button
+│       ├── GameScene.js        # Main gameplay loops and physics
+│       └── EndLevelScene.js    # Level win statistics and results
 └── requirements/
-    └── requirements.txt   # Full requirements specification
+    └── requirements.txt   # Detailed software requirements document
 ```
 
 ## Technical Details
 
 - **Engine**: Phaser 3.80.1
 - **Physics**: Arcade Physics (no gravity)
-- **World Size**: 1600x1200 pixels
+- **World Size**: Dynamically loaded based on tier configurations (up to 3300x2546 pixels)
 - **Viewport**: 800x600 pixels
 - **Target FPS**: 60
 
 ## Known Limitations (Prototype)
 
-- No sprite assets (using geometric shapes)
-- Single level only
-- No save/load functionality
-- No sound effects or music
-- No animations
-- Simplified hazard AI
+- Simple ESC pause lacks a Resume/Restart overlay menu.
+- Progression state and configurations are not saved between refreshes.
+- No sound effects or background music track.
+- Hazard entities move with bounce physics but do not shoot projectiles.
 
 ## Next Steps for Full Implementation
 
-1. Add sprite assets and animations
-2. Implement multiple levels with level selection
-3. Add persistent data storage (LocalStorage)
-4. Create options menu with sound controls
-5. Implement gallery/collection system
-6. Add sound effects and background music
-7. Create pause menu functionality
-8. Add more sophisticated hazard behaviors
-9. Implement projectile hazards
+1. **Pause Menu UI**: Add Resume and Exit buttons to the pause state.
+2. **Local Storage Integration**: Add a SaveManager utility for level progression.
+3. **Audio FX**: Integrate eat sounds and level completion sounds.
+4. **Options Screen**: Connect volume toggles and simple credits text.
+5. **Collection Gallery**: Display the gallery screen with item icons and counts.
+

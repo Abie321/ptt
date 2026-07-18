@@ -13,7 +13,7 @@ const config = {
             debug: typeof GameConfig !== 'undefined' ? GameConfig.DEBUG : false
         }
     },
-    scene: [MainMenuScene, WorldSelectScene, LevelSelectScene, LevelDetailScene, GameScene, EndLevelScene]
+    scene: [MainMenuScene, WorldSelectScene, LevelSelectScene, LevelDetailScene, LevelCreatorScene, GameScene, EndLevelScene]
 };
 
 const game = new Phaser.Game(config);

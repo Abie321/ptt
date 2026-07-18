@@ -4,8 +4,8 @@
   "description": "A Tasty Planet fan game built with Phaser JS",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server . -p 8080",
-    "dev": "npx http-server . -p 8080",
+    "start": "npx -y live-server --port=8080",
+    "dev": "npx -y live-server --port=8080",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

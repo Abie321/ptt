@@ -39,6 +39,25 @@ class MainMenuScene extends Phaser.Scene {
             this.scene.start('WorldSelectScene');
         });
 
+        // Level Creator button
+        const creatorButton = this.add.text(width / 2, height / 2 + 70, 'LEVEL CREATOR', {
+            fontSize: '36px',
+            fill: '#2196F3', // Blue color for creator
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setInteractive();
+
+        creatorButton.on('pointerover', () => {
+            creatorButton.setScale(1.1);
+        });
+
+        creatorButton.on('pointerout', () => {
+            creatorButton.setScale(1);
+        });
+
+        creatorButton.on('pointerdown', () => {
+            this.scene.start('LevelCreatorScene');
+        });
+
         // Instructions
         this.add.text(width / 2, height - 100, 'Use WASD or Arrow Keys to move\nEat smaller items to grow!\nAvoid red hazards!', {
             fontSize: '20px',

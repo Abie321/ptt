@@ -305,8 +305,12 @@ class GameScene extends Phaser.Scene {
 
         // ESC key for pause
         this.input.keyboard.on('keydown-ESC', () => {
-            this.scene.pause();
-            // In a full implementation, show pause menu here
+            if (this.levelConfig && this.levelConfig.isPlaytest) {
+                this.scene.start('LevelCreatorScene', { restoreLayout: true, levelConfig: this.levelConfig });
+            } else {
+                this.scene.pause();
+                // In a full implementation, show pause menu here
+            }
         });
 
         // Cleanup on scene shutdown
@@ -2250,12 +2254,16 @@ class GameScene extends Phaser.Scene {
         // "TypeError: Cannot read properties of undefined (reading 'entries')" inside
         // Phaser's internal list iterators if objects are destroyed while being processed.
         this.time.delayedCall(50, () => {
-            this.scene.start('EndLevelScene', {
-                score: this.score,
-                time: elapsed,
-                stars: stars,
-                levelConfig: this.levelConfig
-            });
+            if (this.levelConfig && this.levelConfig.isPlaytest) {
+                this.scene.start('LevelCreatorScene', { restoreLayout: true, levelConfig: this.levelConfig });
+            } else {
+                this.scene.start('EndLevelScene', {
+                    score: this.score,
+                    time: elapsed,
+                    stars: stars,
+                    levelConfig: this.levelConfig
+                });
+            }
         });
     }
 

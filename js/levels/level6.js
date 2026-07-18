@@ -1,0 +1,107 @@
+// Level 6 Configuration
+
+GameConfig.registerLevel({
+    "id": "level6",
+    "name": "Five Little\nAnseriformes",
+    "winSize": 200,
+    "PLAYER": {
+        "GROWTH_FACTOR": 0.22,
+        "TIER_GROWTH_FACTOR": 0.22
+    },
+    "SIZE_TIERS": [
+        {
+            "tier": 1,
+            "initialSize": 21,
+            "threshold": 21,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 2.5,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 2500,
+                "HEIGHT": 500
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level6.png",
+                "BACKGROUND_SCALE": 2.5,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0
+            }
+        },
+        {
+            "tier": 2,
+            "initialSize": 21,
+            "threshold": 50,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1,
+            "zoomInStart": 2.5,
+            "LEVEL_AREA": {
+                "WIDTH": 3300,
+                "HEIGHT": 2546
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level6.png",
+                "BACKGROUND_SCALE": 1,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0
+            }
+        },
+        {
+            "tier": 3,
+            "initialSize": 63,
+            "threshold": 125,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 0.5,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 1600,
+                "HEIGHT": 1200
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level6.png",
+                "BACKGROUND_SCALE": 0.5,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0,
+                "TILE_BACKGROUND": true
+            }
+        }
+    ],
+    "TIER_ENTITIES": {
+        "1": [
+            {
+                "type": "Duck",
+                "count": 25
+            }
+        ],
+        "2": [
+            {
+                "type": "Goose",
+                "count": 2,
+                "value": 50,
+                "size": 50,
+                "movementType": "random_facing"
+            },
+            {
+                "type": "Goose",
+                "count": 28,
+                "value": 50,
+                "hideInPreviousTier": true,
+                "size": 50,
+                "movementType": "random_facing"
+            }
+        ],
+        "3": [
+            {
+                "type": "Swan",
+                "count": 1
+            },
+            {
+                "type": "Swan",
+                "count": 9,
+                "hideInPreviousTier": true
+            }
+        ]
+    }
+});

@@ -6,9 +6,21 @@ const path = require('path');
 // Load game configuration
 const configPath = path.join(__dirname, '../js/config.js');
 const configCode = fs.readFileSync(configPath, 'utf8');
-// Replace const declaration with global assignment for testing
-const modifiedConfigCode = configCode.replace('const GameConfig =', 'global.GameConfig =');
+// Replace const declarations with global assignments for testing
+const modifiedConfigCode = configCode
+  .replace('const GameConfig =', 'global.GameConfig =')
+  .replace('const ENTITY_TEMPLATES =', 'global.ENTITY_TEMPLATES =');
 eval(modifiedConfigCode);
+
+// Load all level configurations
+const levelsDir = path.join(__dirname, '../js/levels');
+if (fs.existsSync(levelsDir)) {
+  const levelFiles = fs.readdirSync(levelsDir).filter(f => f.endsWith('.js')).sort();
+  levelFiles.forEach(file => {
+    const levelCode = fs.readFileSync(path.join(levelsDir, file), 'utf8');
+    eval(levelCode);
+  });
+}
 
 // Mock Phaser for testing
 global.Phaser = {

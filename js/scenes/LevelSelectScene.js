@@ -33,10 +33,23 @@ class LevelSelectScene extends Phaser.Scene {
         // Ensure GameConfig.LEVELS exists
         const realLevels = (typeof GameConfig !== 'undefined' && GameConfig.LEVELS) ? GameConfig.LEVELS : [];
 
+        // Load custom levels from localStorage
+        let customLevels = [];
+        try {
+            const saved = localStorage.getItem('custom_levels');
+            if (saved) {
+                customLevels = JSON.parse(saved);
+                // Mark them as custom
+                customLevels.forEach(cl => cl.isCustom = true);
+            }
+        } catch (e) {
+            console.error('Failed to parse custom levels:', e);
+        }
+
         // Add dummy levels for layout testing
-        const allLevels = [...realLevels];
+        const allLevels = [...realLevels, ...customLevels];
         const totalSlots = 11; // Ensure we have enough to show 3 rows
-        for (let i = realLevels.length; i < totalSlots; i++) {
+        for (let i = allLevels.length; i < totalSlots; i++) {
             allLevels.push({ dummy: true });
         }
 
@@ -63,14 +76,27 @@ class LevelSelectScene extends Phaser.Scene {
 
     createLevelButton(x, y, levelConfig, index, w, h) {
         const isDummy = levelConfig.dummy;
-        const color = isDummy ? 0x555555 : 0x333333;
+        const isCustom = levelConfig.isCustom;
+        
+        let color = 0x333333;
+        if (isDummy) {
+            color = 0x555555;
+        } else if (isCustom) {
+            color = 0x2196F3; // Blue for custom levels
+        }
 
         // Button Background
         const radius = Math.min(w, h) / 2;
         const bg = this.add.circle(x, y, radius, color);
 
-        // Level Number
-        this.add.text(x, y, `${index}`, {
+        // Level Number (or 'C' + custom index)
+        let label = `${index}`;
+        if (isCustom) {
+            const customIndex = index - GameConfig.LEVELS.length;
+            label = `C${customIndex}`;
+        }
+
+        this.add.text(x, y, label, {
             fontSize: '24px',
             fill: isDummy ? '#888' : '#fff',
             fontStyle: 'bold'
@@ -78,6 +104,8 @@ class LevelSelectScene extends Phaser.Scene {
 
         if (!isDummy) {
             bg.setInteractive({ useHandCursor: true });
+
+            const baseColor = isCustom ? 0x2196F3 : 0x333333;
 
             // Hover effects
             bg.on('pointerover', () => {
@@ -90,7 +118,7 @@ class LevelSelectScene extends Phaser.Scene {
             });
 
             bg.on('pointerout', () => {
-                bg.setFillStyle(0x333333); // Back to normal
+                bg.setFillStyle(baseColor); // Back to normal color
                 this.tweens.add({
                     targets: bg,
                     scale: 1,

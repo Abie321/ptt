@@ -1,0 +1,67 @@
+// Level 4 Configuration
+
+GameConfig.registerLevel({
+    "id": "level4",
+    "name": "All hail the King",
+    "winSize": 137,
+    "SIZE_TIERS": [
+        {
+            "tier": 1,
+            "initialSize": 40,
+            "threshold": 25,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 2200,
+                "HEIGHT": 1700
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level4.png",
+                "BACKGROUND_SCALE": 1,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0
+            }
+        },
+        {
+            "tier": 2,
+            "initialSize": 130,
+            "threshold": 130,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 2200,
+                "HEIGHT": 1700
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level4.png",
+                "BACKGROUND_SCALE": 1,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0
+            }
+        }
+    ],
+    "TIER_ENTITIES": {
+        "1": [
+            {
+                "type": "Goose",
+                "count": 20,
+                "value": 39,
+                "size": 39
+            },
+            {
+                "type": "Guard",
+                "count": 12
+            }
+        ],
+        "2": [
+            {
+                "type": "King",
+                "count": 1
+            }
+        ]
+    }
+});

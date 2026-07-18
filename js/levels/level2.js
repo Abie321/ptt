@@ -1,0 +1,234 @@
+// Level 2 Configuration
+
+GameConfig.registerLevel({
+    "id": "level2",
+    "name": "Spot of Tea",
+    "winSize": 700,
+    "ENTITY_IMAGES": {
+        "teadrop": "assets/images/teadrop.png",
+        "crumb": "assets/images/crumb.png",
+        "coin": "assets/images/coin.png",
+        "cube": "assets/images/cube.png"
+    },
+    "SIZE_TIERS": [
+        {
+            "tier": 1,
+            "initialSize": 45,
+            "threshold": 40,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1,
+            "zoomInStart": 4,
+            "LEVEL_AREA": {
+                "WIDTH": 2400,
+                "HEIGHT": 1000
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level1.png",
+                "BACKGROUND_SCALE": 1,
+                "BACKGROUND_X": 0,
+                "BACKGROUND_Y": 0
+            }
+        },
+        {
+            "tier": 2,
+            "initialSize": 37,
+            "threshold": 115,
+            "name": "Small",
+            "color": 16750592,
+            "zoom": 0.5,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 2800,
+                "HEIGHT": 1450
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level1.png",
+                "BACKGROUND_SCALE": 1
+            }
+        },
+        {
+            "tier": 3,
+            "initialSize": 125,
+            "threshold": 450,
+            "name": "Medium",
+            "color": 16750592,
+            "zoom": 0.5,
+            "zoomInStart": 1,
+            "LEVEL_AREA": {
+                "WIDTH": 2800,
+                "HEIGHT": 1450
+            },
+            "ASSETS": {
+                "BACKGROUND_IMAGE": "assets/images/Level1.png",
+                "BACKGROUND_SCALE": 1
+            }
+        }
+    ],
+    "TIER_ENTITIES": {
+        "1": [
+            {
+                "type": "Sandwich",
+                "count": 2
+            },
+            {
+                "type": "Tea bag",
+                "count": 3
+            },
+            {
+                "type": "Cake",
+                "count": 3
+            },
+            {
+                "type": "Spoon",
+                "count": 3
+            },
+            {
+                "type": "Cup",
+                "count": 2
+            },
+            {
+                "type": "Biscuit",
+                "count": 5
+            },
+            {
+                "type": "Teapot",
+                "count": 1,
+                "value": 110,
+                "size": 110
+            },
+            {
+                "type": "Mouse",
+                "count": 5
+            }
+        ],
+        "2": [
+            {
+                "type": "Chair",
+                "count": 2,
+                "positions": [
+                    {
+                        "x": 450,
+                        "y": 400,
+                        "rotation": 270
+                    },
+                    {
+                        "x": 950,
+                        "y": 400,
+                        "rotation": 90
+                    },
+                    {
+                        "x": 450,
+                        "y": 1000,
+                        "rotation": 270
+                    },
+                    {
+                        "x": 950,
+                        "y": 1000,
+                        "rotation": 90
+                    },
+                    {
+                        "x": 1700,
+                        "y": 400,
+                        "rotation": 270
+                    },
+                    {
+                        "x": 2250,
+                        "y": 400,
+                        "rotation": 90
+                    },
+                    {
+                        "x": 1700,
+                        "y": 1000,
+                        "rotation": 270
+                    },
+                    {
+                        "x": 2250,
+                        "y": 1000,
+                        "rotation": 90
+                    }
+                ],
+                "value": 300,
+                "color": 16771899,
+                "hideInPreviousTier": true,
+                "size": 300
+            },
+            {
+                "type": "One pound note",
+                "count": 10,
+                "value": 200,
+                "size": 200
+            },
+            {
+                "type": "Beans can",
+                "count": 6,
+                "value": 150,
+                "size": 150,
+                "hideInPreviousTier": true
+            },
+            {
+                "type": "Teapot",
+                "count": 6,
+                "value": 110,
+                "size": 110,
+                "hideInPreviousTier": true
+            },
+            {
+                "type": "Waiter",
+                "count": 5
+            },
+            {
+                "type": "Customer",
+                "count": 5
+            }
+        ],
+        "3": [
+            {
+                "type": "Table",
+                "count": 4,
+                "positions": [
+                    {
+                        "x": 700,
+                        "y": 400
+                    },
+                    {
+                        "x": 700,
+                        "y": 1000
+                    },
+                    {
+                        "x": 2000,
+                        "y": 400
+                    },
+                    {
+                        "x": 2000,
+                        "y": 1000
+                    }
+                ],
+                "value": 500,
+                "shape": "square",
+                "color": 16771899,
+                "size": 500,
+                "image": "table",
+                "hitbox": {
+                    "width": 250,
+                    "height": 100
+                }
+            },
+            {
+                "type": "Counter",
+                "count": 4,
+                "positions": [
+                    {
+                        "x": 1450,
+                        "y": 100
+                    }
+                ],
+                "size": 700,
+                "hitbox": {
+                    "width": 350,
+                    "height": 100
+                }
+            }
+        ]
+    }
+});

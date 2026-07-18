@@ -1,44 +1,589 @@
 // Game configuration constants
 
-const LEVEL_1_CONFIG = {
-    VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
-    winSize: 500,
-    coverImage: 'assets/images/Comic1.png',
-    // Size tier configuration
-    SIZE_TIERS: [
-        { tier: 1, initialSize: 11, threshold: 10, name: 'Micro', color: 0x4CAF50, zoom: 2.0, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1800, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 20, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 3, initialSize: 37, threshold: 150, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } }
-    ],
+const ENTITY_TEMPLATES = {
+    "Tea drop": {
+            "type": "Tea drop",
+            "value": 11,
+            "shape": "circle",
+            "color": 9159498,
+            "isHazard": false,
+            "image": "teadrop",
+            "size": [
+                    9,
+                    17
+            ],
+            "hideInNextTier": true
+    },
+    "Cookie crumb": {
+            "type": "Cookie crumb",
+            "value": 11,
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "image": "crumb",
+            "size": [
+                    9,
+                    17
+            ],
+            "hideInNextTier": true
+    },
+    "Coin": {
+            "type": "Coin",
+            "value": 25,
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "image": "coin",
+            "size": 25
+    },
+    "Sugarcube": {
+            "type": "Sugarcube",
+            "value": 18,
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "image": "cube",
+            "size": 18
+    },
+    "Sandwich": {
+            "type": "Sandwich",
+            "value": 58,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 58,
+            "image": "sandwich"
+    },
+    "Tea bag": {
+            "type": "Tea bag",
+            "value": 68,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 68,
+            "image": "teabag"
+    },
+    "Cake": {
+            "type": "Cake",
+            "value": 100,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 100,
+            "image": "cake"
+    },
+    "Spoon": {
+            "type": "Spoon",
+            "value": 60,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 60,
+            "image": "spoon"
+    },
+    "Cup": {
+            "type": "Cup",
+            "value": 48,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 48,
+            "image": "cup"
+    },
+    "Biscuit": {
+            "type": "Biscuit",
+            "value": 42,
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "size": 42,
+            "image": "biscuit"
+    },
+    "Teapot": {
+            "type": "Teapot",
+            "shape": "circle",
+            "color": 240116,
+            "isHazard": false,
+            "image": "teapot"
+    },
+    "Mouse": {
+            "type": "Mouse",
+            "value": 60,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 60,
+            "image": "mouse"
+    },
+    "Mouse Spawner": {
+            "type": "Mouse Spawner",
+            "value": 60,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 60,
+            "image": "mouse",
+            "hideInPreviousTier": true
+    },
+    "One pound note": {
+            "type": "One pound note",
+            "shape": "circle",
+            "color": 16771899,
+            "isHazard": false,
+            "image": "onepoundnote",
+            "noCollision": true
+    },
+    "Beans can": {
+            "type": "Beans can",
+            "shape": "circle",
+            "color": 16771899,
+            "isHazard": false,
+            "image": "beanscan"
+    },
+    "Chair": {
+            "type": "Chair",
+            "shape": "circle",
+            "isHazard": false,
+            "image": "chair"
+    },
+    "Table": {
+            "type": "Table",
+            "isHazard": false
+    },
+    "Counter": {
+            "type": "Counter",
+            "value": 300,
+            "shape": "square",
+            "color": 16771899,
+            "isHazard": false,
+            "image": "emptycounter"
+    },
+    "Waiter": {
+            "type": "Waiter",
+            "value": 350,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 350,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "waiter",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 10
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 10
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 10
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 10
+                            }
+                    }
+            }
+    },
+    "Customer": {
+            "type": "Customer",
+            "value": 350,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 350,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "customer",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 10
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 10
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 10
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 10
+                            }
+                    }
+            }
+    },
+    "Phone booth": {
+            "type": "Phone booth",
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "image": "phonebooth"
+    },
+    "Goose": {
+            "type": "Goose",
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "image": "goose"
+    },
+    "Guard": {
+            "type": "Guard",
+            "value": 78,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 78,
+            "visual_size": 100,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "guard",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 5
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 5
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 5
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 5
+                            }
+                    }
+            },
+            "movementType": "tracking",
+            "speed": 80
+    },
+    "King": {
+            "type": "King",
+            "value": 119,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 119,
+            "visual_size": 140,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "king",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 5
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 5
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 5
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 5
+                            }
+                    }
+            },
+            "movementType": "tracking",
+            "speed": 80
+    },
+    "Brit": {
+            "type": "Brit",
+            "value": 20,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 20,
+            "visual_size": 25,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "brit",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 5
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 5
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 5
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 5
+                            }
+                    }
+            }
+    },
+    "Tourist": {
+            "type": "Tourist",
+            "value": 20,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 20,
+            "visual_size": 25,
+            "SPRITE": {
+                    "USE_SPRITESHEET": true,
+                    "KEY": "tourist",
+                    "FRAME_WIDTH": 750,
+                    "FRAME_HEIGHT": 750,
+                    "ANIMATIONS": {
+                            "UP": {
+                                    "start": 0,
+                                    "end": 1,
+                                    "rate": 5
+                            },
+                            "DOWN": {
+                                    "start": 2,
+                                    "end": 3,
+                                    "rate": 5
+                            },
+                            "LEFT": {
+                                    "start": 4,
+                                    "end": 5,
+                                    "rate": 5
+                            },
+                            "RIGHT": {
+                                    "start": 6,
+                                    "end": 7,
+                                    "rate": 5
+                            }
+                    }
+            }
+    },
+    "Cyclist": {
+            "type": "Cyclist",
+            "value": 20,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 20,
+            "image": "cyclist"
+    },
+    "Bush": {
+            "type": "Bush",
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": false,
+            "image": "bush"
+    },
+    "Streetlight": {
+            "type": "Streetlight",
+            "value": 25,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": false,
+            "size": 25,
+            "image": "streetlight"
+    },
+    "Building, Large": {
+            "type": "Building, Large",
+            "value": 100,
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "hideInPreviousTier": true,
+            "size": 100,
+            "image": "building2"
+    },
+    "Building, Small": {
+            "type": "Building, Small",
+            "value": 75,
+            "shape": "square",
+            "color": 9159498,
+            "isHazard": false,
+            "hideInPreviousTier": true,
+            "size": 75,
+            "image": "building2"
+    },
+    "Tree": {
+            "type": "Tree",
+            "value": 50,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": false,
+            "hideInPreviousTier": true,
+            "size": 50,
+            "image": "tree"
+    },
+    "Awning": {
+            "type": "Awning",
+            "value": 40,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": false,
+            "size": 40,
+            "hideInPreviousTier": true,
+            "image": "awning"
+    },
+    "Car": {
+            "type": "Car",
+            "value": 40,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 40,
+            "image": "car"
+    },
+    "Taxi": {
+            "type": "Taxi",
+            "value": 40,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 40,
+            "image": "taxi"
+    },
+    "Doubledecker bus": {
+            "type": "Doubledecker bus",
+            "value": 60,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "hideInPreviousTier": true,
+            "size": 60,
+            "image": "doubledecker"
+    },
+    "Duck": {
+            "type": "Duck",
+            "value": 20,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 20,
+            "image": "duck",
+            "movementType": "random_facing"
+    },
+    "Swan": {
+            "type": "Swan",
+            "value": 125,
+            "shape": "circle",
+            "color": 16711680,
+            "isHazard": true,
+            "size": 125,
+            "image": "swan",
+            "movementType": "random_facing"
+    },
+};
 
-    // Scoring configuration
+
+const GLOBAL_ASSET_REGISTRY = {
+    'player_sheet': 'assets/images/ghost.png',
+    'teadrop': 'assets/images/teadrop.png',
+    'crumb': 'assets/images/crumb.png',
+    'coin': 'assets/images/coin.png',
+    'cube': 'assets/images/cube.png',
+    'sandwich': 'assets/images/sandwich.png',
+    'teabag': 'assets/images/teabag.png',
+    'cake': 'assets/images/cake.png',
+    'spoon': 'assets/images/spoon.png',
+    'cup': 'assets/images/cup.png',
+    'teapot': 'assets/images/teapot.png',
+    'biscuit': 'assets/images/biscuit.png',
+    'onepoundnote': 'assets/images/onepoundnote.png',
+    'beanscan': 'assets/images/beanscan.png',
+    'chair': 'assets/images/chair.png',
+    'table': 'assets/images/table.png',
+    'waiter': 'assets/images/waiter.png',
+    'customer': 'assets/images/customer.png',
+    'mouse': 'assets/images/mouse.png',
+    'emptycounter': 'assets/images/emptycounter.png',
+    'phonebooth': 'assets/images/phonebooth.png',
+    'goose': 'assets/images/goose.png',
+    'guard': 'assets/images/guard.png',
+    'king': 'assets/images/king.png',
+    'tourist': 'assets/images/tourist.png',
+    'brit': 'assets/images/brit.png',
+    'cyclist': 'assets/images/cyclist.png',
+    'bush': 'assets/images/bush.png',
+    'streetlight': 'assets/images/streetlight.png',
+    'circletable': 'assets/images/circletable.png',
+    'building1': 'assets/images/building1.png',
+    'building2': 'assets/images/building2.png',
+    'awning': 'assets/images/awning.png',
+    'car': 'assets/images/car.png',
+    'taxi': 'assets/images/taxi.png',
+    'doubledecker': 'assets/images/doubledecker.png',
+    'tree': 'assets/images/tree.png',
+    'duck': 'assets/images/duck.png',
+    'swan': 'assets/images/swan.png'
+};
+
+const BASE_LEVEL_CONFIG = {
+    VIEW_AREA: { WIDTH: 800, HEIGHT: 600 },
     SCORING: {
         MAX_POINTS_PER_ITEM: 80,
         MIN_POINTS_PER_ITEM: 1,
         HAZARD_PENALTY: 80
     },
-
-    // Star thresholds (per level)
     STAR_THRESHOLDS: {
         ONE_STAR: 500,
         TWO_STAR: 1500,
         THREE_STAR: 3000
     },
-
-    // Effects configuration
     EFFECTS: {
         SMOKE_DURATION_MIN: 100,
         SMOKE_DURATION_MAX: 1000
     },
-
-    // Player configuration
     PLAYER: {
         GROWTH_FACTOR: 0.15,
         TIER_GROWTH_FACTOR: 0.15,
         SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
+        MOUTH_OFFSET: 0.7,
+        CONSUMPTION_RANGE_BONUS: 10,
+        INVULNERABILITY_DURATION: 500,
         SPRITE: {
             USE_SPRITESHEET: true,
             KEY: 'player_sheet',
@@ -51,963 +596,7 @@ const LEVEL_1_CONFIG = {
                 LEFT: { start: 6, end: 8, rate: 10 }
             }
         }
-    },
-
-    ENTITY_IMAGES: {
-        'player_sheet': 'assets/images/ghost.png',
-        'teadrop': 'assets/images/teadrop.png',
-        'crumb': 'assets/images/crumb.png',
-        'coin': 'assets/images/coin.png',
-        'cube': 'assets/images/cube.png',
-        'sandwich': 'assets/images/sandwich.png',
-        'teabag': 'assets/images/teabag.png',
-        'cake': 'assets/images/cake.png',
-        'spoon': 'assets/images/spoon.png',
-        'cup': 'assets/images/cup.png',
-        'teapot': 'assets/images/teapot.png',
-        'biscuit': 'assets/images/biscuit.png',
-        'onepoundnote': 'assets/images/onepoundnote.png',
-        'beanscan': 'assets/images/beanscan.png',
-        'chair': 'assets/images/chair.png',
-        'table': 'assets/images/table.png',
-        'waiter': 'assets/images/waiter.png',
-        'customer': 'assets/images/customer.png',
-        'mouse': 'assets/images/mouse.png',
-        'emptycounter': 'assets/images/emptycounter.png'
-    },
-  
-    // Entities configuration per tier
-    // Each entry: { type: 'Name', count: N, value: Score, shape: 'circle'|'square'|'triangle', color: Hex, isHazard: boolean, size: Number }
-    TIER_ENTITIES: {
-        1: [
-            { type: "Tea drop", count: 18, value: 11, shape: 'circle', color: 0x8BC34A, isHazard: false, image: 'teadrop', size: [9, 17], hideInNextTier: true },
-            { type: "Cookie crumb", count: 18, value: 11, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'crumb', size: [9, 17], hideInNextTier: true },
-            { type: "Coin", count: 10, value: 25, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
-            { type: "Sugarcube", count: 10, value: 18, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'cube', size: 18},
-        ],
-        2: [
-            // Edibles
-            { type: "Sandwich", count: 5, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
-            { type: "Tea bag", count: 5, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 7, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake', hideInPreviousTier: true },
-            { type: "Spoon", count: 7, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 5, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
-            { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
-            // Hazards
-            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse', hideInPreviousTier: true },
-            {
-                type: "Mouse Spawner",
-                value: 60,
-                shape: 'circle',
-                color: 0xFF0000,
-                isHazard: true,
-                size: 60,
-                image: 'mouse',
-                hideInPreviousTier: true,
-            }
-        ],
-        3: [
-            // Edibles
-            { type: "One pound note", count: 12, value: 200, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 200, image: 'onepoundnote', noCollision: true },
-            { type: "Beans can", count: 12, value: 180, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 180, image: 'beanscan'},
-            { type: "Teapot", count: 7, value: 125, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 125, image: 'teapot', hideInPreviousTier: true },
-            { 
-                type: "Chair", 
-                count: 2, 
-                value: 300, 
-                shape: 'circle',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                hideInPreviousTier: true, 
-                size: 300, 
-                image: 'chair',
-                hitbox: { width: 150, height: 150 },
-                positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
-            },
-            { 
-                type: "Table", 
-                count: 4, 
-                value: 300, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                hideInPreviousTier: true, 
-                size: 650, 
-                image: 'table',
-                hitbox: { width: 400, height: 200 },
-                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
-            },
-            { 
-                type: "Counter", 
-                count: 4, 
-                value: 300, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                hideInPreviousTier: true, 
-                size: 1200, 
-                image: 'emptycounter',
-                hitbox: { width: 600, height: 200 },
-                positions: [{x: 1450, y: 100}]
-            },
-            // Hazards
-            { 
-                    type: "Waiter", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'waiter', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
-            { 
-                    type: "Customer", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'customer', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
-        ],
     }
-};
-
-const LEVEL_2_CONFIG = JSON.parse(JSON.stringify(LEVEL_1_CONFIG));
-LEVEL_2_CONFIG['coverImage'] = undefined;
-LEVEL_2_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 45, threshold: 40, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 2400, HEIGHT: 1000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 37, threshold: 115, name: 'Small', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
-        { tier: 3, initialSize: 125, threshold: 450, name: 'Medium', color: 0xFF9800, zoom: 0.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2800, HEIGHT: 1450 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level1.png', BACKGROUND_SCALE: 1.0 } },
-    ];
-LEVEL_2_CONFIG['winSize'] = 700;
-LEVEL_2_CONFIG['PLAYER'] = {
-        GROWTH_FACTOR: 0.15,
-        TIER_GROWTH_FACTOR: 0.15,
-        SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
-        SPRITE: {
-            USE_SPRITESHEET: true,
-            KEY: 'player_sheet',
-            FRAME_WIDTH: 800,
-            FRAME_HEIGHT: 800,
-            ANIMATIONS: {
-                DOWN: { start: 0, end: 2, rate: 10 },
-                UP: { start: 3, end: 5, rate: 10 },
-                RIGHT: { start: 9, end: 11, rate: 10 },
-                LEFT: { start: 6, end: 8, rate: 10 }
-            }
-        }
-};
-LEVEL_2_CONFIG['TIER_ENTITIES'] = {
-        1: [
-            // Edibles
-            { type: "Sandwich", count: 2, value: 58, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 58, image: 'sandwich'},
-            { type: "Tea bag", count: 3, value: 68, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 68, image: 'teabag'},
-            { type: "Cake", count: 3, value: 100, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 100, image: 'cake'},
-            { type: "Spoon", count: 3, value: 60, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 60, image: 'spoon'},
-            { type: "Cup", count: 2, value: 48, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 48, image: 'cup'},
-            { type: "Biscuit", count: 5, value: 42, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 42, image: 'biscuit'},
-            { type: "Teapot", count: 1, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 110, image: 'teapot'},
-            // Hazards
-            { type: "Mouse", count: 5, value: 60, shape: 'circle', color: 0xFF0000, isHazard: true, size: 60, image: 'mouse' }
-        ],
-        2: [
-            // Edibles
-            { 
-                type: "Chair", 
-                count: 2, 
-                value: 300, 
-                shape: 'circle',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                hideInPreviousTier: true, 
-                size: 300, 
-                image: 'chair',
-                positions: [{x: 450, y: 400, rotation: 270}, {x: 950, y: 400, rotation: 90}, {x: 450, y: 1000, rotation: 270}, {x: 950, y: 1000, rotation: 90}, {x: 1700, y: 400, rotation: 270}, {x: 2250, y: 400, rotation: 90}, {x: 1700, y: 1000, rotation: 270}, {x: 2250, y: 1000, rotation: 90}]
-            },
-            { 
-                type: "One pound note", 
-                count: 10, 
-                value: 200, 
-                shape: 'circle', 
-                color: 0xFFEB3B, 
-                isHazard: false, 
-                size: 200, 
-                image: 'onepoundnote', 
-                noCollision: true,
-             },
-            { type: "Beans can", count: 6, value: 150, shape: 'circle', color: 0xFFEB3B, isHazard: false, size: 150, image: 'beanscan', hideInPreviousTier: true},
-            { type: "Teapot", count: 6, value: 110, shape: 'circle', color: 0x03A9F4, isHazard: false, size: 110, image: 'teapot', hideInPreviousTier: true },
-            // Hazards
-            { 
-                    type: "Waiter", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'waiter', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
-            { 
-                    type: "Customer", 
-                    count: 5, 
-                    value: 350, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 350,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'customer', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 10 },
-                            DOWN: { start: 2, end: 3, rate: 10 },
-                            LEFT: { start: 4, end: 5, rate: 10 },
-                            RIGHT: { start: 6, end: 7, rate: 10 }
-                        }
-                    }
-            },
-
-        ],
-        3 : [
-            { 
-                type: "Table", 
-                count: 4, 
-                value: 500, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                size: 500, 
-                image: 'table',
-                hitbox: { width: 250, height: 100 },
-                positions: [{x: 700, y: 400}, {x: 700, y: 1000}, {x: 2000, y: 400}, {x: 2000, y: 1000}]
-            },
-            { 
-                type: "Counter", 
-                count: 4, 
-                value: 300, 
-                shape: 'square',
-                color: 0xFFEB3B, 
-                isHazard: false,
-                size: 700, 
-                image: 'emptycounter',
-                hitbox: { width: 350, height: 100 },
-                positions: [{x: 1450, y: 100}]
-            },
-        ],
-};
-
-const LEVEL_3_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
-LEVEL_3_CONFIG['ENTITY_IMAGES'] = {
-        'player_sheet': 'assets/images/ghost.png',
-        'coin': 'assets/images/coin.png',
-        'onepoundnote': 'assets/images/onepoundnote.png',
-        'phonebooth': 'assets/images/phonebooth.png',
-    },
-LEVEL_3_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 26, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.5, zoomInStart: 4.0, LEVEL_AREA: { WIDTH: 550, HEIGHT: 2000 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level2.png', BACKGROUND_SCALE: 1.5, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 40, threshold: 95, name: 'Small', color: 0xFF9800, zoom: 0.8, zoomInStart: 1.5, LEVEL_AREA: { WIDTH: 1100, HEIGHT: 2200 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level2.png', BACKGROUND_SCALE: 1.0 } },
-    ];
-LEVEL_3_CONFIG['winSize'] = 210;
-LEVEL_3_CONFIG['PLAYER'] = {
-        GROWTH_FACTOR: 0.15,
-        TIER_GROWTH_FACTOR: 0.15,
-        SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
-        SPRITE: {
-            USE_SPRITESHEET: true,
-            KEY: 'player_sheet',
-            FRAME_WIDTH: 800,
-            FRAME_HEIGHT: 800,
-            ANIMATIONS: {
-                DOWN: { start: 0, end: 2, rate: 10 },
-                UP: { start: 3, end: 5, rate: 10 },
-                RIGHT: { start: 9, end: 11, rate: 10 },
-                LEFT: { start: 6, end: 8, rate: 10 }
-            }
-        }
-};
-LEVEL_3_CONFIG['TIER_ENTITIES'] = {
-        1: [
-            // Edibles
-            { type: "Coin", count: 80, value: 25, shape: 'square', color: 0x8BC34A, isHazard: false, image: 'coin', size: 25 },
-            { 
-                type: "One pound note", 
-                count: 1, 
-                value: 90, 
-                shape: 'circle', 
-                color: 0xFFEB3B, 
-                isHazard: false, 
-                size: 90, 
-                image: 'onepoundnote', 
-                noCollision: true,
-                positions: [{x: 200, y: 1500}],
-             },
-        ],
-        2: [
-            // Edibles
-            { 
-                type: "One pound note", 
-                count: 21, 
-                value: 90, 
-                shape: 'circle', 
-                color: 0xFFEB3B, 
-                isHazard: false, 
-                size: 90, 
-                image: 'onepoundnote', 
-                noCollision: true,
-                hideInPreviousTier: true,
-            },
-            { 
-                type: "Coin", 
-                count: 60, 
-                value: 25, 
-                shape: 'square', 
-                color: 0x8BC34A, 
-                isHazard: false, 
-                image: 'coin', 
-                size: 25,
-                hideInPreviousTier: true, 
-            },
-            { 
-                type: "Phone booth", 
-                count: 1, 
-                value: 200, 
-                shape: 'square', 
-                color: 0x8BC34A, 
-                isHazard: false, 
-                image: 'phonebooth', 
-                size: 200,
-                hideInPreviousTier: true,
-                positions: [{x: 1000, y: 1000}], 
-            },
-        ],
-};
-
-const LEVEL_4_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
-LEVEL_4_CONFIG['ENTITY_IMAGES'] = {
-        'player_sheet': 'assets/images/ghost.png',
-        'goose': 'assets/images/goose.png',
-        'guard': 'assets/images/guard.png',
-        'king': 'assets/images/king.png',
-    },
-LEVEL_4_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 40, threshold: 25, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 130, threshold: 130, name: 'Tiny', color: 0x2196F3, zoom: 1.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 1700 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level4.png', BACKGROUND_SCALE: 1.0, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-    ];
-LEVEL_4_CONFIG['winSize'] = 137;
-LEVEL_4_CONFIG['PLAYER'] = {
-        GROWTH_FACTOR: 0.15,
-        TIER_GROWTH_FACTOR: 0.15,
-        SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
-        SPRITE: {
-            USE_SPRITESHEET: true,
-            KEY: 'player_sheet',
-            FRAME_WIDTH: 800,
-            FRAME_HEIGHT: 800,
-            ANIMATIONS: {
-                DOWN: { start: 0, end: 2, rate: 10 },
-                UP: { start: 3, end: 5, rate: 10 },
-                RIGHT: { start: 9, end: 11, rate: 10 },
-                LEFT: { start: 6, end: 8, rate: 10 }
-            }
-        }
-};
-LEVEL_4_CONFIG['TIER_ENTITIES'] = {
-        1: [
-            { type: "Goose", count: 20, value: 39, shape: 'circle', color: 0xFF0000, isHazard: true, size: 39, image: 'goose' },
-            { 
-                    type: "Guard", 
-                    count: 12, 
-                    value: 78, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 78,
-                    visual_size: 100,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'guard', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 5 },
-                            DOWN: { start: 2, end: 3, rate: 5 },
-                            LEFT: { start: 4, end: 5, rate: 5 },
-                            RIGHT: { start: 6, end: 7, rate: 5 }
-                        }
-                    },
-                    movementType: 'tracking', 
-                    speed: 80 
-            },
-        ],
-        2: [
-            { 
-                    type: "King", 
-                    count: 1, 
-                    value: 119, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 119,
-                    visual_size: 140,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'king', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 5 },
-                            DOWN: { start: 2, end: 3, rate: 5 },
-                            LEFT: { start: 4, end: 5, rate: 5 },
-                            RIGHT: { start: 6, end: 7, rate: 5 }
-                        }
-                    },
-                    movementType: 'tracking', 
-                    speed: 80 
-            },
-        ],
-};
-
-const LEVEL_5_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
-LEVEL_5_CONFIG['ENTITY_IMAGES'] = {
-        'player_sheet': 'assets/images/ghost.png',
-        'tourist': 'assets/images/tourist.png',
-        'brit': 'assets/images/brit.png',
-        'cyclist': 'assets/images/cyclist.png',
-        'bush': 'assets/images/bush.png',
-        'streetlight': 'assets/images/streetlight.png',
-        'circletable': 'assets/images/circletable.png',
-        'chair': 'assets/images/chair.png',
-        'phonebooth': 'assets/images/phonebooth.png',
-        'car': 'assets/images/car.png',
-        'taxi': 'assets/images/taxi.png',
-        'doubledecker': 'assets/images/doubledecker.png',
-        'tree': 'assets/images/tree.png',
-        'doubledecker': 'assets/images/doubledecker.png',
-        'tree': 'assets/images/tree.png',
-        'building1': 'assets/images/building1.png',
-        'building2': 'assets/images/building2.png',
-        'awning': 'assets/images/awning.png',
-    },
-LEVEL_5_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 21, threshold: 21, name: 'Tiny', color: 0x2196F3, zoom: 2.0, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2200, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 2.0, BACKGROUND_X: 0, BACKGROUND_Y: -200 } },
-        { tier: 2, initialSize: 31, threshold: 31, name: 'Tiny', color: 0x2196F3, zoom: 1.25, zoomInStart: 2.0, LEVEL_AREA: { WIDTH: 1760, HEIGHT: 1787 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level5.png', BACKGROUND_SCALE: 1.25, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-    ];
-LEVEL_5_CONFIG['winSize'] = 122;
-LEVEL_5_CONFIG['PLAYER'] = {
-        START_X: 500,
-        START_Y: 400,
-        GROWTH_FACTOR: 0.04,
-        TIER_GROWTH_FACTOR: 0.04,
-        SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
-        SPRITE: {
-            USE_SPRITESHEET: true,
-            KEY: 'player_sheet',
-            FRAME_WIDTH: 800,
-            FRAME_HEIGHT: 800,
-            ANIMATIONS: {
-                DOWN: { start: 0, end: 2, rate: 10 },
-                UP: { start: 3, end: 5, rate: 10 },
-                RIGHT: { start: 9, end: 11, rate: 10 },
-                LEFT: { start: 6, end: 8, rate: 10 }
-            }
-        }
-};
-LEVEL_5_CONFIG['TIER_ENTITIES'] = {
-        1: [
-
-            { 
-                    type: "Brit", 
-                    count: 12, 
-                    value: 20, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 20,
-                    visual_size: 25,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'brit', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 5 },
-                            DOWN: { start: 2, end: 3, rate: 5 },
-                            LEFT: { start: 4, end: 5, rate: 5 },
-                            RIGHT: { start: 6, end: 7, rate: 5 }
-                        }
-                    },
-                    spawner: { edge: 'right', position: 399, interval: 8000, speed: 80, prewarmDuration: 28000 }
-            },
-            { 
-                    type: "Tourist", 
-                    count: 12, 
-                    value: 20, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 20,
-                    visual_size: 25,
-                    SPRITE: {
-                        USE_SPRITESHEET: true,
-                        KEY: 'tourist', // The key used for preloading the image
-                        FRAME_WIDTH: 750,         // Width of a single frame
-                        FRAME_HEIGHT: 750,        // Height of a single frame
-                        ANIMATIONS: {
-                            UP: { start: 0, end: 1, rate: 5 },
-                            DOWN: { start: 2, end: 3, rate: 5 },
-                            LEFT: { start: 4, end: 5, rate: 5 },
-                            RIGHT: { start: 6, end: 7, rate: 5 }
-                        }
-                    },
-                    spawner: { edge: 'right', position: 400, interval: 8000, speed: 80, prewarmDuration: 24000 }
-            },
-            { 
-                    type: "Cyclist", 
-                    count: 12, 
-                    value: 20, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 20,
-                    image: 'cyclist', 
-                    spawner: { edge: 'right', position: 300, interval: 9000, speed: 80, prewarmDuration: 27000 }
-            },
-            { 
-                    type: "Bush", 
-                    count: 12, 
-                    value: 27, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: false,
-                    size: 27,
-                    image: 'bush', 
-                    positions: [{x: 300, y: 50}, {x: 850, y: 50}, {x: 1300, y: 50}, {x: 1650, y: 50}, {x: 2100, y: 50}, {x: 350, y: 450}, {x: 800, y: 450}, {x: 1300, y: 450}, {x: 1680, y: 450}, {x: 2050, y: 450}]
-            },
-            { 
-                    type: "Streetlight", 
-                    count: 12, 
-                    value: 25, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: false,
-                    size: 25,
-                    image: 'streetlight', 
-                    positions: [{x: 650, y: 450, rotation: 270}, {x: 1425, y: 450, rotation: 270}, {x: 1425, y: 50, rotation: 90}]
-            },
-            { 
-                    type: "Table", 
-                    count: 12, 
-                    value: 28, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: false,
-                    size: 28,
-                    image: 'circletable', 
-                    positions: [{x: 450, y: 50}, {x: 1000, y: 50}, {x: 2200, y: 450}]
-            },
-            { 
-                    type: "Chair", 
-                    count: 12, 
-                    value: 20, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: false,
-                    size: 20,
-                    image: 'chair', 
-                    positions: [{x: 375, y: 50, rotation: 270}, {x: 525, y: 50, rotation: 90}, {x: 925, y: 50, rotation: 270}, {x: 1075, y: 50, rotation: 90}, {x: 2125, y: 450, rotation: 270}, {x: 2275, y: 450, rotation: 90}]
-            },
-        ],
-        2 : [
-            {
-                type: "Building, Large",
-                count: 10,
-                value: 100,
-                shape: 'square',
-                color: 0x8BC34A,
-                isHazard: false,
-                hideInPreviousTier: true,
-                size: 100,
-                image: 'building2',
-                positions: [
-                    { x: 706, y: 713, rotation: 90 },
-                    { x: 325, y: 713},
-                    { x: 825, y: 544, rotation: 90 },
-                    { x: 825, y: 713, rotation: 90 },
-                    { x: 706, y: 544, rotation: 90  },
-                    { x: 1500, y: 168 }
-                ]
-            },
-            {
-                type: "Building, Small",
-                count: 10,
-                value: 75,
-                shape: 'square',
-                color: 0x8BC34A,
-                isHazard: false,
-                hideInPreviousTier: true,
-                size: 75,
-                image: 'building2',
-                positions: [
-                    { x: 100, y: 1769 },
-                    { x: 188, y: 1769 },
-                    { x: 275, y: 1769 },
-                    { x: 363, y: 1769 },
-
-                    { x: 538, y: 1769 },
-                    { x: 625, y: 1769 },
-                    { x: 713, y: 1769 },
-                    { x: 800, y: 1769 },
-
-                    { x: 1125, y: 1769 },
-                    { x: 1213, y: 1769 },
-                    { x: 1300, y: 1769 },
-                    { x: 1388, y: 1769 },
-                ]
-            },
-            {
-                type: "Tree",
-                count: 30,
-                value: 50,
-                shape: 'circle',
-                color: 0xFF0000,
-                isHazard: false,
-                hideInPreviousTier: true,
-                size: 50,
-                image: 'tree',
-                positions: [
-                    { x: 1684, y: 74 },
-                    { x: 316, y: 135 },
-                    { x: 165, y: 454 },
-                    { x: 78, y: 599 },
-                    { x: 231, y: 614 },
-                    { x: 154, y: 638 },
-                    { x: 108, y: 733 },
-                    { x: 73, y: 851 },
-                    { x: 679, y: 1026 },
-                    { x: 71, y: 1045 },
-                    { x: 1640, y: 1076 },
-                    { x: 616, y: 1083 },
-                    { x: 1706, y: 1091 },
-                    { x: 826, y: 1136 },
-                    { x: 100, y: 1155 },
-                    { x: 1720, y: 1231 },
-                    { x: 241, y: 1260 },
-                    { x: 838, y: 1308 },
-                    { x: 151, y: 1384 },
-                    { x: 81, y: 1394 },
-                    { x: 1194, y: 1436 },
-                    { x: 1471, y: 1478 },
-                    { x: 1239, y: 1501 },
-                    { x: 1659, y: 1505 },
-                    { x: 598, y: 1536 },
-                    { x: 1711, y: 1540 },
-                    { x: 1660, y: 1575 },
-                    { x: 1591, y: 1756 }
-                ]
-            },
-            {
-                type: "Bush",
-                count: 30,
-                value: 30,
-                shape: 'circle',
-                color: 0xFF0000,
-                isHazard: false,
-                hideInPreviousTier: true,
-                size: 30,
-                image: 'bush',
-                positions: [
-                    { x: 304, y: 850 },
-                    { x: 533, y: 850 },
-                    { x: 646, y: 850 },
-                    { x: 761, y: 850 },
-                    { x: 875, y: 850 },
-                    { x: 1333, y: 850 },
-                    { x: 1446, y: 850 },
-                    { x: 1561, y: 850 },
-                    { x: 1675, y: 850 },
-                    { x: 75, y: 1700 },
-                    { x: 189, y: 1700 },
-                    { x: 304, y: 1700 },
-                    { x: 533, y: 1700 },
-                    { x: 646, y: 1700 },
-                    { x: 761, y: 1700 },
-                    { x: 1104, y: 1700 },
-                    { x: 1218, y: 1700 },
-                    { x: 1333, y: 1700 },
-                    { x: 1446, y: 1700 },
-                    { x: 1675, y: 1700 },
-                    { x: 1063, y: 128 },
-                    { x: 1063, y: 383 },
-                    { x: 1063, y: 510 },
-                    { x: 1063, y: 638 },
-                    { x: 1063, y: 765 },
-                    { x: 1063, y: 1021 },
-                    { x: 1063, y: 1149 },
-                    { x: 1063, y: 1276 },
-                    { x: 1063, y: 1404 },
-                    { x: 1063, y: 1531 },
-                    { x: 500, y: 383 },
-                    { x: 500, y: 510 },
-                    { x: 500, y: 638 },
-                    { x: 500, y: 765 },
-                    { x: 500, y: 1021 },
-                    { x: 500, y: 1149 },
-                    { x: 500, y: 1276 },
-                    { x: 500, y: 1404 },
-                    { x: 500, y: 1531 },
-                ]
-            },
-            {
-                type: "Streetlight",
-                count: 36,
-                value: 25,
-                shape: 'circle',
-                color: 0xFF0000,
-                isHazard: false,
-                size: 25,
-                image: 'streetlight',
-                hideInPreviousTier: true,
-                positions: [
-                    { x: 190, y: 850, rotation: 270 },
-                    { x: 418, y: 850, rotation: 270 },
-                    { x: 590, y: 850, rotation: 270 },
-                    { x: 704, y: 850, rotation: 270 },
-                    { x: 818, y: 850, rotation: 270 },
-                    { x: 1390, y: 850, rotation: 270 },
-                    { x: 1504, y: 850, rotation: 270 },
-                    { x: 1618, y: 850, rotation: 270 },
-                    { x: 133, y: 1700, rotation: 90 },
-                    { x: 246, y: 1700, rotation: 90 },
-                    { x: 590, y: 1700, rotation: 90 },
-                    { x: 704, y: 1700, rotation: 90 },
-                    { x: 1160, y: 1700, rotation: 90 },
-                    { x: 1275, y: 1700, rotation: 90 },
-                    { x: 1390, y: 1700, rotation: 90 },
-                    { x: 1560, y: 1700, rotation: 90 },
-                    { x: 1063, y: 446 },
-                    { x: 1063, y: 574 },
-                    { x: 1063, y: 701 },
-                    { x: 1063, y: 1085 },
-                    { x: 1063, y: 1213 },
-                    { x: 1063, y: 1340 },
-                    { x: 1063, y: 1468 },
-                    { x: 500, y: 446 },
-                    { x: 500, y: 574 },
-                    { x: 500, y: 701 },
-                    { x: 500, y: 1085 },
-                    { x: 500, y: 1213 },
-                    { x: 500, y: 1340 },
-                    { x: 500, y: 1468 },
-                ]
-            },
-            { 
-                type: "Phone booth", 
-                count: 1, 
-                value: 37, 
-                shape: 'square', 
-                color: 0x8BC34A, 
-                isHazard: false, 
-                image: 'phonebooth', 
-                size: 37,
-                positions: [{x: 531, y: 63}], 
-            },
-            { 
-                    type: "Awning", 
-                    count: 12, 
-                    value: 40, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: false,
-                    size: 40,
-                    hideInPreviousTier: true,
-                    image: 'awning', 
-                    positions: [                    
-                        { x: 444, y: 713, rotation: 90 },
-                        { x: 909, y: 544, rotation: 90 },
-                        { x: 909, y: 713, rotation: 90 },
-                        { x: 456, y: 1769, rotation: 90 },
-                        { x: 894, y: 1769, rotation: 90 },
-                        { x: 1031, y: 1769, rotation: 270 },
-                        { x: 1482, y: 1769, rotation: 90 },
-                    ]
-            },
-            {
-                    type: "Car",
-                    count: 12,
-                    value: 40,
-                    shape: 'circle',
-                    color: 0xFF0000,
-                    isHazard: true,
-                    hideInPreviousTier: false,
-                    size: 40,
-                    image: 'car',
-                    hitbox: { width: 260, height: 120 },
-                    spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 33000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 33000 },]
-            },
-            {
-                    type: "Taxi",
-                    count: 12,
-                    value: 40,
-                    shape: 'circle',
-                    color: 0xFF0000,
-                    isHazard: true,
-                    hideInPreviousTier: false,
-                    size: 40,
-                    image: 'taxi',
-                    hitbox: { width: 260, height: 120 },
-                    spawners: [{ edge: 'right', position: 331, interval: 18000, speed: 80, prewarmDuration: 24000 }, { edge: 'right', position: 1669, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'left', rotation: 180, position: 256, interval: 18000, speed: 80, prewarmDuration: 24000 }]
-            },
-            {
-                    type: "Doubledecker bus",
-                    count: 12,
-                    value: 60,
-                    shape: 'circle',
-                    color: 0xFF0000,
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 60,
-                    image: 'doubledecker',
-                    hitbox: { width: 260, height: 120 },
-                    spawners: [{ edge: 'right', rotation: 90, position: 1669, interval: 12000, speed: 80, prewarmDuration: 8000}]
-            },
-            { 
-                    type: "Car", 
-                    count: 12, 
-                    value: 40, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    size: 40,
-                    hideInPreviousTier: true,
-                    image: 'car', 
-                    spawners: [{ edge: 'top', rotation: 270, position: 450, interval: 12000, speed: 80}, { edge: 'bottom', rotation: 90, position: 938, interval: 12000, speed: 80}]
-            },
-            { 
-                    type: "Taxi", 
-                    count: 12, 
-                    value: 40, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    hideInPreviousTier: true,
-                    size: 40,
-                    image: 'taxi', 
-                    spawners: [{ edge: 'top', rotation: 270, position: 450, interval: 12000, speed: 80, prewarmDuration: 4000}, { edge: 'bottom', rotation: 90, position: 938, interval: 12000, speed: 80, prewarmDuration: 4000}]
-            },
-            { 
-                    type: "Doubledecker bus", 
-                    count: 12, 
-                    value: 60, 
-                    shape: 'circle', 
-                    color: 0xFF0000, 
-                    isHazard: true,
-                    size: 60,
-                    hideInPreviousTier: true,
-                    image: 'doubledecker',
-                    hitbox: { width: 120, height: 260 },  
-                    spawners: [{ edge: 'top', position: 450, interval: 12000, speed: 80, prewarmDuration: 8000}, { edge: 'bottom', rotation: 180, position: 938, interval: 12000, speed: 80, prewarmDuration: 8000}]
-            },
-        ],
-};
-
-const LEVEL_6_CONFIG = JSON.parse(JSON.stringify(LEVEL_2_CONFIG));
-LEVEL_6_CONFIG['ENTITY_IMAGES'] = {
-        'player_sheet': 'assets/images/ghost.png',
-        'duck': 'assets/images/duck.png',
-    },
-LEVEL_6_CONFIG['SIZE_TIERS'] = [
-        { tier: 1, initialSize: 21, threshold: 21, name: 'Tiny', color: 0x2196F3, zoom: 2.5, zoomInStart: 1.0, LEVEL_AREA: { WIDTH: 2500, HEIGHT: 500 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level6.png', BACKGROUND_SCALE: 2.5, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-        { tier: 2, initialSize: 21, threshold: 50, name: 'Tiny', color: 0x2196F3, zoom: 1, zoomInStart: 2.5, LEVEL_AREA: { WIDTH: 3040, HEIGHT: 1197 }, ASSETS: { BACKGROUND_IMAGE: 'assets/images/Level6.png', BACKGROUND_SCALE: 1, BACKGROUND_X: 0, BACKGROUND_Y: 0 } },
-    ];
-LEVEL_6_CONFIG['winSize'] = 122;
-LEVEL_6_CONFIG['PLAYER'] = {
-        START_X: 500,
-        START_Y: 400,
-        GROWTH_FACTOR: 0.04,
-        TIER_GROWTH_FACTOR: 0.04,
-        SPEED: 200,
-        MOUTH_OFFSET: 0.7, // Multiplier for hitbox position relative to player size
-        CONSUMPTION_RANGE_BONUS: 10, // Additional pixel range for eating
-        INVULNERABILITY_DURATION: 500, // ms of invulnerability after taking damage
-        SPRITE: {
-            USE_SPRITESHEET: true,
-            KEY: 'player_sheet',
-            FRAME_WIDTH: 800,
-            FRAME_HEIGHT: 800,
-            ANIMATIONS: {
-                DOWN: { start: 0, end: 2, rate: 10 },
-                UP: { start: 3, end: 5, rate: 10 },
-                RIGHT: { start: 9, end: 11, rate: 10 },
-                LEFT: { start: 6, end: 8, rate: 10 }
-            }
-        }
-};
-LEVEL_6_CONFIG['TIER_ENTITIES'] = {
-        1: [
-            { type: "Duck", count: 25, value: 20, shape: 'circle', color: 0xFF0000, isHazard: true, size: 20, image: 'duck' },
-        ]
-
 };
 
 const GameConfig = {
@@ -1020,39 +609,74 @@ const GameConfig = {
         { name: "Pigeon" },
         { name: "Jaguar" },
         { name: "Seagull" },
-        { name: "Goo" },
-
+        { name: "Goo" }
     ],
-    LEVELS: [
-        {
-            id: 'level1',
-            name: 'The Haunted Tea Shop',
-            ...LEVEL_1_CONFIG
-        },
-        {
-            id: 'level2',
-            name: 'Spot of Tea',
-            ...LEVEL_2_CONFIG
-        },
-        {
-            id: 'level3',
-            name: 'Spare some change\nfor the phones',
-            ...LEVEL_3_CONFIG
-        },
-        {
-            id: 'level4',
-            name: 'All hail the King',
-            ...LEVEL_4_CONFIG
-        },
-        {
-            id: 'level5',
-            name: 'Jack the Ghost',
-            ...LEVEL_5_CONFIG
-        },
-        {
-            id: 'level6',
-            name: 'Five Little\nAnseriformes',
-            ...LEVEL_6_CONFIG
-        },
-    ]
+    LEVELS: [],
+
+    // Registration Helper
+    registerLevel(levelData) {
+        // Deep clone base config as start
+        const merged = JSON.parse(JSON.stringify(BASE_LEVEL_CONFIG));
+        
+        // Merge level-specific overrides
+        Object.assign(merged, levelData);
+        if (levelData.PLAYER) {
+            merged.PLAYER = Object.assign({}, BASE_LEVEL_CONFIG.PLAYER, levelData.PLAYER);
+            if (levelData.PLAYER.SPRITE) {
+                merged.PLAYER.SPRITE = Object.assign({}, BASE_LEVEL_CONFIG.PLAYER.SPRITE, levelData.PLAYER.SPRITE);
+            }
+        }
+
+        // Expand TIER_ENTITIES from templates
+        merged.TIER_ENTITIES = {};
+        for (const tier in levelData.TIER_ENTITIES) {
+            merged.TIER_ENTITIES[tier] = levelData.TIER_ENTITIES[tier].map(item => {
+                const template = ENTITY_TEMPLATES[item.type] || {};
+                
+                // Deep merge standard template and overrides (needed to avoid nested objects like SPRITE getting overwritten completely)
+                const mergedItem = JSON.parse(JSON.stringify(template));
+                
+                // Perform deep merge of properties
+                Object.keys(item).forEach(key => {
+                    if (item[key] && typeof item[key] === 'object' && !Array.isArray(item[key])) {
+                        mergedItem[key] = Object.assign({}, mergedItem[key] || {}, item[key]);
+                    } else {
+                        mergedItem[key] = item[key];
+                    }
+                });
+                
+                return mergedItem;
+            });
+        }
+
+        // Auto-generate ENTITY_IMAGES preloads mapping
+        merged.ENTITY_IMAGES = {};
+        // Add player sheet by default
+        const playerKey = merged.PLAYER.SPRITE.KEY;
+        if (GLOBAL_ASSET_REGISTRY[playerKey]) {
+            merged.ENTITY_IMAGES[playerKey] = GLOBAL_ASSET_REGISTRY[playerKey];
+        }
+        
+        // Scan all entities for custom images
+        for (const tier in merged.TIER_ENTITIES) {
+            merged.TIER_ENTITIES[tier].forEach(entity => {
+                // If it uses custom key in SPRITE config, load that
+                if (entity.SPRITE && entity.SPRITE.KEY && GLOBAL_ASSET_REGISTRY[entity.SPRITE.KEY]) {
+                    merged.ENTITY_IMAGES[entity.SPRITE.KEY] = GLOBAL_ASSET_REGISTRY[entity.SPRITE.KEY];
+                }
+                // Otherwise normal image
+                if (entity.image && GLOBAL_ASSET_REGISTRY[entity.image]) {
+                    merged.ENTITY_IMAGES[entity.image] = GLOBAL_ASSET_REGISTRY[entity.image];
+                }
+            });
+        }
+
+        // In level 5, there was building1 in ENTITY_IMAGES even though building1 wasn't used in entities.
+        // Let's add any custom preloads if specified under levelData.ENTITY_IMAGES (e.g. for legacy preloads)
+        if (levelData.ENTITY_IMAGES) {
+            Object.assign(merged.ENTITY_IMAGES, levelData.ENTITY_IMAGES);
+        }
+
+        this.LEVELS.push(merged);
+    }
 };

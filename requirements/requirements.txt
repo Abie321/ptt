@@ -1,94 +1,134 @@
 Software Requirements Specification: Tasty Planet Fan Game
-Version: 1.1
-Status: Draft
-Author: Systems Analyst (AI)
+Version: 1.2
+Status: Updated
+Author: Antigravity AI & Development Team
+Last Updated: 2026-07-18
+
 1. Introduction
-This document outlines the functional and non-functional requirements for the Tasty Planet Fan Video Game. The system involves a player-controlled avatar capable of moving, growing via consumption, and interacting with various size-tiered entities. This version (1.1) integrates the Top-Down gameplay module with the overarching application framework, including UI, progression, and persistent data systems.
+This document outlines the functional and non-functional requirements for the Tasty Planet Fan Video Game. The system involves a player-controlled avatar capable of moving, growing via consumption, and interacting with various size-tiered entities. This version (1.2) updates the implementation status of all requirements following the prototype v0.1 analysis.
+
 2. System Architecture
 2.1 Technology Stack
-REQ-TECH-001: The application shall be developed using the Phaser JS game engine to ensure web compatibility and efficient 2D rendering.
+- REQ-TECH-001 [STATUS: IMPLEMENTED]: The application shall be developed using the Phaser JS game engine to ensure web compatibility and efficient 2D rendering.
+
 2.2 Game Loop
-REQ-SYS-001: The system shall maintain a central game loop handling input processing, physics updates (collision detection), and rendering at a target frame rate of 60 FPS.
+- REQ-SYS-001 [STATUS: IMPLEMENTED]: The system shall maintain a central game loop handling input processing, physics updates (collision detection), and rendering at a target frame rate of 60 FPS.
+
 3. Character & Camera System (Top-Down Module)
 3.1 Character Representation
-REQ-CAM-001: The Player Character (PC) shall be rendered as a 3D or 2D sprite with a distinct anterior ("mouth") and posterior ("back").
-REQ-CAM-002: The PC's visual orientation must clearly indicate the direction of movement and the location of the mouth for hitbox referencing.
+- REQ-CAM-001 [STATUS: IMPLEMENTED]: The Player Character (PC) shall be rendered as a 3D or 2D sprite with a distinct anterior ("mouth") and posterior ("back"). (Currently implemented using sprite sheets with direction-based animations and a circular physics shape).
+- REQ-CAM-002 [STATUS: IMPLEMENTED]: The PC's visual orientation must clearly indicate the direction of movement and the location of the mouth for hitbox referencing.
+
 3.2 Camera Perspective
-REQ-CAM-003: The game view shall be rendered from a top-down perspective (overhead view).
-REQ-CAM-004: The camera shall capture the PC's dorsal (back) and lateral (side) features, providing depth perception relative to the ground plane.
+- REQ-CAM-003 [STATUS: IMPLEMENTED]: The game view shall be rendered from a top-down perspective (overhead view).
+- REQ-CAM-004 [STATUS: IMPLEMENTED]: The camera shall capture the PC's dorsal (back) and lateral (side) features, providing depth perception relative to the ground plane.
+
 4. Input & Control System
 4.1 Directional Movement
 The system shall support both Arrow Key and WASD input schemes for character translation.
-REQ-INP-001 (Upward): Pressing the Up Arrow or W key shall translate the PC in the positive Y-axis direction (Up).
-REQ-INP-002 (Downward): Pressing the Down Arrow or S key shall translate the PC in the negative Y-axis direction (Down).
-REQ-INP-003 (Leftward): Pressing the Left Arrow or A key shall translate the PC in the negative X-axis direction (Left).
-REQ-INP-004 (Rightward): Pressing the Right Arrow or D key shall translate the PC in the positive X-axis direction (Right).
+- REQ-INP-001 (Upward) [STATUS: IMPLEMENTED]: Pressing the Up Arrow or W key shall translate the PC in the positive Y-axis direction (Up).
+- REQ-INP-002 (Downward) [STATUS: IMPLEMENTED]: Pressing the Down Arrow or S key shall translate the PC in the negative Y-axis direction (Down).
+- REQ-INP-003 (Leftward) [STATUS: IMPLEMENTED]: Pressing the Left Arrow or A key shall translate the PC in the negative X-axis direction (Left).
+- REQ-INP-004 (Rightward) [STATUS: IMPLEMENTED]: Pressing the Right Arrow or D key shall translate the PC in the positive X-axis direction (Right).
+
 4.2 System Inputs
-REQ-INP-005: Pressing the ESC key shall pause the game loop and toggle the in-game Menu UI overlay.
+- REQ-INP-005 [STATUS: PARTIALLY IMPLEMENTED]: Pressing the ESC key shall pause the game loop and toggle the in-game Menu UI overlay. (Scene pause is implemented; pause menu UI is NOT yet implemented).
+
 4.3 Movement Constraints
-REQ-MOV-001: The PC shall have full freedom of movement within the visible screen coordinates (X, Y), bounded only by level edges or obstacles.
+- REQ-MOV-001 [STATUS: IMPLEMENTED]: The PC shall have full freedom of movement within the visible screen coordinates (X, Y), bounded only by level edges or obstacles.
+
 5. Core Gameplay Mechanics
 5.1 Consumption Logic
-REQ-MECH-001: The system shall define an "Edible Hitbox" located at the anterior (mouth) of the PC.
-REQ-MECH-002: A consumption event is triggered when the Edible Hitbox collides with an entity flagged as "Edible" for the PC's current size.
-REQ-MECH-003: Upon consumption, the target entity shall be removed from the game world and the PC's growth progress shall increment.
+- REQ-MECH-001 [STATUS: IMPLEMENTED]: The system shall define an "Edible Hitbox" located at the anterior (mouth) of the PC.
+- REQ-MECH-002 [STATUS: IMPLEMENTED]: A consumption event is triggered when the Edible Hitbox collides with an entity flagged as "Edible" for the PC's current size.
+- REQ-MECH-003 [STATUS: IMPLEMENTED]: Upon consumption, the target entity shall be removed from the game world and the PC's growth progress shall increment.
+
 5.2 Growth & Size Tiers
-REQ-MECH-004: The game world entities shall be categorized into distinct "Size Tiers."
-REQ-MECH-005: The PC shall begin play at Size Tier 1.
-REQ-MECH-006: The PC must consume a predefined quota of items within the current Size Tier to advance to the next Size Tier.
-REQ-MECH-007: Upon advancing a Size Tier, the PC's visual scale (size) shall increase.
-REQ-MECH-008: Upon advancing to Size Tier N, items belonging to Size Tier N shall become consumable.
-REQ-MECH-009: Items from Size Tier N-1 (previous tier) shall remain consumable.
-REQ-MECH-010 (Despawn Logic): As the PC grows to Size Tier N, items belonging to Size Tier N-2 (or the smallest currently active tier) shall disappear (despawn) from the level to reduce clutter and optimize performance.
+- REQ-MECH-004 [STATUS: IMPLEMENTED]: The game world entities shall be categorized into distinct "Size Tiers."
+- REQ-MECH-005 [STATUS: IMPLEMENTED]: The PC shall begin play at Size Tier 1.
+- REQ-MECH-006 [STATUS: IMPLEMENTED]: The PC must consume a predefined quota of items within the current Size Tier to advance to the next Size Tier.
+- REQ-MECH-007 [STATUS: IMPLEMENTED]: Upon advancing a Size Tier, the PC's visual scale (size) shall increase.
+- REQ-MECH-008 [STATUS: IMPLEMENTED]: Upon advancing to Size Tier N, items belonging to Size Tier N shall become consumable.
+- REQ-MECH-009 [STATUS: IMPLEMENTED]: Items from Size Tier N-1 (previous tier) shall remain consumable.
+- REQ-MECH-010 (Despawn Logic) [STATUS: IMPLEMENTED]: As the PC grows to Size Tier N, items belonging to Size Tier N-2 (or the smallest currently active tier) shall disappear (despawn) from the level to reduce clutter and optimize performance.
+
 5.3 Win Condition
-REQ-MECH-011: The level shall conclude successfully when the PC consumes a predefined quantity of items within the level's maximum defined Size Tier.
+- REQ-MECH-011 [STATUS: IMPLEMENTED]: The level shall conclude successfully when the PC consumes a predefined quantity of items within the level's maximum defined Size Tier.
+
 6. Scoring System
 6.1 Base Scoring
-REQ-SCR-001: The player shall receive points for every successful consumption event.
+- REQ-SCR-001 [STATUS: IMPLEMENTED]: The player shall receive points for every successful consumption event.
+
 6.2 Diminishing Returns (Decay)
-REQ-SCR-002: The system shall track the number of times a specific unique item type has been consumed.
-REQ-SCR-003: The first consumption of a unique item type shall award maximum points (e.g., 80 points).
-REQ-SCR-004: Subsequent consumption of the same item type shall award progressively fewer points based on a decay formula.
-REQ-SCR-005: The decay formula shall depend on the total density (count) of that item type in the Size Tier.
-REQ-SCR-006: The score award for an item shall never drop below 1 point.
+- REQ-SCR-002 [STATUS: IMPLEMENTED]: The system shall track the number of times a specific unique item type has been consumed.
+- REQ-SCR-003 [STATUS: IMPLEMENTED]: The first consumption of a unique item type shall award maximum points (e.g., 80 points).
+- REQ-SCR-004 [STATUS: IMPLEMENTED]: Subsequent consumption of the same item type shall award progressively fewer points based on a decay formula.
+- REQ-SCR-005 [STATUS: IMPLEMENTED]: The decay formula shall depend on the total density (count) of that item type in the Size Tier.
+- REQ-SCR-006 [STATUS: IMPLEMENTED]: The score award for an item shall never drop below 1 point.
+
 6.3 Star Rating System
-REQ-SCR-007: The system shall utilize a 3-star rating system for level completion.
-REQ-SCR-008: Stars shall be awarded based on the final score achieving predefined thresholds (e.g., Bronze, Silver, Gold thresholds) set per level.
+- REQ-SCR-007 [STATUS: IMPLEMENTED]: The system shall utilize a 3-star rating system for level completion.
+- REQ-SCR-008 [STATUS: IMPLEMENTED]: Stars shall be awarded based on the final score achieving predefined thresholds (e.g., Bronze, Silver, Gold thresholds) set per level.
+
 7. Health & Penalty System
 7.1 Hazard Detection
-REQ-DMG-001: Any entity belonging to a Size Tier larger than the PC's current consumption tier is classified as a "Hazard."
-REQ-DMG-002: Projectiles emitted by Hazard entities are classified as "Hazards."
+- REQ-DMG-001 [STATUS: IMPLEMENTED]: Any entity belonging to a Size Tier larger than the PC's current consumption tier is classified as a "Hazard."
+- REQ-DMG-002 [STATUS: NOT IMPLEMENTED]: Projectiles emitted by Hazard entities are classified as "Hazards."
+
 7.2 Score Penalty
-REQ-DMG-003: Collision with a Hazard shall result in a score reduction (penalty) of 80 points (configurable).
-REQ-DMG-004: Penalties shall apply regardless of current score; if Current Score < Penalty, the score shall become negative.
-REQ-DMG-005: The PC shall remain in a negative score state until sufficient items are consumed to return the value to positive.
+- REQ-DMG-003 [STATUS: IMPLEMENTED]: Collision with a Hazard shall result in a score reduction (penalty) of 80 points (configurable).
+- REQ-DMG-004 [STATUS: IMPLEMENTED]: Penalties shall apply regardless of current score; if Current Score < Penalty, the score shall become negative.
+- REQ-DMG-005 [STATUS: IMPLEMENTED]: The PC shall remain in a negative score state until sufficient items are consumed to return the value to positive.
+
 8. User Interface (UI)
 8.1 Heads Up Display (HUD)
 The HUD shall be visible during active gameplay.
-REQ-UI-HUD-001 (Size Indicator): A status indicator in the top-left corner shall display the avatar's current size metric. This metric shall update dynamically as items are consumed.
-REQ-UI-HUD-002 (Level Progress): A progress bar in the top-left corner shall indicate progress toward level completion. It shall reach 100% capacity when the Win Condition (REQ-MECH-011) is met.
-REQ-UI-HUD-003 (Timer): A timer in the top-right corner shall display the elapsed duration of the current playthrough.
-REQ-UI-HUD-004 (Scoreboard): A score box located to the left of the timer (top-right) shall display the player's current running score.
+- REQ-UI-HUD-001 (Size Indicator) [STATUS: IMPLEMENTED]: A status indicator in the top-left corner shall display the avatar's current size metric. This metric shall update dynamically as items are consumed.
+- REQ-UI-HUD-002 (Level Progress) [STATUS: IMPLEMENTED]: A progress bar in the top-left corner shall indicate progress toward level completion. It shall reach 100% capacity when the Win Condition (REQ-MECH-011) is met.
+- REQ-UI-HUD-003 (Timer) [STATUS: IMPLEMENTED]: A timer in the top-right corner shall display the elapsed duration of the current playthrough.
+- REQ-UI-HUD-004 (Scoreboard) [STATUS: IMPLEMENTED]: A score box located to the left of the timer (top-right) shall display the player's current running score.
+
 8.2 Main Menu
-REQ-UI-MNU-001: Upon application launch, a Main Menu shall be displayed containing the following interactive options, Play: Navigates to Level Selection, Options: Navigates to Settings, Gallery: Navigates to the Collection Viewer, Save and Quit: Saves current progress and exits the application/returns to title.
+- REQ-UI-MNU-001 [STATUS: PARTIALLY IMPLEMENTED]: Upon application launch, a Main Menu shall be displayed containing the following interactive options:
+  - Play: Navigates to World Select / Level Selection (Implemented)
+  - Options: Navigates to Settings (NOT implemented)
+  - Gallery: Navigates to the Collection Viewer (NOT implemented)
+  - Save and Quit: Saves current progress and exits the application (NOT implemented)
+
 8.3 Level Selection Screen
-REQ-UI-LVL-001: Selecting "Play" shall display a list of all game levels.
-REQ-UI-LVL-002: Locked levels shall be visually distinct from playable levels.
-REQ-UI-LVL-003: For unlocked levels, the number of stars earned (0-3) shall be displayed beneath the level identifier.
-REQ-UI-LVL-004: The descriptive Level Name shall only be visible when the specific Level Number is selected/highlighted.
-REQ-UI-LVL-005: Selecting an available (unlocked) level shall initialize the Game Loop for that specific level.
+- REQ-UI-LVL-001 [STATUS: IMPLEMENTED]: Selecting "Play" shall display a list of all game levels. (Implemented via WorldSelectScene and LevelSelectScene).
+- REQ-UI-LVL-002 [STATUS: PARTIALLY IMPLEMENTED]: Locked levels shall be visually distinct from playable levels. (Implemented for Worlds - World 1 is unlocked, others are locked; NOT yet implemented for individual levels within a world).
+- REQ-UI-LVL-003 [STATUS: NOT IMPLEMENTED]: For unlocked levels, the number of stars earned (0-3) shall be displayed beneath the level identifier.
+- REQ-UI-LVL-004 [STATUS: PARTIALLY IMPLEMENTED]: The descriptive Level Name shall only be visible when the specific Level Number is selected/highlighted. (Level name is shown inside the LevelDetailScene, but there is no highlight hover panel on LevelSelectScene).
+- REQ-UI-LVL-005 [STATUS: IMPLEMENTED]: Selecting an available (unlocked) level shall initialize the Game Loop for that specific level.
+
 8.4 Options Screen
-REQ-UI-OPT-001: The Options menu shall provide a toggle button to enable/disable sound.
-REQ-UI-OPT-002: The Options menu shall provide a button to display the Credits screen.
+- REQ-UI-OPT-001 [STATUS: NOT IMPLEMENTED]: The Options menu shall provide a toggle button to enable/disable sound.
+- REQ-UI-OPT-002 [STATUS: NOT IMPLEMENTED]: The Options menu shall provide a button to display the Credits screen.
+
 8.5 Gallery Screen
-REQ-UI-GAL-001: The Gallery shall visualize all unique edible items previously consumed by the player across all playthroughs.
-REQ-UI-GAL-002: Associated with each item in the Gallery, the system shall display the cumulative count of that specific item type consumed.
+- REQ-UI-GAL-001 [STATUS: NOT IMPLEMENTED]: The Gallery shall visualize all unique edible items previously consumed by the player across all playthroughs.
+- REQ-UI-GAL-002 [STATUS: NOT IMPLEMENTED]: Associated with each item in the Gallery, the system shall display the cumulative count of that specific item type consumed.
+
 8.6 End-of-Level Screen
-REQ-UI-END-001: Upon level completion, a summary screen shall appear displaying: Final Time, Final Score, Stars Awarded (based on REQ-SCR-008).
+- REQ-UI-END-001 [STATUS: IMPLEMENTED]: Upon level completion, a summary screen shall appear displaying: Final Time, Final Score, Stars Awarded (based on REQ-SCR-008).
+
 9. Progression & Persistence
 9.1 Level Progression Logic
-REQ-PRG-001: Levels shall be unlocked sequentially.
-REQ-PRG-002: Level N+1 shall remain locked and unplayable until Level N is successfully completed.
-9.2 Data Persistence
-REQ-DAT-001: The system shall persist the following data between sessions: Highest Level Completed, Best Score/Star Rating per Level, Cumulative count of every unique item consumed (for Gallery), User Settings (Sound On/Off).
+- REQ-PRG-001 [STATUS: NOT IMPLEMENTED]: Levels shall be unlocked sequentially. (Currently, level configurations exist, but progression locks are not active).
+- REQ-PRG-002 [STATUS: NOT IMPLEMENTED]: Level N+1 shall remain locked and unplayable until Level N is successfully completed.
 
+9.2 Data Persistence
+- REQ-DAT-001 [STATUS: NOT IMPLEMENTED]: The system shall persist the following data between sessions: Highest Level Completed, Best Score/Star Rating per Level, Cumulative count of every unique item consumed (for Gallery), User Settings (Sound On/Off).
+
+10. Level Creator (Visual Level Editor)
+- REQ-CRE-001 [STATUS: NOT IMPLEMENTED]: The system shall provide a visual Level Creator interface accessible via a button on the Main Menu.
+- REQ-CRE-002 [STATUS: NOT IMPLEMENTED]: The editor shall split the viewport into a scrollable level canvas and a static settings sidebar.
+- REQ-CRE-003 [STATUS: NOT IMPLEMENTED]: The editor shall support configuring Level Name, Win Size, and size tiers count.
+- REQ-CRE-004 [STATUS: NOT IMPLEMENTED]: The editor shall support configuring initial size, progress threshold, zoom factor, and dimensions for each tier.
+- REQ-CRE-005 [STATUS: NOT IMPLEMENTED]: The editor shall present a visual palette of all items registered in the entity template registry.
+- REQ-CRE-006 [STATUS: NOT IMPLEMENTED]: Clicking on the canvas with a selected palette item shall place that item at coordinates. A snap-to-grid toggle shall be supported.
+- REQ-CRE-007 [STATUS: NOT IMPLEMENTED]: Placed items can be dragged to reposition or deleted.
+- REQ-CRE-008 [STATUS: NOT IMPLEMENTED]: A "Test Play" button shall instantly run the current level in GameScene, returning to the editor when complete or when ESC is pressed.
+- REQ-CRE-009 [STATUS: NOT IMPLEMENTED]: An "Export Code" button shall generate copy-pasteable Javascript registration code.
+- REQ-CRE-010 [STATUS: NOT IMPLEMENTED]: The system shall support saving custom layouts to localStorage to play them from the Level Selection screen.
