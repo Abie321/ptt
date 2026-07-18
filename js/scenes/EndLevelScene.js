@@ -1,4 +1,4 @@
-// End Level Scene - Zesty Jelly Theme
+// End Level Scene - Zesty Jelly Theme matching Stitch Design
 class EndLevelScene extends Phaser.Scene {
     constructor() {
         super({ key: 'EndLevelScene' });
@@ -9,6 +9,7 @@ class EndLevelScene extends Phaser.Scene {
         this.finalTime = data.time || 0;
         this.stars = data.stars || 0;
         this.levelConfig = data.levelConfig;
+        this.itemsEaten = data.itemsEaten || 0;
     }
 
     create() {
@@ -19,7 +20,7 @@ class EndLevelScene extends Phaser.Scene {
         this.cameras.main.fadeIn(500, 0, 0, 0);
 
         // Title using Fredoka, neon lime, outline, drop shadow
-        const titleText = this.add.text(centerX, 90, 'LEVEL COMPLETE!', {
+        const titleText = this.add.text(centerX, 70, 'LEVEL COMPLETE!', {
             fontFamily: 'Fredoka',
             fontSize: '56px',
             fill: '#79ff5b', // neon lime
@@ -52,105 +53,148 @@ class EndLevelScene extends Phaser.Scene {
         const seconds = this.finalTime % 60;
         const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-        // Stats card box
+        // 1. Stats card box (Tactile Neumorphic container)
         const cardBg = this.add.graphics();
-        cardBg.fillStyle(0x2e0854, 0.7); // surface-container
+        cardBg.fillStyle(0x2e0854, 0.75); // surface-container
         cardBg.lineStyle(4, 0x120224, 1);
-        cardBg.fillRoundedRect(centerX - 160, 160, 320, 120, 18);
-        cardBg.strokeRoundedRect(centerX - 160, 160, 320, 120, 18);
+        cardBg.fillRoundedRect(centerX - 240, 140, 480, 110, 20);
+        cardBg.strokeRoundedRect(centerX - 240, 140, 480, 110, 20);
 
-        // Stats texts (using Quicksand / Fredoka)
-        this.add.text(centerX - 120, 190, 'Time Spent:', {
-            fontFamily: 'Quicksand',
-            fontSize: '18px',
-            fill: '#efdbff' // on-surface text
+        // Sub-panels side-by-side inside the card container
+        const subPanelWidth = 135;
+        const subPanelHeight = 80;
+        const subPanelY = 155;
+        const subPanelXOffsets = [-150, 0, 150]; // Left, center, right shifts relative to centerX
+        
+        const statsData = [
+            { title: 'ITEMS EATEN', value: `${this.itemsEaten}`, valColor: '#79ff5b' }, // neon lime
+            { title: 'TIME', value: timeStr, valColor: '#00daf3' }, // electric cyan
+            { title: 'BEST SCORE', value: `${this.finalScore}`, valColor: '#ffdbc8' } // tangerine text
+        ];
+
+        statsData.forEach((stat, idx) => {
+            const xPos = centerX + subPanelXOffsets[idx];
+            
+            // Sub-panel background
+            const panel = this.add.graphics();
+            panel.fillStyle(0x45236b, 0.5); // surface-container-highest
+            panel.lineStyle(2, 0x120224, 1);
+            panel.fillRoundedRect(xPos - subPanelWidth/2, subPanelY, subPanelWidth, subPanelHeight, 10);
+            panel.strokeRoundedRect(xPos - subPanelWidth/2, subPanelY, subPanelWidth, subPanelHeight, 10);
+            
+            // Title text
+            this.add.text(xPos, subPanelY + 18, stat.title, {
+                fontFamily: 'Fredoka',
+                fontSize: '11px',
+                fill: '#baccb0', // on-surface-variant
+                fontStyle: 'bold'
+            }).setOrigin(0.5);
+            
+            // Value text
+            this.add.text(xPos, subPanelY + 48, stat.value, {
+                fontFamily: 'Fredoka',
+                fontSize: '24px',
+                fill: stat.valColor,
+                fontStyle: 'bold',
+                stroke: '#120224',
+                strokeThickness: 3
+            }).setOrigin(0.5);
         });
-        this.add.text(centerX + 120, 190, timeStr, {
-            fontFamily: 'Fredoka',
-            fontSize: '22px',
-            fill: '#00daf3', // electric cyan
-            fontStyle: 'bold',
-            stroke: '#120224',
-            strokeThickness: 4
-        }).setOrigin(1, 0.5);
 
-        this.add.text(centerX - 120, 240, 'Final Score:', {
-            fontFamily: 'Quicksand',
-            fontSize: '18px',
-            fill: '#efdbff'
-        });
-        this.add.text(centerX + 120, 240, `${this.finalScore}`, {
-            fontFamily: 'Fredoka',
-            fontSize: '22px',
-            fill: '#00daf3',
-            fontStyle: 'bold',
-            stroke: '#120224',
-            strokeThickness: 4
-        }).setOrigin(1, 0.5);
+        // 2. Stars layout matching Stitch design: center star is larger and shifted up
+        const starSpacing = 100;
+        const starStartX = centerX - starSpacing;
 
-        // Stars layout (unlocked gold, locked dark purple)
-        const starY = 345;
-        const starSpacing = 90;
-        const startX = centerX - starSpacing;
+        const starConfigs = [
+            { x: starStartX, y: 350, size: 30, delay: 0 },
+            { x: centerX, y: 325, size: 42, delay: 200 }, // Center star is larger and higher
+            { x: centerX + starSpacing, y: 350, size: 30, delay: 400 }
+        ];
 
-        for (let i = 0; i < 3; i++) {
-            const hasStar = i < this.stars;
-            const starX = startX + (i * starSpacing);
+        starConfigs.forEach((starConf, idx) => {
+            const hasStar = idx < this.stars;
             const starColor = hasStar ? 0xFFD700 : 0x2a0350;
 
             const star = this.add.graphics();
             star.fillStyle(starColor, 1);
             star.lineStyle(3, 0x120224, 1); // Thick stroke
 
-            // Draw star path
+            // Draw star path dynamically based on custom configurations
             let rot = Math.PI / 2 * 3;
             const points = 5;
-            const outerRadius = 32;
-            const innerRadius = 15;
+            const outerRadius = starConf.size;
+            const innerRadius = starConf.size * 0.47;
             const step = Math.PI / points;
 
             star.beginPath();
-            star.moveTo(starX, starY - outerRadius);
+            star.moveTo(starConf.x, starConf.y - outerRadius);
             for (let p = 0; p < points; p++) {
-                let cx = starX + Math.cos(rot) * outerRadius;
-                let cy = starY + Math.sin(rot) * outerRadius;
+                let cx = starConf.x + Math.cos(rot) * outerRadius;
+                let cy = starConf.y + Math.sin(rot) * outerRadius;
                 star.lineTo(cx, cy);
                 rot += step;
 
-                cx = starX + Math.cos(rot) * innerRadius;
-                cy = starY + Math.sin(rot) * innerRadius;
+                cx = starConf.x + Math.cos(rot) * innerRadius;
+                cy = starConf.y + Math.sin(rot) * innerRadius;
                 star.lineTo(cx, cy);
                 rot += step;
             }
-            star.lineTo(starX, starY - outerRadius);
+            star.lineTo(starConf.x, starConf.y - outerRadius);
             star.closePath();
             star.fillPath();
             star.strokePath();
 
             // Pop animation on star reveal
             star.setScale(0);
-            this.time.delayedCall(i * 200 + 300, () => {
+            this.time.delayedCall(starConf.delay + 300, () => {
                 this.tweens.add({
                     targets: star,
                     scale: 1,
-                    duration: 400,
+                    duration: 450,
                     ease: 'Back.easeOut'
                 });
             });
-        }
+        });
 
-        // Return Button (Primary Lime Jelly Button)
+        // 3. Action Buttons (Replay and Next Level / Main Menu side-by-side)
+        
+        // Find next level config to see if Next Level is available
+        const currentIdx = (typeof GameConfig !== 'undefined' && GameConfig.LEVELS) ? GameConfig.LEVELS.findIndex(l => l.id === this.levelConfig.id) : -1;
+        const hasNextLevel = (currentIdx !== -1 && currentIdx < GameConfig.LEVELS.length - 1);
+        
+        // Replay Button (Tangerine Secondary Jelly Button)
         this.createJellyButton(
-            centerX, 
+            centerX - 110, 
             height - 110, 
-            260, 
-            55, 
-            'MAIN MENU', 
-            0x2ae500, // Lime green
+            180, 
+            50, 
+            '↻ REPLAY', 
+            0xff7f1c, // Tangerine orange
+            0x602a00, 
+            '#ffdbc8', 
+            () => {
+                this.scene.start('GameScene', { levelConfig: this.levelConfig });
+            }
+        );
+
+        // Next Level / Menu Button (Neon Lime Primary Jelly Button)
+        const nextBtnLabel = hasNextLevel ? 'NEXT LEVEL ▶' : 'MAIN MENU 🏠';
+        this.createJellyButton(
+            centerX + 110, 
+            height - 110, 
+            180, 
+            50, 
+            nextBtnLabel, 
+            0x2ae500, // Neon Lime green
             0x053900, 
             '#efffe3', 
             () => {
-                this.scene.start('MainMenuScene');
+                if (hasNextLevel) {
+                    const nextLevelConfig = GameConfig.LEVELS[currentIdx + 1];
+                    this.scene.start('LevelDetailScene', { levelConfig: nextLevelConfig, index: currentIdx + 2 });
+                } else {
+                    this.scene.start('MainMenuScene');
+                }
             }
         );
     }
@@ -173,11 +217,11 @@ class EndLevelScene extends Phaser.Scene {
 
         const btnText = this.add.text(0, 0, text, {
             fontFamily: 'Fredoka',
-            fontSize: '26px',
+            fontSize: '18px',
             fill: textColor,
             fontStyle: 'bold',
             stroke: '#120224',
-            strokeThickness: 5
+            strokeThickness: 4
         }).setOrigin(0.5);
         container.add(btnText);
 
@@ -205,6 +249,7 @@ class EndLevelScene extends Phaser.Scene {
         body.on('pointerup', () => {
             body.y = 0;
             btnText.y = 0;
+            this.tweens.add({ targets: container, scaleX: 1.05, scaleY: 1.05, duration: 50 });
             onClick();
         });
 

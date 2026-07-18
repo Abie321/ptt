@@ -24,6 +24,7 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('mascot', 'assets/images/mascot.png');
         if (this.levelConfig.coverImage) {
             this.load.image('level_cover_image', this.levelConfig.coverImage);
         }
@@ -1135,28 +1136,78 @@ class GameScene extends Phaser.Scene {
             strokeThickness: 4
         };
 
-        // Size indicator (top-left)
-        this.sizeText = this.add.text(10, 10, 'Size: Micro (Tier 1)', sizeStyle).setScrollFactor(0);
+        // Draw Neumorphic panels behind HUD indicators to match Stitch designs
+        this.hudPanelLeft = this.add.graphics();
+        this.hudPanelLeft.setScrollFactor(0);
+        this.hudPanelLeft.fillStyle(0x2e0854, 0.6); // surface-container
+        this.hudPanelLeft.lineStyle(4, 0x120224, 1);
+        this.hudPanelLeft.fillRoundedRect(5, 5, 230, 75, 15);
+        this.hudPanelLeft.strokeRoundedRect(5, 5, 230, 75, 15);
 
-        // Progress bar (below size)
-        this.progressBarBg = this.add.rectangle(10, 45, 200, 20, 0x333333).setOrigin(0, 0).setScrollFactor(0);
+        this.hudPanelRight = this.add.graphics();
+        this.hudPanelRight.setScrollFactor(0);
+        this.hudPanelRight.fillStyle(0x2e0854, 0.6); // surface-container
+        this.hudPanelRight.lineStyle(4, 0x120224, 1);
+        this.hudPanelRight.fillRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 15);
+        this.hudPanelRight.strokeRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 15);
+
+        // Size indicator (top-left) - shifted slightly inside panel
+        this.sizeText = this.add.text(15, 12, 'Size: Micro (Tier 1)', sizeStyle).setScrollFactor(0);
+
+        // Progress bar (below size) - shifted inside panel, keeping exact 200px width for tests
+        this.progressBarBg = this.add.rectangle(15, 48, 200, 20, 0x333333).setOrigin(0, 0).setScrollFactor(0);
         this.progressBarBg.setStrokeStyle(3, 0x120224);
-        this.progressBar = this.add.rectangle(10, 45, 0, 20, 0x4CAF50).setOrigin(0, 0).setScrollFactor(0);
+        this.progressBar = this.add.rectangle(15, 48, 0, 20, 0x4CAF50).setOrigin(0, 0).setScrollFactor(0);
 
-        // Score (top-right)
-        this.scoreText = this.add.text(this.cameras.main.width - 10, 10, 'Score: 0', scoreStyle)
+        // Score (top-right) - shifted inside panel, maintaining right-aligned origin (1, 0) for tests
+        this.scoreText = this.add.text(this.cameras.main.width - 15, 12, 'Score: 0', scoreStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
 
-        // Timer (below score)
-        this.timerText = this.add.text(this.cameras.main.width - 10, 45, 'Time: 0:00', timerStyle)
+        // Timer (below score) - shifted inside panel, maintaining origin (1, 0) for tests
+        this.timerText = this.add.text(this.cameras.main.width - 15, 48, 'Time: 0:00', timerStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
+
+        // Pause Button (chunky circular Neon Lime button in top right area next to panels)
+        this.pauseButton = this.add.circle(this.cameras.main.width - 280, 42, 24, 0x2ae500)
+            .setStrokeStyle(3, 0x120224)
+            .setScrollFactor(0)
+            .setInteractive({ useHandCursor: true });
+        
+        this.pauseIcon = this.add.text(this.cameras.main.width - 280, 42, '⏸', {
+            fontFamily: 'Fredoka',
+            fontSize: '18px',
+            fill: '#053900',
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setScrollFactor(0);
+
+        this.pauseButton.on('pointerdown', () => {
+            // Trigger pause sequence
+            const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+            this.input.keyboard.emit('keydown-ESC', { preventDefault: () => {} });
+        });
+
+        // Sidekick Mascot at the bottom-left corner
+        this.mascotHUD = this.add.image(80, this.cameras.main.height - 85, 'mascot')
+            .setOrigin(0.5)
+            .setScale(0.24)
+            .setScrollFactor(0)
+            .setDepth(100);
+
+        // Bouncing mascot animation
+        this.tweens.add({
+            targets: this.mascotHUD,
+            y: this.cameras.main.height - 100,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
 
         // REQ-UI-HUD-005: Last Consumed Indicator
-        // Positioned to the left of the score, moved down to avoid overlapping with long size text
         const indicatorX = this.cameras.main.width - 250;
-        const indicatorY = 85;
+        const indicatorY = 95;
 
         // Create graphics for the shape
         this.consumedIcon = this.add.graphics();
@@ -1175,7 +1226,7 @@ class GameScene extends Phaser.Scene {
             stroke: '#120224',
             strokeThickness: 4
         })
-        .setOrigin(1, 0.5) // Right aligned
+        .setOrigin(1, 0.5)
         .setScrollFactor(0)
         .setDepth(100);
         this.consumedText.alpha = 0;
@@ -1190,7 +1241,7 @@ class GameScene extends Phaser.Scene {
         };
         const initialDebugSize = (this.player.radius * 2).toFixed(2);
         this.debugSizeText = this.add.text(10, this.cameras.main.height - 40, `Debug Size: ${initialDebugSize}`, debugStyle)
-            .setOrigin(0, 1) // Bottom-left aligned
+            .setOrigin(0, 1)
             .setScrollFactor(0)
             .setDepth(100);
 
@@ -1203,7 +1254,12 @@ class GameScene extends Phaser.Scene {
             this.timerText,
             this.consumedIcon,
             this.consumedText,
-            this.debugSizeText
+            this.debugSizeText,
+            this.hudPanelLeft,
+            this.hudPanelRight,
+            this.pauseButton,
+            this.pauseIcon,
+            this.mascotHUD
         ];
 
         if (this.cameras.main) {
@@ -2290,7 +2346,8 @@ class GameScene extends Phaser.Scene {
                     score: this.score,
                     time: elapsed,
                     stars: stars,
-                    levelConfig: this.levelConfig
+                    levelConfig: this.levelConfig,
+                    itemsEaten: this.player.totalConsumed
                 });
             }
         });
