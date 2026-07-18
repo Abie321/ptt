@@ -1110,27 +1110,46 @@ class GameScene extends Phaser.Scene {
     }
 
     createHUD() {
-        const hudStyle = {
+        const sizeStyle = {
+            fontFamily: 'Fredoka',
+            fontSize: '22px',
+            fill: '#efffe3',
+            stroke: '#120224',
+            strokeThickness: 5
+        };
+
+        const scoreStyle = {
+            fontFamily: 'Fredoka',
+            fontSize: '22px',
+            fill: '#efffe3',
+            stroke: '#120224',
+            strokeThickness: 5,
+            fontStyle: 'bold'
+        };
+
+        const timerStyle = {
+            fontFamily: 'Fredoka',
             fontSize: '20px',
-            fill: '#fff',
-            backgroundColor: '#000',
-            padding: { x: 10, y: 5 }
+            fill: '#00daf3',
+            stroke: '#120224',
+            strokeThickness: 4
         };
 
         // Size indicator (top-left)
-        this.sizeText = this.add.text(10, 10, 'Size: Micro (Tier 1)', hudStyle).setScrollFactor(0);
+        this.sizeText = this.add.text(10, 10, 'Size: Micro (Tier 1)', sizeStyle).setScrollFactor(0);
 
         // Progress bar (below size)
         this.progressBarBg = this.add.rectangle(10, 45, 200, 20, 0x333333).setOrigin(0, 0).setScrollFactor(0);
+        this.progressBarBg.setStrokeStyle(3, 0x120224);
         this.progressBar = this.add.rectangle(10, 45, 0, 20, 0x4CAF50).setOrigin(0, 0).setScrollFactor(0);
 
         // Score (top-right)
-        this.scoreText = this.add.text(this.cameras.main.width - 10, 10, 'Score: 0', hudStyle)
+        this.scoreText = this.add.text(this.cameras.main.width - 10, 10, 'Score: 0', scoreStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
 
         // Timer (below score)
-        this.timerText = this.add.text(this.cameras.main.width - 10, 45, 'Time: 0:00', hudStyle)
+        this.timerText = this.add.text(this.cameras.main.width - 10, 45, 'Time: 0:00', timerStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
 
@@ -1149,9 +1168,12 @@ class GameScene extends Phaser.Scene {
 
         // Text for the name
         this.consumedText = this.add.text(indicatorX - 20, indicatorY, '', {
+            fontFamily: 'Fredoka',
             fontSize: '18px',
-            fill: '#fff',
-            fontStyle: 'bold'
+            fill: '#ffdbc8',
+            fontStyle: 'bold',
+            stroke: '#120224',
+            strokeThickness: 4
         })
         .setOrigin(1, 0.5) // Right aligned
         .setScrollFactor(0)
@@ -1159,8 +1181,15 @@ class GameScene extends Phaser.Scene {
         this.consumedText.alpha = 0;
 
         // Debug size indicator (bottom-left)
+        const debugStyle = {
+            fontFamily: 'Quicksand',
+            fontSize: '14px',
+            fill: '#efdbff',
+            stroke: '#120224',
+            strokeThickness: 3
+        };
         const initialDebugSize = (this.player.radius * 2).toFixed(2);
-        this.debugSizeText = this.add.text(10, this.cameras.main.height - 40, `Debug Size: ${initialDebugSize}`, hudStyle)
+        this.debugSizeText = this.add.text(10, this.cameras.main.height - 40, `Debug Size: ${initialDebugSize}`, debugStyle)
             .setOrigin(0, 1) // Bottom-left aligned
             .setScrollFactor(0)
             .setDepth(100);
