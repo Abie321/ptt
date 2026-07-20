@@ -1,11 +1,11 @@
-// Main Menu Scene - Zesty Jelly Theme matching Stitch Design
+// Main Menu Scene - Zesty Jelly Theme matching Stitch Design (Updated to prevent overlaps)
 class MainMenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainMenuScene' });
     }
 
     preload() {
-        // Load the sidekick mascot image downloaded from the Stitch project
+        // Load the sidekick mascot image
         this.load.image('mascot', 'assets/images/mascot.png');
     }
 
@@ -13,10 +13,19 @@ class MainMenuScene extends Phaser.Scene {
         const { width, height } = this.cameras.main;
         const centerX = width / 2;
 
+        // 1. Header / Logo Area (Side-by-side Mascot and Title to prevent overlap)
+        const logoY = height / 3 - 30;
+
+        // Mascot Image (Sidekick Mascot - side-by-side with title)
+        const mascot = this.add.image(centerX - 230, logoY, 'mascot')
+            .setOrigin(0.5)
+            .setScale(0.35)
+            .setAngle(-12);
+
         // Title text using Fredoka font, Neon Lime color, thick dark stroke, and soft drop shadow
-        const titleText = this.add.text(centerX, height / 3 - 30, 'TASTY PLANET', {
+        const titleText = this.add.text(centerX + 70, logoY, 'TASTY PLANET', {
             fontFamily: 'Fredoka',
-            fontSize: '72px',
+            fontSize: '64px', // Adjusted slightly from 72px to ensure perfect side-by-side layout
             fill: '#79ff5b', // Zesty Jelly Primary Light Neon Green
             fontStyle: 'bold',
             stroke: '#120224', // Thick dark comic outline
@@ -24,7 +33,7 @@ class MainMenuScene extends Phaser.Scene {
             shadow: {
                 offsetX: 0,
                 offsetY: 6,
-                color: '#120224', // Neumorphic flat drop shadow
+                color: '#120224', // Neumorphic drop shadow
                 blur: 0,
                 stroke: true,
                 fill: true
@@ -34,17 +43,17 @@ class MainMenuScene extends Phaser.Scene {
         // Gentle wobble rotation tween for playful toy feel
         this.tweens.add({
             targets: titleText,
-            angle: { from: -2, to: 2 },
+            angle: { from: -1.5, to: 1.5 },
             duration: 2500,
             yoyo: true,
             repeat: -1,
             ease: 'Sine.easeInOut'
         });
 
-        // Subtitle using Fredoka
+        // Subtitle - positioned below the mascot + title row
         const subtitleText = this.add.text(centerX, height / 3 + 45, 'Fan Game Prototype', {
             fontFamily: 'Fredoka',
-            fontSize: '24px',
+            fontSize: '22px',
             fill: '#85edff', // Zesty Jelly Tertiary Cyan
             stroke: '#120224',
             strokeThickness: 4
@@ -59,12 +68,6 @@ class MainMenuScene extends Phaser.Scene {
             repeat: -1,
             ease: 'Sine.easeInOut'
         });
-
-        // 0. Mascot Image (Sidekick Mascot from Stitch screens)
-        const mascot = this.add.image(centerX - 240, height / 3 - 35, 'mascot')
-            .setOrigin(0.5)
-            .setScale(0.35)
-            .setAngle(-12);
 
         // Mascot hover and click interactivity juice
         mascot.setInteractive({ useHandCursor: true });
@@ -102,12 +105,12 @@ class MainMenuScene extends Phaser.Scene {
             });
         };
 
-        // Primary Buttons Layout (Tactile Neumorphic Jelly Buttons)
+        // Primary Buttons Layout (Tactile Neumorphic Jelly Buttons - Adjusted Y to prevent overlap)
 
         // 1. PLAY Button (Neon Lime Primary Jelly Button)
         this.createJellyButton(
             centerX, 
-            height / 2 - 20, 
+            height / 2 - 40, 
             280,
             55,
             '▶ PLAY', 
@@ -125,7 +128,7 @@ class MainMenuScene extends Phaser.Scene {
         // 2. LEVEL CREATOR Button (Tangerine Secondary Jelly Button)
         this.createJellyButton(
             centerX, 
-            height / 2 + 45, 
+            height / 2 + 25, 
             280,
             55,
             '⚙ LEVEL CREATOR', 
@@ -144,7 +147,7 @@ class MainMenuScene extends Phaser.Scene {
         // Gallery Button
         this.createJellyButton(
             centerX - 75, 
-            height / 2 + 110, 
+            height / 2 + 90, 
             130,
             45,
             '🖼 GALLERY', 
@@ -160,7 +163,7 @@ class MainMenuScene extends Phaser.Scene {
         // Options Button
         this.createJellyButton(
             centerX + 75, 
-            height / 2 + 110, 
+            height / 2 + 90, 
             130,
             45,
             '⚙ OPTIONS', 
@@ -174,14 +177,22 @@ class MainMenuScene extends Phaser.Scene {
         );
 
         // Instructions with Quicksand typography
-        this.add.text(centerX, height - 60, 'Use WASD or Arrow Keys to move\nEat smaller items to grow! Avoid red hazards!', {
+        this.add.text(centerX, height - 90, 'Use WASD or Arrow Keys to move', {
             fontFamily: 'Quicksand',
             fontSize: '16px',
             fill: '#efdbff', // on-surface variant
             align: 'center',
             stroke: '#120224',
-            strokeThickness: 3,
-            lineSpacing: 4
+            strokeThickness: 3
+        }).setOrigin(0.5);
+
+        this.add.text(centerX, height - 65, 'Eat smaller items to grow! Avoid red hazards!', {
+            fontFamily: 'Quicksand',
+            fontSize: '16px',
+            fill: '#efdbff', // on-surface variant
+            align: 'center',
+            stroke: '#120224',
+            strokeThickness: 3
         }).setOrigin(0.5);
 
         // Version Label

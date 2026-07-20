@@ -1136,31 +1136,67 @@ class GameScene extends Phaser.Scene {
             strokeThickness: 4
         };
 
-        // Draw Neumorphic panels behind HUD indicators to match Stitch designs
+        // Draw Neumorphic panels behind HUD indicators to match Stitch HUD designs
         this.hudPanelLeft = this.add.graphics();
         this.hudPanelLeft.setScrollFactor(0);
-        this.hudPanelLeft.fillStyle(0x2e0854, 0.6); // surface-container
+        this.hudPanelLeft.fillStyle(0x2e0854, 0.85); // surface-container
         this.hudPanelLeft.lineStyle(4, 0x120224, 1);
-        this.hudPanelLeft.fillRoundedRect(5, 5, 230, 75, 15);
-        this.hudPanelLeft.strokeRoundedRect(5, 5, 230, 75, 15);
+        this.hudPanelLeft.fillRoundedRect(5, 5, 235, 75, 16);
+        this.hudPanelLeft.strokeRoundedRect(5, 5, 235, 75, 16);
 
         this.hudPanelRight = this.add.graphics();
         this.hudPanelRight.setScrollFactor(0);
-        this.hudPanelRight.fillStyle(0x2e0854, 0.6); // surface-container
+        this.hudPanelRight.fillStyle(0x2e0854, 0.85); // surface-container
         this.hudPanelRight.lineStyle(4, 0x120224, 1);
-        this.hudPanelRight.fillRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 15);
-        this.hudPanelRight.strokeRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 15);
+        this.hudPanelRight.fillRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 16);
+        this.hudPanelRight.strokeRoundedRect(this.cameras.main.width - 245, 5, 240, 75, 16);
 
-        // Size indicator (top-left) - shifted slightly inside panel
-        this.sizeText = this.add.text(15, 12, 'Size: Micro (Tier 1)', sizeStyle).setScrollFactor(0);
+        // SIZE Label (small tracking text in top-left)
+        this.sizeLabelText = this.add.text(18, 12, 'SIZE', {
+            fontFamily: 'Fredoka',
+            fontSize: '10px',
+            fill: '#baccb0',
+            fontStyle: 'bold'
+        }).setScrollFactor(0);
 
-        // Progress bar (below size) - shifted inside panel, keeping exact 200px width for tests
-        this.progressBarBg = this.add.rectangle(15, 48, 200, 20, 0x333333).setOrigin(0, 0).setScrollFactor(0);
+        // Size indicator (top-left) - maintains test compatibility but hidden visually
+        this.sizeText = this.add.text(18, 16, 'Size: Micro (Tier 1)', sizeStyle).setScrollFactor(0);
+        this.sizeText.alpha = 0;
+
+        // Size Number (e.g. 11.0)
+        this.sizeNumberText = this.add.text(18, 24, '11.0', {
+            fontFamily: 'Fredoka',
+            fontSize: '22px',
+            fill: '#39ff14', // Primary Neon Lime
+            fontStyle: 'bold',
+            stroke: '#120224',
+            strokeThickness: 3
+        }).setScrollFactor(0);
+
+
+
+        // Tier Tag Pill (Top-Right inside Left Panel)
+        this.tierTagBg = this.add.graphics();
+        if (this.tierTagBg.setScrollFactor) this.tierTagBg.setScrollFactor(0);
+        this.tierTagBg.fillStyle(0x39ff14, 1); // primary-container neon lime
+        this.tierTagBg.lineStyle(2, 0x120224, 1);
+        this.tierTagBg.fillRoundedRect(150, 14, 75, 22, 6);
+        this.tierTagBg.strokeRoundedRect(150, 14, 75, 22, 6);
+
+        this.tierTagText = this.add.text(187.5, 25, 'TIER 1', {
+            fontFamily: 'Fredoka',
+            fontSize: '11px',
+            fill: '#053900',
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setScrollFactor(0);
+
+        // Progress bar (below size) - keeps exact 200px width and colors for tests
+        this.progressBarBg = this.add.rectangle(18, 52, 200, 12, 0x333333).setOrigin(0, 0).setScrollFactor(0);
         this.progressBarBg.setStrokeStyle(3, 0x120224);
-        this.progressBar = this.add.rectangle(15, 48, 0, 20, 0x4CAF50).setOrigin(0, 0).setScrollFactor(0);
+        this.progressBar = this.add.rectangle(18, 52, 0, 12, 0x4CAF50).setOrigin(0, 0).setScrollFactor(0);
 
         // Score (top-right) - shifted inside panel, maintaining right-aligned origin (1, 0) for tests
-        this.scoreText = this.add.text(this.cameras.main.width - 15, 12, 'Score: 0', scoreStyle)
+        this.scoreText = this.add.text(this.cameras.main.width - 15, 16, 'Score: 0', scoreStyle)
             .setOrigin(1, 0)
             .setScrollFactor(0);
 
@@ -1169,43 +1205,9 @@ class GameScene extends Phaser.Scene {
             .setOrigin(1, 0)
             .setScrollFactor(0);
 
-        // Pause Button (chunky circular Neon Lime button in top right area next to panels)
-        this.pauseButton = this.add.circle(this.cameras.main.width - 280, 42, 24, 0x2ae500)
-            .setStrokeStyle(3, 0x120224)
-            .setScrollFactor(0)
-            .setInteractive({ useHandCursor: true });
-        
-        this.pauseIcon = this.add.text(this.cameras.main.width - 280, 42, '⏸', {
-            fontFamily: 'Fredoka',
-            fontSize: '18px',
-            fill: '#053900',
-            fontStyle: 'bold'
-        }).setOrigin(0.5).setScrollFactor(0);
 
-        this.pauseButton.on('pointerdown', () => {
-            // Trigger pause sequence
-            const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-            this.input.keyboard.emit('keydown-ESC', { preventDefault: () => {} });
-        });
 
-        // Sidekick Mascot at the bottom-left corner
-        this.mascotHUD = this.add.image(80, this.cameras.main.height - 85, 'mascot')
-            .setOrigin(0.5)
-            .setScale(0.24)
-            .setScrollFactor(0)
-            .setDepth(100);
-
-        // Bouncing mascot animation
-        this.tweens.add({
-            targets: this.mascotHUD,
-            y: this.cameras.main.height - 100,
-            duration: 1200,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
-        });
-
-        // REQ-UI-HUD-005: Last Consumed Indicator
+        // REQ-UI-HUD-005: Last Consumed Indicator (Clean layout matching v0.1 Sync)
         const indicatorX = this.cameras.main.width - 250;
         const indicatorY = 95;
 
@@ -1231,19 +1233,7 @@ class GameScene extends Phaser.Scene {
         .setDepth(100);
         this.consumedText.alpha = 0;
 
-        // Debug size indicator (bottom-left)
-        const debugStyle = {
-            fontFamily: 'Quicksand',
-            fontSize: '14px',
-            fill: '#efdbff',
-            stroke: '#120224',
-            strokeThickness: 3
-        };
-        const initialDebugSize = (this.player.radius * 2).toFixed(2);
-        this.debugSizeText = this.add.text(10, this.cameras.main.height - 40, `Debug Size: ${initialDebugSize}`, debugStyle)
-            .setOrigin(0, 1)
-            .setScrollFactor(0)
-            .setDepth(100);
+
 
         // Assign all HUD elements to the UI camera and ignore them on the main camera
         const hudElements = [
@@ -1254,15 +1244,17 @@ class GameScene extends Phaser.Scene {
             this.timerText,
             this.consumedIcon,
             this.consumedText,
-            this.debugSizeText,
+            this.consumedBoxBg,
+            this.consumedIconBg,
             this.hudPanelLeft,
             this.hudPanelRight,
-            this.pauseButton,
-            this.pauseIcon,
-            this.mascotHUD
-        ];
+            this.sizeLabelText,
+            this.sizeNumberText,
+            this.tierTagBg,
+            this.tierTagText
+        ].filter(Boolean);
 
-        if (this.cameras.main) {
+        if (this.cameras.main && typeof this.cameras.main.ignore === 'function') {
             this.cameras.main.ignore(hudElements);
         }
 
@@ -1401,42 +1393,16 @@ class GameScene extends Phaser.Scene {
             this.closestIndicator.setPosition(0, 0);
             this.closestIndicator.setRotation(0);
 
-            // Draw bracket indicator
+            // Target Reticle Box (Stitch Prototype: border-2 border-primary-container rounded-sm opacity-70)
             const itemRadius = closestItem.radius || closestItem.displayWidth / 2;
-            const bracketDist = itemRadius + 5; // Little padding
+            const boxPadding = 6;
+            const boxSize = (itemRadius + boxPadding) * 2;
             const targetX = closestItem.x;
             const targetY = closestItem.y;
-            const len = Math.max(5, bracketDist * 0.4);
 
-            this.closestIndicator.lineStyle(3, 0x000000, 1);
-
-            // Top Left
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(targetX - bracketDist, targetY - bracketDist + len);
-            this.closestIndicator.lineTo(targetX - bracketDist, targetY - bracketDist);
-            this.closestIndicator.lineTo(targetX - bracketDist + len, targetY - bracketDist);
-            this.closestIndicator.strokePath();
-
-            // Top Right
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(targetX + bracketDist - len, targetY - bracketDist);
-            this.closestIndicator.lineTo(targetX + bracketDist, targetY - bracketDist);
-            this.closestIndicator.lineTo(targetX + bracketDist, targetY - bracketDist + len);
-            this.closestIndicator.strokePath();
-
-            // Bottom Left
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(targetX - bracketDist, targetY + bracketDist - len);
-            this.closestIndicator.lineTo(targetX - bracketDist, targetY + bracketDist);
-            this.closestIndicator.lineTo(targetX - bracketDist + len, targetY + bracketDist);
-            this.closestIndicator.strokePath();
-
-            // Bottom Right
-            this.closestIndicator.beginPath();
-            this.closestIndicator.moveTo(targetX + bracketDist - len, targetY + bracketDist);
-            this.closestIndicator.lineTo(targetX + bracketDist, targetY + bracketDist);
-            this.closestIndicator.lineTo(targetX + bracketDist, targetY + bracketDist - len);
-            this.closestIndicator.strokePath();
+            // Single clean 2px Neon Lime border without extra black border
+            this.closestIndicator.lineStyle(2, 0x39ff14, 0.7);
+            this.closestIndicator.strokeRoundedRect(targetX - boxSize / 2, targetY - boxSize / 2, boxSize, boxSize, 4);
 
             // Check if the item is within the camera view
             const camera = this.cameras.main;
@@ -1446,22 +1412,28 @@ class GameScene extends Phaser.Scene {
                                       targetY <= camera.worldView.bottom;
 
             if (isVisibleOnScreen) {
-                // Draw pointing arrow orbiting the player
+                // Directional Arrow Indicator (Stitch Prototype: arrow_right_alt in Neon Lime)
                 const angle = Phaser.Math.Angle.Between(playerX, playerY, targetX, targetY);
-
-                // Orbit distance: just outside the player's collision radius + some padding
-                const orbitDistance = this.player.getCollisionRadius() + 15;
+                const orbitDistance = this.player.getCollisionRadius() + 14;
 
                 const arrowX = playerX + Math.cos(angle) * orbitDistance;
                 const arrowY = playerY + Math.sin(angle) * orbitDistance;
 
-                this.closestIndicator.fillStyle(0xFFD700, 1); // Gold color arrow
-                this.closestIndicator.lineStyle(2, 0x000000, 1); // Black outline
+                // Stem of arrow_right_alt in thin 2px Neon Lime
+                const stemLength = 12;
+                const startStemX = arrowX - Math.cos(angle) * stemLength;
+                const startStemY = arrowY - Math.sin(angle) * stemLength;
 
-                const arrowSize = 10;
+                this.closestIndicator.lineStyle(2, 0x39ff14, 1);
+                this.closestIndicator.beginPath();
+                this.closestIndicator.moveTo(startStemX, startStemY);
+                this.closestIndicator.lineTo(arrowX, arrowY);
+                this.closestIndicator.strokePath();
+
+                // Small crisp Arrowhead Tip
+                const arrowSize = 6;
                 const rotation = angle + Math.PI / 2;
 
-                // Function to rotate a point around origin
                 const rotatePoint = (x, y, rad) => {
                     return {
                         x: x * Math.cos(rad) - y * Math.sin(rad),
@@ -1469,20 +1441,22 @@ class GameScene extends Phaser.Scene {
                     };
                 };
 
-                // Calculate absolute points for the triangle
-                const pt1 = rotatePoint(0, -arrowSize, rotation);
-                const pt2 = rotatePoint(-arrowSize * 0.7, arrowSize, rotation);
-                const pt3 = rotatePoint(arrowSize * 0.7, arrowSize, rotation);
+                const tipX = arrowX + Math.cos(angle) * 3;
+                const tipY = arrowY + Math.sin(angle) * 3;
 
-                // Draw a triangle
+                const pt1 = rotatePoint(0, -arrowSize, rotation);
+                const pt2 = rotatePoint(-arrowSize * 0.6, arrowSize * 0.6, rotation);
+                const pt3 = rotatePoint(arrowSize * 0.6, arrowSize * 0.6, rotation);
+
+                this.closestIndicator.fillStyle(0x39ff14, 1);
+
                 this.closestIndicator.beginPath();
-                this.closestIndicator.moveTo(arrowX + pt1.x, arrowY + pt1.y); // Tip
-                this.closestIndicator.lineTo(arrowX + pt2.x, arrowY + pt2.y); // Bottom left
-                this.closestIndicator.lineTo(arrowX + pt3.x, arrowY + pt3.y); // Bottom right
+                this.closestIndicator.moveTo(tipX + pt1.x, tipY + pt1.y);
+                this.closestIndicator.lineTo(tipX + pt2.x, tipY + pt2.y);
+                this.closestIndicator.lineTo(tipX + pt3.x, tipY + pt3.y);
                 this.closestIndicator.closePath();
 
                 this.closestIndicator.fillPath();
-                this.closestIndicator.strokePath();
             }
         }
     }
@@ -2200,6 +2174,14 @@ class GameScene extends Phaser.Scene {
         const internalSize = this.player.internalSize.toFixed(2);
         this.sizeText.setText(`Size: ${tierConfig.name} (Tier ${this.player.getCurrentTier()}) - Internal Size: ${internalSize}`);
 
+        if (this.sizeNumberText) {
+            const displaySize = this.player.size.toFixed(1);
+            this.sizeNumberText.setText(displaySize);
+        }
+        if (this.tierTagText) {
+            this.tierTagText.setText(`TIER ${this.player.getCurrentTier()}`);
+        }
+
         // Progress bar
         const progress = this.player.getProgress();
         this.progressBar.width = 200 * progress;
@@ -2214,8 +2196,10 @@ class GameScene extends Phaser.Scene {
         this.timerText.setText(`Time: ${minutes}:${seconds.toString().padStart(2, '0')}`);
 
         // Debug size
-        const debugSize = (this.player.radius * 2).toFixed(2);
-        this.debugSizeText.setText(`Debug Size: ${debugSize}`);
+        if (this.debugSizeText) {
+            const debugSize = (this.player.radius * 2).toFixed(2);
+            this.debugSizeText.setText(`Debug Size: ${debugSize}`);
+        }
     }
 
     checkWinCondition() {
@@ -2609,47 +2593,90 @@ class GameScene extends Phaser.Scene {
     showConsumedItem(itemData) {
         if (!itemData) return;
 
-        // Reset any existing tweens or timers
         if (this.consumedFadeEvent) {
             this.consumedFadeEvent.remove();
             this.consumedFadeEvent = null;
         }
         if (this.consumedTween) {
-            this.consumedTween.stop(); // Stop tween
-            this.tweens.killTweensOf([this.consumedIcon, this.consumedText]); // Ensure clean state
+            this.consumedTween.stop();
+            const targets = [this.consumedIcon, this.consumedText];
+            if (this.consumedBoxBg) targets.push(this.consumedBoxBg);
+            if (this.consumedIconBg) targets.push(this.consumedIconBg);
+            this.tweens.killTweensOf(targets);
             this.consumedTween = null;
         }
 
-        // With new system, itemData IS the config object
         const name = itemData.type || "Unknown";
-        const color = itemData.color !== undefined ? itemData.color : 0xFFFFFF;
+        const color = itemData.color !== undefined ? itemData.color : 0x39ff14;
         const shape = itemData.shape || 'circle';
 
-        // Update Text
-        this.consumedText.setText(name);
-        this.consumedText.alpha = 1;
+        const startX = 20;
+        const startY = 135;
 
-        // Update Graphics
+        this.consumedText.setText(name);
+        const textWidth = this.consumedText.width || 90;
+        const cardWidth = Math.max(160, textWidth + 60);
+
+        if (!this.consumedBoxBg) {
+            this.consumedBoxBg = this.add.graphics();
+            if (this.consumedBoxBg.setScrollFactor) this.consumedBoxBg.setScrollFactor(0);
+            if (this.consumedBoxBg.setDepth) this.consumedBoxBg.setDepth(99);
+        }
+        this.consumedBoxBg.clear();
+        this.consumedBoxBg.fillStyle(0x2e0854, 0.85);
+        this.consumedBoxBg.lineStyle(2, 0x39ff14, 1);
+        this.consumedBoxBg.fillRoundedRect(startX, startY, cardWidth, 38, 12);
+        this.consumedBoxBg.strokeRoundedRect(startX, startY, cardWidth, 38, 12);
+        this.consumedBoxBg.alpha = 0;
+
+        if (!this.consumedIconBg) {
+            this.consumedIconBg = this.add.graphics();
+            if (this.consumedIconBg.setScrollFactor) this.consumedIconBg.setScrollFactor(0);
+            if (this.consumedIconBg.setDepth) this.consumedIconBg.setDepth(100);
+        }
+        this.consumedIconBg.clear();
+        this.consumedIconBg.fillStyle(0x39ff14, 1);
+        this.consumedIconBg.fillCircle(startX + 20, startY + 19, 12);
+        this.consumedIconBg.alpha = 0;
+
         this.consumedIcon.clear();
         this.consumedIcon.fillStyle(color, 1);
+        this.consumedIcon.x = startX + 20;
+        this.consumedIcon.y = startY + 19;
 
-        const size = 10; // Fixed size for HUD
+        const size = 6;
         if (shape === 'circle') {
             this.consumedIcon.fillCircle(0, 0, size);
         } else if (shape === 'square') {
             this.consumedIcon.fillRect(-size, -size, size * 2, size * 2);
         } else {
-            // Triangle pointing up
             this.consumedIcon.fillTriangle(0, -size, size, size, -size, size);
         }
-        this.consumedIcon.alpha = 1;
+        this.consumedIcon.alpha = 0;
 
-        // Schedule fade out after 2 seconds
-        this.consumedFadeEvent = this.time.delayedCall(2000, () => {
+        this.consumedText.x = startX + 40;
+        this.consumedText.y = startY + 19;
+        if (typeof this.consumedText.setOrigin === 'function') {
+            this.consumedText.setOrigin(0, 0.5);
+        }
+        this.consumedText.setStyle({
+            fontFamily: 'Fredoka',
+            fontSize: '14px',
+            fill: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#120224',
+            strokeThickness: 3
+        });
+        this.consumedText.alpha = 0;
+
+        const targets = [this.consumedBoxBg, this.consumedIconBg, this.consumedIcon, this.consumedText];
+        targets.forEach(t => { if (t) t.alpha = 1; });
+
+        this.consumedFadeEvent = this.time.delayedCall(1800, () => {
             this.consumedTween = this.tweens.add({
-                targets: [this.consumedIcon, this.consumedText],
+                targets: targets,
                 alpha: 0,
-                duration: 500,
+                duration: 400,
                 onComplete: () => {
                     this.consumedTween = null;
                 }

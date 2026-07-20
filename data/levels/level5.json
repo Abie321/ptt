@@ -1,0 +1,66 @@
+{
+    "id": "level5",
+    "name": "Jack the Ghost",
+    "winSize": 122,
+    "worldIndex": 1,
+    "worldName": "Ghost",
+    "ENTITY_IMAGES": {
+        "building1": "assets/images/building1.png"
+    },
+    "PLAYER": {
+        "START_X": 500,
+        "START_Y": 400,
+        "GROWTH_FACTOR": 0.04,
+        "TIER_GROWTH_FACTOR": 0.04
+    },
+    "SIZE_TIERS": [
+        {
+            "tier": 1,
+            "initialSize": 21,
+            "threshold": 21,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 2,
+            "zoomInStart": 1,
+            "LEVEL_AREA": { "WIDTH": 2200, "HEIGHT": 500 },
+            "ASSETS": { "BACKGROUND_IMAGE": "assets/images/Level5.png", "BACKGROUND_SCALE": 2, "BACKGROUND_X": 0, "BACKGROUND_Y": -200 }
+        },
+        {
+            "tier": 2,
+            "initialSize": 31,
+            "threshold": 31,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1.25,
+            "zoomInStart": 2,
+            "LEVEL_AREA": { "WIDTH": 1760, "HEIGHT": 1787 },
+            "ASSETS": { "BACKGROUND_IMAGE": "assets/images/Level5.png", "BACKGROUND_SCALE": 1.25, "BACKGROUND_X": 0, "BACKGROUND_Y": 0 }
+        }
+    ],
+    "TIER_ENTITIES": {
+        "1": [
+            { "type": "Brit", "count": 12, "spawner": { "edge": "right", "position": 399, "interval": 8000, "speed": 80, "prewarmDuration": 28000 } },
+            { "type": "Tourist", "count": 12, "spawner": { "edge": "right", "position": 400, "interval": 8000, "speed": 80, "prewarmDuration": 24000 } },
+            { "type": "Cyclist", "count": 12, "spawner": { "edge": "right", "position": 300, "interval": 9000, "speed": 80, "prewarmDuration": 27000 } },
+            { "type": "Bush", "count": 12, "positions": [ { "x": 300, "y": 50 }, { "x": 850, "y": 50 }, { "x": 1300, "y": 50 }, { "x": 1650, "y": 50 }, { "x": 2100, "y": 50 }, { "x": 350, "y": 450 }, { "x": 800, "y": 450 }, { "x": 1300, "y": 450 }, { "x": 1680, "y": 450 }, { "x": 2050, "y": 450 } ], "value": 27, "size": 27 },
+            { "type": "Streetlight", "count": 12, "positions": [ { "x": 650, "y": 450, "rotation": 270 }, { "x": 1425, "y": 450, "rotation": 270 }, { "x": 1425, "y": 50, "rotation": 90 } ] },
+            { "type": "Table", "count": 12, "positions": [ { "x": 450, "y": 50 }, { "x": 1000, "y": 50 }, { "x": 2200, "y": 450 } ], "value": 28, "shape": "circle", "color": 16711680, "size": 28, "image": "circletable" },
+            { "type": "Chair", "count": 12, "positions": [ { "x": 375, "y": 50, "rotation": 270 }, { "x": 525, "y": 50, "rotation": 90 }, { "x": 925, "y": 50, "rotation": 270 }, { "x": 1075, "y": 50, "rotation": 90 }, { "x": 2125, "y": 450, "rotation": 270 }, { "x": 2275, "y": 450, "rotation": 90 } ], "value": 20, "color": 16711680, "size": 20 }
+        ],
+        "2": [
+            { "type": "Building, Large", "count": 10, "positions": [ { "x": 706, "y": 713, "rotation": 90 }, { "x": 325, "y": 713 }, { "x": 825, "y": 544, "rotation": 90 }, { "x": 825, "y": 713, "rotation": 90 }, { "x": 706, "y": 544, "rotation": 90 }, { "x": 1500, "y": 168 } ] },
+            { "type": "Building, Small", "count": 10, "positions": [ { "x": 100, "y": 1769 }, { "x": 188, "y": 1769 }, { "x": 275, "y": 1769 }, { "x": 363, "y": 1769 }, { "x": 538, "y": 1769 }, { "x": 625, "y": 1769 }, { "x": 713, "y": 1769 }, { "x": 800, "y": 1769 }, { "x": 1125, "y": 1769 }, { "x": 1213, "y": 1769 }, { "x": 1300, "y": 1769 }, { "x": 1388, "y": 1769 } ] },
+            { "type": "Tree", "count": 30, "positions": [ { "x": 1684, "y": 74 }, { "x": 316, "y": 135 }, { "x": 165, "y": 454 }, { "x": 78, "y": 599 }, { "x": 231, "y": 614 }, { "x": 154, "y": 638 }, { "x": 108, "y": 733 }, { "x": 73, "y": 851 }, { "x": 679, "y": 1026 }, { "x": 71, "y": 1045 }, { "x": 1640, "y": 1076 }, { "x": 616, "y": 1083 }, { "x": 1706, "y": 1091 }, { "x": 826, "y": 1136 }, { "x": 100, "y": 1155 }, { "x": 1720, "y": 1231 }, { "x": 241, "y": 1260 }, { "x": 838, "y": 1308 }, { "x": 151, "y": 1384 }, { "x": 81, "y": 1394 }, { "x": 1194, "y": 1436 }, { "x": 1471, "y": 1478 }, { "x": 1239, "y": 1501 }, { "x": 1659, "y": 1505 }, { "x": 598, "y": 1536 }, { "x": 1711, "y": 1540 }, { "x": 1660, "y": 1575 }, { "x": 1591, "y": 1756 } ] },
+            { "type": "Bush", "count": 30, "positions": [ { "x": 304, "y": 850 }, { "x": 533, "y": 850 }, { "x": 646, "y": 850 }, { "x": 761, "y": 850 }, { "x": 875, "y": 850 }, { "x": 1333, "y": 850 }, { "x": 1446, "y": 850 }, { "x": 1561, "y": 850 }, { "x": 1675, "y": 850 }, { "x": 75, "y": 1700 }, { "x": 189, "y": 1700 }, { "x": 304, "y": 1700 }, { "x": 533, "y": 1700 }, { "x": 646, "y": 1700 }, { "x": 761, "y": 1700 }, { "x": 1104, "y": 1700 }, { "x": 1218, "y": 1700 }, { "x": 1333, "y": 1700 }, { "x": 1446, "y": 1700 }, { "x": 1675, "y": 1700 }, { "x": 1063, "y": 128 }, { "x": 1063, "y": 383 }, { "x": 1063, "y": 510 }, { "x": 1063, "y": 638 }, { "x": 1063, "y": 765 }, { "x": 1063, "y": 1021 }, { "x": 1063, "y": 1149 }, { "x": 1063, "y": 1276 }, { "x": 1063, "y": 1404 }, { "x": 1063, "y": 1531 }, { "x": 500, "y": 383 }, { "x": 500, "y": 510 }, { "x": 500, "y": 638 }, { "x": 500, "y": 765 }, { "x": 500, "y": 1021 }, { "x": 500, "y": 1149 }, { "x": 500, "y": 1276 }, { "x": 500, "y": 1404 }, { "x": 500, "y": 1531 } ], "value": 30, "hideInPreviousTier": true, "size": 30 },
+            { "type": "Streetlight", "count": 36, "positions": [ { "x": 190, "y": 850, "rotation": 270 }, { "x": 418, "y": 850, "rotation": 270 }, { "x": 590, "y": 850, "rotation": 270 }, { "x": 704, "y": 850, "rotation": 270 }, { "x": 818, "y": 850, "rotation": 270 }, { "x": 1390, "y": 850, "rotation": 270 }, { "x": 1504, "y": 850, "rotation": 270 }, { "x": 1618, "y": 850, "rotation": 270 }, { "x": 133, "y": 1700, "rotation": 90 }, { "x": 246, "y": 1700, "rotation": 90 }, { "x": 590, "y": 1700, "rotation": 90 }, { "x": 704, "y": 1700, "rotation": 90 }, { "x": 1160, "y": 1700, "rotation": 90 }, { "x": 1275, "y": 1700, "rotation": 90 }, { "x": 1390, "y": 1700, "rotation": 90 }, { "x": 1560, "y": 1700, "rotation": 90 }, { "x": 1063, "y": 446 }, { "x": 1063, "y": 574 }, { "x": 1063, "y": 701 }, { "x": 1063, "y": 1085 }, { "x": 1063, "y": 1213 }, { "x": 1063, "y": 1340 }, { "x": 1063, "y": 1468 }, { "x": 500, "y": 446 }, { "x": 500, "y": 574 }, { "x": 500, "y": 701 }, { "x": 500, "y": 1085 }, { "x": 500, "y": 1213 }, { "x": 500, "y": 1340 }, { "x": 500, "y": 1468 } ], "hideInPreviousTier": true },
+            { "type": "Phone booth", "count": 1, "positions": [ { "x": 531, "y": 63 } ], "value": 37, "size": 37 },
+            { "type": "Awning", "count": 12, "positions": [ { "x": 444, "y": 713, "rotation": 90 }, { "x": 909, "y": 544, "rotation": 90 }, { "x": 909, "y": 713, "rotation": 90 }, { "x": 456, "y": 1769, "rotation": 90 }, { "x": 894, "y": 1769, "rotation": 90 }, { "x": 1031, "y": 1769, "rotation": 270 }, { "x": 1482, "y": 1769, "rotation": 90 } ] },
+            { "type": "Car", "count": 12, "spawners": [ { "edge": "right", "position": 331, "interval": 18000, "speed": 80, "prewarmDuration": 33000 }, { "edge": "right", "position": 1669, "interval": 12000, "speed": 80 }, { "edge": "left", "rotation": 180, "position": 256, "interval": 18000, "speed": 80, "prewarmDuration": 33000 } ], "hideInPreviousTier": false, "hitbox": { "width": 260, "height": 120 } },
+            { "type": "Taxi", "count": 12, "spawners": [ { "edge": "right", "position": 331, "interval": 18000, "speed": 80, "prewarmDuration": 24000 }, { "edge": "right", "position": 1669, "interval": 12000, "speed": 80, "prewarmDuration": 4000 }, { "edge": "left", "rotation": 180, "position": 256, "interval": 18000, "speed": 80, "prewarmDuration": 24000 } ], "hideInPreviousTier": false, "hitbox": { "width": 260, "height": 120 } },
+            { "type": "Doubledecker bus", "count": 12, "spawners": [ { "edge": "right", "rotation": 90, "position": 1669, "interval": 12000, "speed": 80, "prewarmDuration": 8000 } ], "hitbox": { "width": 260, "height": 120 } },
+            { "type": "Car", "count": 12, "spawners": [ { "edge": "top", "rotation": 270, "position": 450, "interval": 12000, "speed": 80 }, { "edge": "bottom", "rotation": 90, "position": 938, "interval": 12000, "speed": 80 } ], "hideInPreviousTier": true },
+            { "type": "Taxi", "count": 12, "spawners": [ { "edge": "top", "rotation": 270, "position": 450, "interval": 12000, "speed": 80, "prewarmDuration": 4000 }, { "edge": "bottom", "rotation": 90, "position": 938, "interval": 12000, "speed": 80, "prewarmDuration": 4000 } ], "hideInPreviousTier": true },
+            { "type": "Doubledecker bus", "count": 12, "spawners": [ { "edge": "top", "position": 450, "interval": 12000, "speed": 80, "prewarmDuration": 8000 }, { "edge": "bottom", "rotation": 180, "position": 938, "interval": 12000, "speed": 80, "prewarmDuration": 8000 } ], "hitbox": { "width": 120, "height": 260 } }
+        ]
+    }
+}

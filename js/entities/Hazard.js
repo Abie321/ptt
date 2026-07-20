@@ -200,7 +200,9 @@ class Hazard {
     pickRandomDirection() {
         if (!this.sprite || !this.sprite.active || !this.sprite.body) return;
 
-        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+        const angle = (Phaser.Math && typeof Phaser.Math.FloatBetween === 'function')
+            ? Phaser.Math.FloatBetween(0, Math.PI * 2)
+            : Math.random() * Math.PI * 2;
         this.sprite.body.setVelocity(
             Math.cos(angle) * this.speed,
             Math.sin(angle) * this.speed

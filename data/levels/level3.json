@@ -1,0 +1,42 @@
+{
+    "id": "level3",
+    "name": "Spare some change\nfor the phones",
+    "winSize": 210,
+    "worldIndex": 1,
+    "worldName": "Ghost",
+    "SIZE_TIERS": [
+        {
+            "tier": 1,
+            "initialSize": 26,
+            "threshold": 25,
+            "name": "Tiny",
+            "color": 2201331,
+            "zoom": 1.5,
+            "zoomInStart": 4,
+            "LEVEL_AREA": { "WIDTH": 550, "HEIGHT": 2000 },
+            "ASSETS": { "BACKGROUND_IMAGE": "assets/images/Level2.png", "BACKGROUND_SCALE": 1.5, "BACKGROUND_X": 0, "BACKGROUND_Y": 0 }
+        },
+        {
+            "tier": 2,
+            "initialSize": 40,
+            "threshold": 95,
+            "name": "Small",
+            "color": 16750592,
+            "zoom": 0.8,
+            "zoomInStart": 1.5,
+            "LEVEL_AREA": { "WIDTH": 1100, "HEIGHT": 2200 },
+            "ASSETS": { "BACKGROUND_IMAGE": "assets/images/Level2.png", "BACKGROUND_SCALE": 1 }
+        }
+    ],
+    "TIER_ENTITIES": {
+        "1": [
+            { "type": "Coin", "count": 80 },
+            { "type": "One pound note", "count": 1, "positions": [ { "x": 200, "y": 1500 } ], "value": 90, "size": 90 }
+        ],
+        "2": [
+            { "type": "One pound note", "count": 21, "value": 90, "size": 90, "hideInPreviousTier": true },
+            { "type": "Coin", "count": 60, "hideInPreviousTier": true },
+            { "type": "Phone booth", "count": 1, "positions": [ { "x": 1000, "y": 1000 } ], "value": 200, "size": 200, "hideInPreviousTier": true }
+        ]
+    }
+}

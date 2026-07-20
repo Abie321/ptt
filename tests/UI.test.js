@@ -343,4 +343,18 @@ describe('UI and HUD Elements', () => {
       });
     });
   });
+
+  describe('Tier Indicator Alignment', () => {
+    test('should align tier tag pill within left panel bounds and above progress bar', () => {
+      expect(gameScene.tierTagBg).toBeDefined();
+      expect(gameScene.tierTagText).toBeDefined();
+      expect(gameScene.hudPanelLeft).toBeDefined();
+
+      // Ensure tier tag pill sits to the right of size text and above progress bar
+      expect(gameScene.tierTagText.x).toBeGreaterThan(gameScene.sizeNumberText.x);
+      expect(gameScene.tierTagText.y).toBeLessThan(gameScene.progressBarBg.y);
+      // Ensure progress bar extends underneath the tier tag pill
+      expect(gameScene.progressBarBg.x + gameScene.progressBarBg.width).toBeGreaterThan(gameScene.tierTagText.x);
+    });
+  });
 });

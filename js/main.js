@@ -16,5 +16,9 @@ const config = {
     scene: [MainMenuScene, WorldSelectScene, LevelSelectScene, LevelDetailScene, LevelCreatorScene, GameScene, EndLevelScene]
 };
 
+if (typeof ConfigLoader !== 'undefined') {
+    ConfigLoader.loadAllConfig();
+}
+
 const game = new Phaser.Game(config);
 window.game = game; // Expose for debugging/testing

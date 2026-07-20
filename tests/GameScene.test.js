@@ -75,6 +75,30 @@ describe('GameScene', () => {
         0, 0, levelArea.WIDTH, levelArea.HEIGHT
       );
     });
+
+    test('should load all configured levels without errors or undefined camera ignore elements', () => {
+      const levels = (global.GameConfig && global.GameConfig.LEVELS) ? global.GameConfig.LEVELS : [];
+      expect(levels.length).toBeGreaterThan(0);
+
+      levels.forEach((levelConfig, index) => {
+        const scene = new GameScene();
+        scene.init({ levelConfig: levelConfig, index: index + 1 });
+        expect(() => scene.create()).not.toThrow();
+
+        if (scene.cameras.main && scene.cameras.main.ignore.mock) {
+          const ignoreCalls = scene.cameras.main.ignore.mock.calls;
+          ignoreCalls.forEach(call => {
+            const arg = call[0];
+            if (Array.isArray(arg)) {
+              arg.forEach(item => {
+                expect(item).toBeDefined();
+                expect(item).not.toBeNull();
+              });
+            }
+          });
+        }
+      });
+    });
   });
 
   describe('Asset Loading', () => {

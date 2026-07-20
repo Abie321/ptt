@@ -1,0 +1,9 @@
+[
+  { "id": 1, "name": "Ghost", "subtitle": "Death isn't the end of you, but it is the end for London." },
+  { "id": 2, "name": "Stingray", "subtitle": "The Atlantic isn't safe from poachers, and so isn't your appetite." },
+  { "id": 3, "name": "Snake", "subtitle": "Eat your way through an indian zoo." },
+  { "id": 4, "name": "Pigeon", "subtitle": "Consume NYC and gain the ability to fly." },
+  { "id": 5, "name": "Jaguar", "subtitle": "A consumption journey of the Amazon." },
+  { "id": 6, "name": "Seagull", "subtitle": "The ultimate feasting on Shanghai!" },
+  { "id": 7, "name": "Goo", "subtitle": "Start in a petri dish and eat your way to the end of the universe!" }
+]

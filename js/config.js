@@ -603,13 +603,14 @@ const GameConfig = {
     DEBUG: false,
     PLACEMENT_ATTEMPTS: 500,
     WORLDS: [
-        { name: "Ghost" },
-        { name: "Stingray" },
-        { name: "Snake" },
-        { name: "Pigeon" },
-        { name: "Jaguar" },
-        { name: "Seagull" },
-        { name: "Goo" }
+       { name: "Ghost", subtitle: "Death isn't the end of you, but it is the end for London." },
+        { name: "Stingray", subtitle: "The Atlantic isn't safe from poachers, and so isn't your appetite." },
+        { name: "Snake", subtitle: "Eat your way through an indian zoo." },
+        { name: "Pigeon", subtitle: "Consume NYC and gain the ability to fly." },
+        { name: "Jaguar", subtitle: "A consumption journey of the Amazon." },
+        { name: "Seagull", subtitle: "The ultimate feasting on Shanghai!" },
+        { name: "Goo", subtitle: "Start in a petri dish and eat your way to the end of the universe!" }
+
     ],
     LEVELS: [],
 
